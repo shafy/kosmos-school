@@ -50,13 +50,25 @@ namespace Kosmos
         enableLineRenderer(true);
       }
 
+      // only triggered once one player presses the trigger down
+      if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) && controllerRayCaster.CurrentInteractible) {
+        // get current object targeted by raycast
+        InteractiveItem currentInteractible = controllerRayCaster.CurrentInteractible;
+
+        // get it's button component
+        Button currentButton = currentInteractible.gameObject.GetComponent<Button>();
+        if (currentButton == null) return;
+
+        // press the button
+        currentButton.Press();
+
+      }
+
       // play presses trigger button
       if (!isGrabbing && OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) && controllerRayCaster.CurrentInteractible) {
-        isGrabbing = true;
-
-        // check if there's currently an item targeted by controller ray cast
+        
+        // get current object targeted by raycast
         InteractiveItem currentInteractible = controllerRayCaster.CurrentInteractible;
-        if (currentInteractible == null) return;
 
         // get it's Grabbable component
         currentGrabbable = currentInteractible.gameObject.GetComponent<Grabbable>();
@@ -73,6 +85,8 @@ namespace Kosmos
         Vector3 objectPos = currentGrabbable.transform.position;
 
         DistanceToObj = Vector3.Distance(controllerPosWorld, objectPos);
+
+        isGrabbing = true;
 
         currentGrabbable.Grabbed();
       }
