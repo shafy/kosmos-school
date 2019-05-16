@@ -52,6 +52,5 @@ namespace Kosmos {
       // make sure it's not active so that physics doesn't apply
       currentGP.SetActive(false);
     }
-
   }
 }
