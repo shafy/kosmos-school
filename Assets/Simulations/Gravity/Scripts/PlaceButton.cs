@@ -18,7 +18,7 @@ namespace Kosmos {
     [SerializeField] private GameObject currentGO;
 
     void Start() {
-      placeHeight = 10.0f;
+      placeHeight = 50.0f;
 
       currentTransform = currentGO.transform;
       currentGP = currentGO.GetComponent<GravityPhysics>();

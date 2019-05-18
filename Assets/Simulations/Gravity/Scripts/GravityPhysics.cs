@@ -6,7 +6,7 @@ namespace Kosmos {
   // Physics behind falling objects
   // object must also have a Rigidbody component
   // this class sets the velocity of the Rigidbody, overriding mass, drag etc.
-  public class GravityPhysics : MonoBehaviour {
+  public class GravityPhysics : KosmosPhysics {
 
     private bool isOnGround;
     private bool readOnly;
@@ -18,13 +18,20 @@ namespace Kosmos {
     private float prevAcceleration;
     private float accelerationG;
     private float currentFixedTime;
+    private float intervalTime;
+    private int intervalTimeCounter;
+    private List<float> graphDataTime;
+    private List<float> graphDataVelocity;
 
     private Rigidbody rb;
 
-    [SerializeField] private bool isActive = true;
+    [SerializeField] private bool isActive = false;
     [SerializeField] private float mass;
     [SerializeField] private float dragCoefficient;
     [SerializeField] private float crossSectionArea;
+     // record data every graphTimeStep seconds
+    [SerializeField] private float graphTimeStep = 0.5f;
+    [SerializeField] private GraphCreator graphCreator;
 
     public bool ReadOnly {
       get { return readOnly; }
@@ -46,6 +53,21 @@ namespace Kosmos {
       }
 
       readOnly = false;
+
+      intervalTime = 0f;
+      intervalTimeCounter = 1;      
+
+      // test test test
+      // float[] xValues = new float[6] {1f, 2f, 3f, 4f, 5f, 6f};
+      // float[] yValues = new float[6] {10f, 5f, 4f, 3f, 2f, 1f};
+      //GraphableDataList = new List<GraphableData>();
+      // GraphableDataList.Add(new GraphableData(xValues, yValues));
+      /// end test
+
+      // initialize data graph stuff
+      GraphableDataList = new List<GraphableData>();
+      graphDataTime = new List<float>();
+      graphDataVelocity = new List<float>();
     }
 
     void FixedUpdate() {
@@ -59,6 +81,17 @@ namespace Kosmos {
       prevAcceleration = currentAcceleration;
 
       rb.velocity = new Vector3(0, -currentYSpeed, 0);
+
+      // update data every graphTimeStep sec
+      intervalTime += Time.deltaTime;
+      if (intervalTime > graphTimeStep) {
+        intervalTime = 0f;
+        // add to graphDataTime list
+        graphDataTime.Add(intervalTimeCounter * graphTimeStep);
+        intervalTimeCounter++;
+        // add to graphDataVelocity list
+        graphDataVelocity.Add(currentYSpeed);
+      }
     }
 
     void OnCollisionEnter(Collision collision) {
@@ -66,6 +99,9 @@ namespace Kosmos {
       isOnGround = true;
       isActive = false;
       readOnly = false;
+      intervalTime = 0f;
+      intervalTimeCounter = 1;
+      addDataToGraph();
     }
 
     void OnCollisionExit(Collision collision) {
@@ -75,7 +111,7 @@ namespace Kosmos {
 
     // calculate current Y speed
     private float calculateYSpeed() {
-      return prevAcceleration * Time.fixedDeltaTime + prevYSpeed;
+      return prevAcceleration * Time.deltaTime + prevYSpeed;
     }
 
     // calculate current acceleration
@@ -96,6 +132,11 @@ namespace Kosmos {
     // calculate resulting force
     private float fRes() {
       return fGravity() - fAir();
+    }
+
+    private void addDataToGraph() {
+      GraphableDataList.Add(new GraphableData(graphDataTime, graphDataVelocity));
+      graphCreator.CreateGraph(GraphableDataList);
     }
 
     public void SetActive(bool value) {

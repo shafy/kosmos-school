@@ -38,19 +38,16 @@ namespace Kosmos
     void Start() {
       renderer = GetComponent<Renderer>();
 
-      // crate new texture
+      // future to-do: move more params that are hard coded here to GraphLine's arguments for more flexibility
+
+      // create new texture
       texture = new Texture2D(256, 256);
       renderer.material.mainTexture = texture;
 
       // define colors array to be used with SetPixels block overload
       // the color is a flattened 2D array that has the length blockWidth * blockHeight
-      blockWidthLine = 4;
-      blockHeightLine = 4;
       blockWidthGrid = 2;
       blockHeightGrid = 2;
-
-      // axis color
-      colorsAxis = Enumerable.Repeat<Color>(Color.gray, blockWidthLine * blockHeightLine).ToArray<Color>();
 
       // define the number of gridlines per axis
       nGridLines = 5;
@@ -69,10 +66,10 @@ namespace Kosmos
       // these are predefined grid stepss
       predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f};
 
-      float[] exampleX = new float[5] {10f, 15f, 20f, 25f, 30f};
-      float[] exampleY = new float[5] {0.2f, 0.3f, 0.33f, 0.71f, 0.82f};
-      Color[] exampleColors = Enumerable.Repeat<Color>(Color.magenta, blockWidthLine * blockHeightLine).ToArray<Color>();
-      GraphLine(exampleX, exampleY, exampleColors);
+      // float[] exampleX = new float[5] {10f, 15f, 20f, 25f, 30f};
+      // float[] exampleY = new float[5] {0.2f, 0.3f, 0.33f, 0.71f, 0.82f};
+      // Color[] exampleColors = Enumerable.Repeat<Color>(Color.magenta, blockWidthLine * blockHeightLine).ToArray<Color>();
+      // GraphLine(exampleX, exampleY, exampleColors, blockWidthLine, blockWidthLine);
 
     }
 
@@ -229,7 +226,7 @@ namespace Kosmos
       // assign correct value to TextMeshPro
       TextMeshPro currentTMP = newAxisLabel.GetComponentInChildren<TextMeshPro>();
       // display decimal if necessary
-      if (Mathf.Abs(labelValues[number]) < 1.0f && Mathf.Abs(labelValues[number]) > 0.0f) {
+      if (Mathf.Abs(labelValues[0]) < 1.0f && Mathf.Abs(labelValues[0]) > 0.0f) {
         currentTMP.SetText("{0:1}", labelValues[number]);
       } else {
         currentTMP.SetText("{0}", labelValues[number]);
@@ -266,12 +263,18 @@ namespace Kosmos
     }
 
     // creates a line graph
-    public void GraphLine(float[] xValues, float[] yValues, Color[] colors) {
+    public void GraphLine(List<float> xValues, List<float> yValues, int _blockWidthLine, int _blockHeightLine, Color[] colors) {
       // check if lengths of x values and y values match, if not return
-      if (xValues.Length != yValues.Length) {
+      if (xValues.Count != yValues.Count) {
         Debug.Log("GraphLine error: number of xValues and yValues need to be the same.");
         return;
       }
+
+      blockWidthLine = _blockWidthLine;
+      blockHeightLine = _blockHeightLine;
+
+      // axis color (might take in as argument also)
+      colorsAxis = Enumerable.Repeat<Color>(Color.gray, blockWidthLine * blockHeightLine).ToArray<Color>();
 
       // get maximum and minimum values of x and y axes (used to scale the graph correctly)
       float xMax = xValues.Max();
