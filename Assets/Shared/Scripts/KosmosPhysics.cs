@@ -8,6 +8,9 @@ namespace Kosmos {
 
     private List<GraphableData> graphableDataList;
 
+    [SerializeField] protected string xAxisTitle;
+    [SerializeField] protected string yAxisTitle;
+
     public List<GraphableData> GraphableDataList {
       get { return graphableDataList; }
       protected set { graphableDataList = value; }

@@ -16,10 +16,6 @@ namespace Kosmos
       rb = GetComponent<Rigidbody>();
     }
 
-    public void Update() {
-
-    }
-
     protected void gravityActive(bool active) {
       if (rb) {
         rb.useGravity = active;

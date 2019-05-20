@@ -55,14 +55,7 @@ namespace Kosmos {
       readOnly = false;
 
       intervalTime = 0f;
-      intervalTimeCounter = 1;      
-
-      // test test test
-      // float[] xValues = new float[6] {1f, 2f, 3f, 4f, 5f, 6f};
-      // float[] yValues = new float[6] {10f, 5f, 4f, 3f, 2f, 1f};
-      //GraphableDataList = new List<GraphableData>();
-      // GraphableDataList.Add(new GraphableData(xValues, yValues));
-      /// end test
+      intervalTimeCounter = 1;
 
       // initialize data graph stuff
       GraphableDataList = new List<GraphableData>();
@@ -136,7 +129,7 @@ namespace Kosmos {
 
     private void addDataToGraph() {
       GraphableDataList.Add(new GraphableData(graphDataTime, graphDataVelocity));
-      graphCreator.CreateGraph(GraphableDataList);
+      graphCreator.CreateGraph(GraphableDataList, xAxisTitle, yAxisTitle);
     }
 
     public void SetActive(bool value) {

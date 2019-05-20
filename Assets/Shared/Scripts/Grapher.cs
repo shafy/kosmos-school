@@ -22,26 +22,24 @@ namespace Kosmos
     private float[] xAxisLabelValues;
     private float[] yAxisLabelValues;
     private List<float> predefinedAxisLabels;
+    private string xAxisTitle;
+    private string yAxisTitle;
     private Texture2D texture;
     private Renderer renderer;
 
     [SerializeField] private GameObject AxisLabelPrefab;
     [SerializeField] private Transform AxisLabelParentTransform;
-    [SerializeField] private string xAxisUnit;
-    [SerializeField] private string yAxisUnit;
-    [SerializeField] private string xAxisTitle;
-    [SerializeField] private string yAxisTitle;
     [SerializeField] private TextMeshPro xAxisTMP;
     [SerializeField] private TextMeshPro yAxisTMP;
     
 
-    void Start() {
+    void Awake() {
       renderer = GetComponent<Renderer>();
 
       // future to-do: move more params that are hard coded here to GraphLine's arguments for more flexibility
 
       // create new texture
-      texture = new Texture2D(256, 256);
+      texture = new Texture2D(1024, 512);
       renderer.material.mainTexture = texture;
 
       // define colors array to be used with SetPixels block overload
@@ -55,7 +53,7 @@ namespace Kosmos
       colorsGrid = Enumerable.Repeat<Color>(new Color(0.9f, 0.9f, 0.9f), blockWidthGrid * blockHeightGrid).ToArray<Color>();
 
       // define border size and lengths of axes
-      border = 42;
+      border = 64;
       // get lengths
       lengthX = texture.width - 2 * border;
       lengthY = texture.height - 2 * border;
@@ -66,11 +64,6 @@ namespace Kosmos
       // these are predefined grid stepss
       predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f};
 
-      // float[] exampleX = new float[5] {10f, 15f, 20f, 25f, 30f};
-      // float[] exampleY = new float[5] {0.2f, 0.3f, 0.33f, 0.71f, 0.82f};
-      // Color[] exampleColors = Enumerable.Repeat<Color>(Color.magenta, blockWidthLine * blockHeightLine).ToArray<Color>();
-      // GraphLine(exampleX, exampleY, exampleColors, blockWidthLine, blockWidthLine);
-
     }
 
     // draws a block of pixels (don't forget to call texture.Apply())
@@ -80,8 +73,8 @@ namespace Kosmos
     }
 
     private void setAxesTitles() {
-      xAxisTMP.text = xAxisTitle + " [" + xAxisUnit + "]";
-      yAxisTMP.text = yAxisTitle + " [" + yAxisUnit + "]";
+      xAxisTMP.text = xAxisTitle;
+      yAxisTMP.text = yAxisTitle;
     }
 
     // draw x or y axis for graph
@@ -122,26 +115,26 @@ namespace Kosmos
     }
 
     // draws arrow head for x or y axis
-    private void drawArrowHead(string axis, int startingPointX, int startingPointY) {
-      if (axis == "x") {
-        // upper part
-        drawPixelBlock(startingPointX - (2 * blockWidthLine), startingPointY + blockHeightLine, blockWidthLine, blockHeightLine, colorsAxis);
-        drawPixelBlock(startingPointX - (3 * blockWidthLine), startingPointY + (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
+    // private void drawArrowHead(string axis, int startingPointX, int startingPointY) {
+    //   if (axis == "x") {
+    //     // upper part
+    //     drawPixelBlock(startingPointX - (2 * blockWidthLine), startingPointY + blockHeightLine, blockWidthLine, blockHeightLine, colorsAxis);
+    //     drawPixelBlock(startingPointX - (3 * blockWidthLine), startingPointY + (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
 
-        // lower part
-        drawPixelBlock(startingPointX - (2 * blockWidthLine), startingPointY - blockHeightLine, blockWidthLine, blockHeightLine, colorsAxis);
-        drawPixelBlock(startingPointX - (3 * blockWidthLine), startingPointY - (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
-      } else {
-        // right part
-        drawPixelBlock(startingPointX + blockWidthLine, startingPointY - (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
-        drawPixelBlock(startingPointX + (2 * blockWidthLine), startingPointY - (3 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
+    //     // lower part
+    //     drawPixelBlock(startingPointX - (2 * blockWidthLine), startingPointY - blockHeightLine, blockWidthLine, blockHeightLine, colorsAxis);
+    //     drawPixelBlock(startingPointX - (3 * blockWidthLine), startingPointY - (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
+    //   } else {
+    //     // right part
+    //     drawPixelBlock(startingPointX + blockWidthLine, startingPointY - (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
+    //     drawPixelBlock(startingPointX + (2 * blockWidthLine), startingPointY - (3 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
 
-        // left part
-        drawPixelBlock(startingPointX - blockWidthLine, startingPointY - (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
-        drawPixelBlock(startingPointX - (2 * blockWidthLine), startingPointY - (3 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
+    //     // left part
+    //     drawPixelBlock(startingPointX - blockWidthLine, startingPointY - (2 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
+    //     drawPixelBlock(startingPointX - (2 * blockWidthLine), startingPointY - (3 * blockHeightLine), blockWidthLine, blockHeightLine, colorsAxis);
 
-        }
-    }
+    //     }
+    // }
 
     // draws grid with nGridLines lines per axis
     private void drawGrid() {
@@ -173,7 +166,7 @@ namespace Kosmos
         relativeYPos = (float)yPos / (float)texture.height;
         quadYPos = transform.localScale.y * relativeYPos;
 
-        relativeXPos = (float)(border - 2 * blockWidthLine) / (float)texture.width;
+        relativeXPos = (float)(border - 4 * blockWidthLine) / (float)texture.width;
         quadXPos = transform.localScale.x * relativeXPos;
 
         // translate to Vector3
@@ -204,7 +197,7 @@ namespace Kosmos
         relativeXPos = (float)xPos / (float)texture.width;
         quadXPos = transform.localScale.x * relativeXPos;
 
-        relativeYPos = (float)(border - 2 * blockHeightLine) / (float)texture.height;
+        relativeYPos = (float)(border - 4 * blockHeightLine) / (float)texture.height;
         quadYPos = transform.localScale.y * relativeYPos;
 
         // translate to Vector3
@@ -247,8 +240,6 @@ namespace Kosmos
       // always take the next biggest scale of maxValue / nGridLines
 
       float gridStep = predefinedAxisLabels.OrderBy(l => l).FirstOrDefault(l => l > gridDivider);
-      
-      predefinedAxisLabels.OrderBy(l => l);
 
       // if no higher value found
       if (gridStep == 0f) {
@@ -263,7 +254,7 @@ namespace Kosmos
     }
 
     // creates a line graph
-    public void GraphLine(List<float> xValues, List<float> yValues, int _blockWidthLine, int _blockHeightLine, Color[] colors) {
+    public void GraphLine(List<float> xValues, List<float> yValues, int _blockWidthLine, int _blockHeightLine, Color[] colors, string _xAxisTitle, string _yAxisTitle) {
       // check if lengths of x values and y values match, if not return
       if (xValues.Count != yValues.Count) {
         Debug.Log("GraphLine error: number of xValues and yValues need to be the same.");
@@ -272,6 +263,8 @@ namespace Kosmos
 
       blockWidthLine = _blockWidthLine;
       blockHeightLine = _blockHeightLine;
+      xAxisTitle = _xAxisTitle;
+      yAxisTitle = _yAxisTitle;
 
       // axis color (might take in as argument also)
       colorsAxis = Enumerable.Repeat<Color>(Color.gray, blockWidthLine * blockHeightLine).ToArray<Color>();
@@ -285,14 +278,6 @@ namespace Kosmos
       // create arrays with axis label values
       xAxisLabelValues = createAxisLabelValues(xMax, xMin);
       yAxisLabelValues = createAxisLabelValues(yMax, yMin);
-
-      // // get ratio to length of axes
-      // float xFactor = (lengthX - blockWidthLine) / xMax;
-      // float yFactor = (lengthY - blockHeightLine) / yMax;
-
-      // // scale up / down values
-      // int[] scaledXValues = xValues.Select(x => (int)(x * xFactor)).ToArray();
-      // int[] scaledYValues = yValues.Select(x => (int)(x * yFactor)).ToArray();
 
       float xLabelMax = xAxisLabelValues[nGridLines];
       float yLabelMax = yAxisLabelValues[nGridLines];
