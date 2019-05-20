@@ -2,27 +2,77 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 namespace Kosmos
 { 
-  // Creates Graphs based on argument data with CreateGraph
+  // Handles Graph controls
   public class GraphCreator : MonoBehaviour {
 
+    private List<GameObject> graphsList;
+
     [SerializeField] GameObject graphPrefab;
+    [SerializeField] GameObject graphTabPrefab;
     [SerializeField] Transform graphsParentTransform;
+    [SerializeField] Transform graphsTabParentTransform;
 
-    public void CreateGraph(List<GraphableData> graphableDataList, string xAxisTitle, string yAxisTitle) {
 
-      // instantiate new graph object
-      GameObject newGraph = (GameObject)Instantiate(graphPrefab, graphsParentTransform);
+    void Awake() {
+      graphsList = new List<GameObject>();
+    }
 
-      Grapher currentGrapher = newGraph.GetComponentInChildren<Grapher>();
+    // Creates Graphs and Tabs
+    public void CreateGraph(List<GraphableData> graphableDataList, List<GraphableDescription> graphableDescription) {
+
       // define params
       int blockWidthLine = 4;
       int blockHeightLine = 4;
       Color[] colorsMagenta = Enumerable.Repeat<Color>(Color.magenta, blockWidthLine * blockHeightLine).ToArray<Color>();
 
-      currentGrapher.GraphLine(graphableDataList[0].XDataList, graphableDataList[0].YDataList, blockWidthLine, blockHeightLine, colorsMagenta, xAxisTitle, yAxisTitle);
+      // if graphableDataList and graphableDescription don't match, return
+      if (graphableDataList.Count != graphableDescription.Count) {
+        Debug.Log("CreateGraph Error: graphableDataList and graphableDescription have different Counts");
+        return;
+      }
+
+      // for each y and x data pair in graphableDataList, create new graph and graph line
+      for (int i = 0; i < graphableDataList.Count; i++) {
+        GameObject newGraph = (GameObject)Instantiate(graphPrefab, graphsParentTransform);
+        Grapher currentGrapher = newGraph.GetComponentInChildren<Grapher>();
+
+        currentGrapher.GraphLine(graphableDataList[i].XDataList, graphableDataList[i].YDataList, blockWidthLine, blockHeightLine, colorsMagenta, graphableDescription[i].XAxisTitle, graphableDescription[i].YAxisTitle);
+
+        // disable if not first
+        if (i > 0) {
+          newGraph.active = false;
+        }
+
+        // add to list
+        graphsList.Add(newGraph);
+
+        // create tab also
+        GameObject newTab = (GameObject)Instantiate(graphTabPrefab, graphsTabParentTransform);
+        // move to right pos
+        newTab.transform.localPosition = new Vector3(i * newTab.transform.localScale.x,  newTab.transform.localPosition.y, newTab.transform.localPosition.z);
+        // update tab title
+        TextMeshPro currentTMP = newTab.GetComponentInChildren<TextMeshPro>();
+        currentTMP.text = graphableDescription[i].GraphTabTitle;
+        // assign index and this instance of the GraphCreator
+        TabButton currentTabButton = newTab.GetComponent<TabButton>();
+        currentTabButton.GraphIndex = i;
+        currentTabButton.GraphCreator = this;
+
+      }
+    }
+
+    // switches to new graph based on tab button press
+    public void SwitchGraphs(int newGraphIndex) {
+      // loop through all gameobjects in the list and deactivate
+      for (int i = 0; i < graphsList.Count; i++) {
+        graphsList[i].active = false;
+      }
+      // activate the new one
+      graphsList[newGraphIndex].active = true;
     }
   }
 }

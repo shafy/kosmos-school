@@ -21,8 +21,8 @@ namespace Kosmos {
     private float intervalTime;
     private int intervalTimeCounter;
     private List<float> graphDataTime;
-    private List<float> graphDataVelocity;
-
+    private List<float> graphDataSpeed;
+    private List<float> graphDataAcceleration;
     private Rigidbody rb;
 
     [SerializeField] private bool isActive = false;
@@ -60,7 +60,9 @@ namespace Kosmos {
       // initialize data graph stuff
       GraphableDataList = new List<GraphableData>();
       graphDataTime = new List<float>();
-      graphDataVelocity = new List<float>();
+      graphDataSpeed = new List<float>();
+      graphDataAcceleration = new List<float>();
+      GraphableDescriptionList = new List<GraphableDescription>();
     }
 
     void FixedUpdate() {
@@ -82,8 +84,10 @@ namespace Kosmos {
         // add to graphDataTime list
         graphDataTime.Add(intervalTimeCounter * graphTimeStep);
         intervalTimeCounter++;
-        // add to graphDataVelocity list
-        graphDataVelocity.Add(currentYSpeed);
+        // add to graphDataSpeed list
+        graphDataSpeed.Add(currentYSpeed);
+        // add acceleration to graphDataAcceleration
+        graphDataAcceleration.Add(currentAcceleration);
       }
     }
 
@@ -128,8 +132,14 @@ namespace Kosmos {
     }
 
     private void addDataToGraph() {
-      GraphableDataList.Add(new GraphableData(graphDataTime, graphDataVelocity));
-      graphCreator.CreateGraph(GraphableDataList, xAxisTitle, yAxisTitle);
+      // add velocity graph
+      GraphableDataList.Add(new GraphableData(graphDataTime, graphDataSpeed));
+      GraphableDescriptionList.Add(new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]"));
+      // add acceleration graph
+      GraphableDataList.Add(new GraphableData(graphDataTime, graphDataAcceleration));
+      GraphableDescriptionList.Add(new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]"));
+
+      graphCreator.CreateGraph(GraphableDataList, GraphableDescriptionList);
     }
 
     public void SetActive(bool value) {
