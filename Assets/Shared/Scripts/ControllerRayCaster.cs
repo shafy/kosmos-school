@@ -101,7 +101,8 @@ namespace Kosmos
             }
             
             // Do the raycast forweards to see if we hit an interactive item
-            if (Physics.Raycast(ray, out hit, m_RayLength, ~m_ExclusionLayers))
+            // ignore colliders that have isTrigger = true
+            if (Physics.Raycast(ray, out hit, m_RayLength, ~m_ExclusionLayers, QueryTriggerInteraction.Ignore))
             {
                 InteractiveItem interactible = hit.collider.GetComponent<InteractiveItem>(); //attempt to get the InteractiveItem on the hit object
 

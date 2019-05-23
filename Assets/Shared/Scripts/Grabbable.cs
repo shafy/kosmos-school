@@ -10,6 +10,13 @@ namespace Kosmos
     private bool isGrabbed;
     private float DistanceToObj;
     private Rigidbody rb;
+
+    [SerializeField] private bool isGrabbable = true;
+
+    public bool IsGrabbable {
+      get { return isGrabbable; }
+      set { isGrabbable = value; }
+    }
     
     void Start() {
       base.Start();

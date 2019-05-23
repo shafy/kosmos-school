@@ -19,6 +19,8 @@ namespace Kosmos
     private int lengthX;
     private int lengthY;
     private int nGridLines;
+    private int textureWidth;
+    private int textureHeight;
     private float[] xAxisLabelValues;
     private float[] yAxisLabelValues;
     private List<float> predefinedAxisLabels;
@@ -39,8 +41,14 @@ namespace Kosmos
       // future to-do: move more params that are hard coded here to GraphLine's arguments for more flexibility
 
       // create new texture
-      texture = new Texture2D(1024, 512);
+      textureWidth = 1024;
+      textureHeight = 512;
+      texture = new Texture2D(textureWidth, textureHeight);
       renderer.material.mainTexture = texture;
+
+      // set background color of texture
+      Color[] colorsBackground = Enumerable.Repeat<Color>(new Color(0.212f, 0.271f, 0.31f), textureWidth * textureHeight).ToArray<Color>();
+      setBackgroundColor(colorsBackground);
 
       // define colors array to be used with SetPixels block overload
       // the color is a flattened 2D array that has the length blockWidth * blockHeight
@@ -64,6 +72,11 @@ namespace Kosmos
       // these are predefined grid stepss
       predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f};
 
+    }
+
+    private void setBackgroundColor(Color[] colors) {
+      texture.SetPixels(colors, 0);
+      texture.Apply();
     }
 
     // draws a block of pixels (don't forget to call texture.Apply())
@@ -267,7 +280,7 @@ namespace Kosmos
       yAxisTitle = _yAxisTitle;
 
       // axis color (might take in as argument also)
-      colorsAxis = Enumerable.Repeat<Color>(Color.gray, blockWidthLine * blockHeightLine).ToArray<Color>();
+      colorsAxis = Enumerable.Repeat<Color>(new Color(0.95f, 0.95f, 0.95f), blockWidthLine * blockHeightLine).ToArray<Color>();
 
       // get maximum and minimum values of x and y axes (used to scale the graph correctly)
       float xMax = xValues.Max();

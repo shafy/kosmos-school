@@ -24,7 +24,7 @@ namespace Kosmos {
       currentGP = currentGO.GetComponent<GravityPhysics>();
 
       lerpValue = 0.0f;
-      movementTime = 3.0f;
+      movementTime = 1.0f;
       startPos = currentTransform.position;
       endPos = new Vector3(currentTransform.position.x, placeHeight, currentTransform.position.z);
     }
@@ -33,13 +33,14 @@ namespace Kosmos {
       if (!shouldMove) return;
 
       lerpValue += Time.deltaTime / movementTime;
-      currentTransform.position = Vector3.Lerp(startPos, endPos, movementTime);
+      currentTransform.position = Vector3.Lerp(startPos, endPos, lerpValue);
 
       // when arrived, stop moving
       if (currentTransform.position == endPos) {
         // deactivate read only mode
         currentGP.SetReadOnly(false);
         shouldMove = false;
+        lerpValue = 0.0f;
       }
     }
 

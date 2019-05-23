@@ -64,47 +64,22 @@ namespace Kosmos
 
       }
 
-      // play presses trigger button
+      // play presses trigger button: grab item
       if (!isGrabbing && OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) && controllerRayCaster.CurrentInteractible) {
-        
-        // get current object targeted by raycast
-        InteractiveItem currentInteractible = controllerRayCaster.CurrentInteractible;
-
-        // get it's Grabbable component
-        currentGrabbable = currentInteractible.gameObject.GetComponent<Grabbable>();
-        if (currentGrabbable == null) return;
-
-        // make kinematic
-        currentGrabbableRb = currentGrabbable.gameObject.GetComponent<Rigidbody>();
-        currentGrabbableRb.isKinematic = true;
-
-        // calculate distance to obj
-        Vector3 controllerPos = OVRInput.GetLocalControllerPosition(KosmosStatics.Controller);
-        localToWorld = trackingSpace.localToWorldMatrix;
-        Vector3 controllerPosWorld = localToWorld.MultiplyPoint(controllerPos);
-        Vector3 objectPos = currentGrabbable.transform.position;
-
-        DistanceToObj = Vector3.Distance(controllerPosWorld, objectPos);
-
-        isGrabbing = true;
-
-        currentGrabbable.Grabbed();
+        grabItem();
       }
 
-      // player let's go of triger button
+      // player let's go of triger button: ungrab item
       if (isGrabbing && !OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger)) {
-        isGrabbing = false;
-        if (currentGrabbable == null) return;
-
-        currentGrabbableRb.isKinematic = false;
-        // show linerenderer again
-        enableLineRenderer(true);
-
-        resetLaser();
-        currentGrabbable.Ungrabbed();
+        ungrabItem();
       }
 
       if (isGrabbing) {
+        // ungrabItem if it becomes ungrabbable
+        if (!currentGrabbable.IsGrabbable) {
+          ungrabItem();
+          return;
+        }
         // move object with ElectroGrabber
         moveItem();
         // disable linerender
@@ -119,6 +94,46 @@ namespace Kosmos
         // show laser beam to object
         extendLaser();
       }
+    }
+
+    private void grabItem() {
+      // get current object targeted by raycast
+      InteractiveItem currentInteractible = controllerRayCaster.CurrentInteractible;
+
+      // get it's Grabbable component
+      currentGrabbable = currentInteractible.gameObject.GetComponent<Grabbable>();
+      if (currentGrabbable == null) return;
+
+      // don'tgrab it if it has IsGrabbable = false;
+      if (!currentGrabbable.IsGrabbable) return;
+
+      // make kinematic
+      currentGrabbableRb = currentGrabbable.gameObject.GetComponent<Rigidbody>();
+      currentGrabbableRb.isKinematic = true;
+
+      // calculate distance to obj
+      Vector3 controllerPos = OVRInput.GetLocalControllerPosition(KosmosStatics.Controller);
+      localToWorld = trackingSpace.localToWorldMatrix;
+      Vector3 controllerPosWorld = localToWorld.MultiplyPoint(controllerPos);
+      Vector3 objectPos = currentGrabbable.transform.position;
+
+      DistanceToObj = Vector3.Distance(controllerPosWorld, objectPos);
+
+      isGrabbing = true;
+
+      currentGrabbable.Grabbed();
+    }
+
+    private void ungrabItem() {
+      isGrabbing = false;
+      if (currentGrabbable == null) return;
+
+      currentGrabbableRb.isKinematic = false;
+      // show linerenderer again
+      enableLineRenderer(true);
+
+      resetLaser();
+      currentGrabbable.Ungrabbed();
     }
 
     private void moveItem() {

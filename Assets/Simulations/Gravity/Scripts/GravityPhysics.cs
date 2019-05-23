@@ -132,6 +132,8 @@ namespace Kosmos {
     }
 
     private void addDataToGraph() {
+      if (!graphCreator) return;
+
       // add velocity graph
       GraphableDataList.Add(new GraphableData(graphDataTime, graphDataSpeed));
       GraphableDescriptionList.Add(new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]"));
