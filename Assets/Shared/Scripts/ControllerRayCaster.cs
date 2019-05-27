@@ -55,7 +55,6 @@ namespace Kosmos
             private set { currentHit = value;}
         }
 
-
         private void Update()
         {   
             EyeRaycast();

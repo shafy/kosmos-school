@@ -38,6 +38,11 @@ namespace Kosmos {
       private set { readOnly = value; }
     }
 
+    public bool IsActive {
+      get { return isActive; }
+      private set { isActive = value; }
+    }
+
     void Start() {
       rb = GetComponent<Rigidbody>();
       initialAcceleration = 9.81f;
@@ -93,8 +98,11 @@ namespace Kosmos {
 
     void OnCollisionEnter(Collision collision) {
       // if collision, stop manually updating velocity
+      // only care about collisions with PlatformFloor
+      if (!collision.gameObject.CompareTag("PlatformFloor")) return;
       isOnGround = true;
       isActive = false;
+      //rb.isKinematic = true;
       readOnly = false;
       intervalTime = 0f;
       intervalTimeCounter = 1;
@@ -149,6 +157,7 @@ namespace Kosmos {
       if (readOnly) return;
       // can't activate if it's already on the ground
       if (value == true && isOnGround) return;
+
       isActive = value;
       rb.isKinematic = !value;
       readOnly = true;

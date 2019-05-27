@@ -7,7 +7,7 @@ namespace Kosmos {
   public class PlatformController : MonoBehaviour {
     
     private bool isMoving;
-    private bool ungrabbableCoroutineRunning; 
+    private bool ungrabbableCoroutineRunning;
     private float lerpValue;
     private float movementTime;
     private Vector3 startPos;
@@ -15,8 +15,12 @@ namespace Kosmos {
     private List<Transform> objectsList;
     private Transform currentObjectTransform;
 
-
     [SerializeField] private Transform[] SpotTransforms;
+
+    public List<Transform> ObjectsList {
+        get { return objectsList; }
+        private set { objectsList = value;}
+    }
 
     void Start() {
       objectsList = new List<Transform>();
@@ -48,10 +52,13 @@ namespace Kosmos {
     }
 
     void OnTriggerEnter(Collider collider) {
-
       // if user drops an object, move it to the next free spot
       // first, check if the object has a GravityPhysics component
-      if (!collider.gameObject.GetComponent<GravityPhysics>()) return;
+      GravityPhysics currentGP = collider.gameObject.GetComponent<GravityPhysics>();
+      if (!currentGP) return;
+
+      // do nothing if it's falling (i.e. IsActive == true)
+      //if (currentGP.IsActive) return;
 
       // return if object is already in the list
       if (objectsList.Contains(collider.transform)) return;
@@ -66,7 +73,6 @@ namespace Kosmos {
       if (!collider.gameObject.GetComponent<GravityPhysics>()) return;
 
       objectsList.Remove(collider.transform);
-      Debug.Log("objectsList.Count " + objectsList.Count);
       repositionObjects();
     }
 

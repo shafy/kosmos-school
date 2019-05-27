@@ -8,8 +8,6 @@ namespace Kosmos
   public class Grabbable : BaseInteractable {
 
     private bool isGrabbed;
-    private float DistanceToObj;
-    private Rigidbody rb;
 
     [SerializeField] private bool isGrabbable = true;
 
@@ -20,19 +18,6 @@ namespace Kosmos
     
     void Start() {
       base.Start();
-      rb = GetComponent<Rigidbody>();
-    }
-
-    protected void gravityActive(bool active) {
-      if (rb) {
-        rb.useGravity = active;
-      }
-    }
-
-    protected void kinematicActive(bool active) {
-      if (rb) {
-        rb.isKinematic = active;
-      }
     }
 
     // this can be overriden in child
@@ -43,8 +28,6 @@ namespace Kosmos
     // this can be overriden in child
     public virtual void Ungrabbed() {
       isGrabbed = false;
-      // reset distance to obj
-      DistanceToObj = 0;
     }
   }
 }
