@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace Kosmos {
   // Makes sure are moved to right place on platform if dropped on it
@@ -8,29 +9,59 @@ namespace Kosmos {
     
     private bool isMoving;
     private bool ungrabbableCoroutineRunning;
+    private bool isPlaced;
     private float lerpValue;
     private float movementTime;
-    private Vector3 startPos;
-    private Vector3 endPos;
+    private float placeHeight;
     private List<Transform> objectsList;
     private Transform currentObjectTransform;
+    private Vector3 startPos;
+    private Vector3 endPos;
 
     [SerializeField] private Transform[] SpotTransforms;
+    [SerializeField] private TextMeshPro heightLabelTMP;
+    [SerializeField] private TextMeshPro heightValueTMP;
+    [SerializeField] private TextMeshPro heightInstructionsTMP;
+    [SerializeField] private TextMeshPro dropInstructionsTMP;
+    [SerializeField] private TextMeshPro placeInstructionsTMP;
+
+    public bool IsPlaced {
+      get { return isPlaced; }
+      private set { isPlaced = value;}
+    }
+
+    public float PlaceHeight {
+      get { return placeHeight; }
+      private set { placeHeight = value;}
+    }
 
     public List<Transform> ObjectsList {
-        get { return objectsList; }
-        private set { objectsList = value;}
+      get { return objectsList; }
+      private set { objectsList = value;}
     }
 
     void Start() {
       objectsList = new List<Transform>();
       lerpValue = 0.0f;
+      isPlaced = false;
 
       // move objects over movementTime seconds
       movementTime = 0.5f;
 
       isMoving = false;
       ungrabbableCoroutineRunning = false;
+
+      placeHeight = 10.0f;
+      heightValueTMP.SetText("{0:0} m", placeHeight);
+
+      // deactivate texts
+      heightLabelTMP.gameObject.active = false;
+      heightValueTMP.gameObject.active = false;
+      heightInstructionsTMP.gameObject.active = false;
+      dropInstructionsTMP.gameObject.active = false;
+
+      //activate text
+      placeInstructionsTMP.gameObject.active = true;
     }
 
 
@@ -57,14 +88,25 @@ namespace Kosmos {
       GravityPhysics currentGP = collider.gameObject.GetComponent<GravityPhysics>();
       if (!currentGP) return;
 
-      // do nothing if it's falling (i.e. IsActive == true)
-      //if (currentGP.IsActive) return;
+      // dont' add to list if it's already full
+      if (SpotTransforms.Length == objectsList.Count) return;
 
       // return if object is already in the list
       if (objectsList.Contains(collider.transform)) return;
 
+      // activate texts if it's first objects to be added
+      if (objectsList.Count == 0) {
+        heightLabelTMP.gameObject.active = true;
+        heightValueTMP.gameObject.active = true;
+        heightInstructionsTMP.gameObject.active = true;
+        placeInstructionsTMP.gameObject.active = false;
+      }
+
+      // Add to List
+      objectsList.Add(collider.transform);
+
       // move to next free pos
-      moveToSpot(collider.transform, SpotTransforms[objectsList.Count].position);
+      moveToSpot(collider.transform, SpotTransforms[objectsList.Count - 1].position);
     }
 
     void OnTriggerExit(Collider collider) {
@@ -74,18 +116,21 @@ namespace Kosmos {
 
       objectsList.Remove(collider.transform);
       repositionObjects();
+
+      // deactivate texts if it's first objects to be added
+      if (objectsList.Count == 0) {
+        heightLabelTMP.gameObject.active = false;
+        heightValueTMP.gameObject.active = false;
+        heightInstructionsTMP.gameObject.active = false;
+        placeInstructionsTMP.gameObject.active = true;
+      }
     }
 
     // moves to next free spot
     private void moveToSpot(Transform transformToMove, Vector3 _endPos) {
-      // if list is full, don't move
-      if (SpotTransforms.Length == objectsList.Count) return;
-
       endPos = _endPos;
-      // Add to List
-      objectsList.Add(transformToMove);
 
-      // asign current transform and pos
+      // assign current transform and pos
       startPos = transformToMove.position;
       currentObjectTransform = transformToMove;
       
@@ -114,6 +159,35 @@ namespace Kosmos {
       // make grabbable again
       currentGrabbable.IsGrabbable = true;
       ungrabbableCoroutineRunning = false;
+    }
+
+    public void IncrementHeightValue(float incrementalValue) {
+      float newValue = placeHeight + incrementalValue;
+        
+      // lower limit
+      if (newValue < 10.0f) return;
+
+      // upper limit
+      if (newValue > 100.0f) return;
+
+      placeHeight = newValue;
+
+      // update TextMeshPro text
+      heightValueTMP.SetText("{0:0} m", placeHeight);
+    }
+
+    public void UpdateIsPlaced(bool value) {
+      isPlaced = value;
+
+      // activate or deactivate text
+      if (value) {
+        dropInstructionsTMP.gameObject.active = true;
+        heightInstructionsTMP.gameObject.active = false;
+        
+      } else {
+        dropInstructionsTMP.gameObject.active = false;
+        heightInstructionsTMP.gameObject.active = true;
+      }
     }
   }
 }
