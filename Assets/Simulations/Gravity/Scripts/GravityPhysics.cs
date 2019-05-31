@@ -19,6 +19,7 @@ namespace Kosmos {
     private float accelerationG;
     private float currentFixedTime;
     private float intervalTime;
+    private GraphCreator graphCreator;
     private int intervalTimeCounter;
     private List<float> graphDataTime;
     private List<float> graphDataSpeed;
@@ -31,7 +32,9 @@ namespace Kosmos {
     [SerializeField] private float crossSectionArea;
      // record data every graphTimeStep seconds
     [SerializeField] private float graphTimeStep = 0.5f;
-    [SerializeField] private GraphCreator graphCreator;
+    [SerializeField] private PlatformController platformController;
+    [SerializeField] private string dataName;
+    [SerializeField] private Color dataColor;
 
     public bool ReadOnly {
       get { return readOnly; }
@@ -41,6 +44,10 @@ namespace Kosmos {
     public bool IsActive {
       get { return isActive; }
       private set { isActive = value; }
+    }
+
+    void Awake() {
+      graphCreator = platformController.GraphCreator;
     }
 
     void Start() {
@@ -63,11 +70,11 @@ namespace Kosmos {
       intervalTimeCounter = 1;
 
       // initialize data graph stuff
-      GraphableDataList = new List<GraphableData>();
+      //GraphableDataList = new List<GraphableData>();
       graphDataTime = new List<float>();
       graphDataSpeed = new List<float>();
       graphDataAcceleration = new List<float>();
-      GraphableDescriptionList = new List<GraphableDescription>();
+      //GraphableDescriptionList = new List<GraphableDescription>();
     }
 
     void FixedUpdate() {
@@ -98,8 +105,8 @@ namespace Kosmos {
 
     void OnCollisionEnter(Collision collision) {
       // if collision, stop manually updating velocity
-      // only care about collisions with PlatformFloor
-      if (!collision.gameObject.CompareTag("PlatformFloor")) return;
+      // only care about collisions with PlatformFloor and that are actively falling
+      if (!collision.gameObject.CompareTag("PlatformFloor") || !isActive) return;
       isOnGround = true;
       isActive = false;
       //rb.isKinematic = true;
@@ -107,6 +114,8 @@ namespace Kosmos {
       intervalTime = 0f;
       intervalTimeCounter = 1;
       addDataToGraph();
+      // let platformController now that the object has dropped
+      platformController.DropComplete(true);
     }
 
     void OnCollisionExit(Collision collision) {
@@ -140,16 +149,20 @@ namespace Kosmos {
     }
 
     private void addDataToGraph() {
-      if (!graphCreator) return;
+      if (!graphCreator || graphDataTime.Count == 0) return;
 
       // add velocity graph
-      GraphableDataList.Add(new GraphableData(graphDataTime, graphDataSpeed));
-      GraphableDescriptionList.Add(new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]"));
+      //GraphableDataList.Add(new GraphableData(graphDataTime, graphDataSpeed));
+      //GraphableDescriptionList.Add(new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]"));
       // add acceleration graph
-      GraphableDataList.Add(new GraphableData(graphDataTime, graphDataAcceleration));
-      GraphableDescriptionList.Add(new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]"));
+      //GraphableDataList.Add(new GraphableData(graphDataTime, graphDataAcceleration));
+      //GraphableDescriptionList.Add(new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]"));
+      // new Color(1f, 1f, 0.6f)
+      // new Color(0.6f, 0.99f, 0.88f)
 
-      graphCreator.CreateGraph(GraphableDataList, GraphableDescriptionList);
+      //graphCreator.CreateGraph(GraphableDataList, GraphableDescriptionList);
+      graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
+      graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");      
     }
 
     public void SetActive(bool value) {

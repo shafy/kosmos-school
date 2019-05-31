@@ -13,11 +13,13 @@ namespace Kosmos {
     private float lerpValue;
     private float movementTime;
     private float placeHeight;
+    private int dropCompleteCounter;
     private List<Transform> objectsList;
     private Transform currentObjectTransform;
     private Vector3 startPos;
     private Vector3 endPos;
 
+    [SerializeField] private GraphCreator graphCreator;
     [SerializeField] private Transform[] SpotTransforms;
     [SerializeField] private TextMeshPro heightLabelTMP;
     [SerializeField] private TextMeshPro heightValueTMP;
@@ -38,6 +40,11 @@ namespace Kosmos {
     public List<Transform> ObjectsList {
       get { return objectsList; }
       private set { objectsList = value;}
+    }
+
+    public GraphCreator GraphCreator {
+      get { return graphCreator; }
+      private set { graphCreator = value;}
     }
 
     void Start() {
@@ -62,6 +69,8 @@ namespace Kosmos {
 
       //activate text
       placeInstructionsTMP.gameObject.active = true;
+
+      createEmptyGraphs();
     }
 
 
@@ -84,7 +93,11 @@ namespace Kosmos {
 
     void OnTriggerEnter(Collider collider) {
       // if user drops an object, move it to the next free spot
-      // first, check if the object has a GravityPhysics component
+
+      // can't place new objects when objects are placed
+      if (isPlaced) return;
+
+      // check if the object has a GravityPhysics component
       GravityPhysics currentGP = collider.gameObject.GetComponent<GravityPhysics>();
       if (!currentGP) return;
 
@@ -161,6 +174,15 @@ namespace Kosmos {
       ungrabbableCoroutineRunning = false;
     }
 
+    // creates empty graphs that are later used to be filled with data
+    private void createEmptyGraphs() {
+      GraphableDescription speedGraph = new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]");
+      GraphableDescription accelerationGraph = new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]");
+
+      graphCreator.CreateEmptyGraph(speedGraph);
+      graphCreator.CreateEmptyGraph(accelerationGraph);
+    }
+
     public void IncrementHeightValue(float incrementalValue) {
       float newValue = placeHeight + incrementalValue;
         
@@ -183,10 +205,25 @@ namespace Kosmos {
       if (value) {
         dropInstructionsTMP.gameObject.active = true;
         heightInstructionsTMP.gameObject.active = false;
+
+        // clear graph also
+        graphCreator.ClearGraphs();
+        createEmptyGraphs();
         
       } else {
         dropInstructionsTMP.gameObject.active = false;
         heightInstructionsTMP.gameObject.active = true;
+      }
+    }
+
+    public void DropComplete(bool value) {
+      if (!value) return;
+
+      dropCompleteCounter += 1;
+
+      // if all objects have dropped, graph line chart
+      if (dropCompleteCounter == objectsList.Count) {
+        graphCreator.CreateGraph();
       }
     }
   }

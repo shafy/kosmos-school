@@ -21,6 +21,9 @@ namespace Kosmos
     private int nGridLines;
     private int textureWidth;
     private int textureHeight;
+    private int legendWidth;
+    private int legendBlockWidth;
+    private int legendBlockHeight;
     private float[] xAxisLabelValues;
     private float[] yAxisLabelValues;
     private List<float> predefinedAxisLabels;
@@ -29,8 +32,10 @@ namespace Kosmos
     private Texture2D texture;
     private Renderer renderer;
 
-    [SerializeField] private GameObject AxisLabelPrefab;
-    [SerializeField] private Transform AxisLabelParentTransform;
+    [SerializeField] private GameObject axisLabelPrefab;
+    [SerializeField] private Transform axisLabelParentTransform;
+    [SerializeField] private GameObject dataLegendPrefab;
+    [SerializeField] private Transform dataLegendParentTransform;
     [SerializeField] private TextMeshPro xAxisTMP;
     [SerializeField] private TextMeshPro yAxisTMP;
     
@@ -62,8 +67,15 @@ namespace Kosmos
 
       // define border size and lengths of axes
       border = 64;
+
+      // define legend width
+      
+      legendWidth = 160;
+      legendBlockWidth = 15;
+      legendBlockHeight = 15;
+
       // get lengths
-      lengthX = texture.width - 2 * border;
+      lengthX = texture.width - legendWidth - 2 * border;
       lengthY = texture.height - 2 * border;
       // make sure it's divisble by number of gridlines
       lengthX = lengthX - (lengthX % nGridLines);
@@ -151,12 +163,6 @@ namespace Kosmos
 
     // draws grid with nGridLines lines per axis
     private void drawGrid() {
-      // define vars
-      float relativeXPos;
-      float relativeYPos;
-      float quadXPos;
-      float quadYPos;
-
       // x axis grid (horizontal)
 
       // get 1/nGridLines of lengthY, use modulo to make sure we don't get floats
@@ -176,14 +182,15 @@ namespace Kosmos
 
         // set label
         // translate texture pixel to world space (Vector3)
-        relativeYPos = (float)yPos / (float)texture.height;
-        quadYPos = transform.localScale.y * relativeYPos;
+        // relativeYPos = (float)yPos / (float)texture.height;
+        // quadYPos = transform.localScale.y * relativeYPos;
 
-        relativeXPos = (float)(border - 4 * blockWidthLine) / (float)texture.width;
-        quadXPos = transform.localScale.x * relativeXPos;
+        // relativeXPos = (float)(border - 4 * blockWidthLine) / (float)texture.width;
+        // quadXPos = transform.localScale.x * relativeXPos;
 
-        // translate to Vector3
-        Vector3 labelPos = new Vector3(quadXPos, quadYPos, -0.0001f);
+        // // translate to Vector3
+        // Vector3 labelPos = new Vector3(quadXPos, quadYPos, -0.0001f);
+        Vector3 labelPos = texturePosToWorldSpace((float)(border - 4 * blockWidthLine), (float)yPos);
 
         // set actual label
         setAxesLabel(i, yAxisLabelValues, labelPos);
@@ -207,14 +214,14 @@ namespace Kosmos
 
         // set label
         // translate texture pixel to world space (Vector3)
-        relativeXPos = (float)xPos / (float)texture.width;
-        quadXPos = transform.localScale.x * relativeXPos;
+        // relativeXPos = (float)xPos / (float)texture.width;
+        // quadXPos = transform.localScale.x * relativeXPos;
 
-        relativeYPos = (float)(border - 4 * blockHeightLine) / (float)texture.height;
-        quadYPos = transform.localScale.y * relativeYPos;
+        // relativeYPos = (float)(border - 4 * blockHeightLine) / (float)texture.height;
+        // quadYPos = transform.localScale.y * relativeYPos;
 
         // translate to Vector3
-        Vector3 labelPos = new Vector3(quadXPos, quadYPos, -0.0001f);
+        Vector3 labelPos = texturePosToWorldSpace((float)xPos, (float)(border - 4 * blockHeightLine));
 
         // set actual label
         setAxesLabel(i , xAxisLabelValues, labelPos);
@@ -223,16 +230,32 @@ namespace Kosmos
       texture.Apply();
     }
 
+    // translates a x, y coordinate on 2D texture to world space (e.g. to place objects there)
+    private Vector3 texturePosToWorldSpace(float xValue, float yValue) {
+      float relativeXPos;
+      float relativeYPos;
+      float quadXPos;
+      float quadYPos;
+
+      relativeXPos = xValue / (float)texture.width;
+      quadXPos = transform.localScale.x * relativeXPos;
+
+      relativeYPos = yValue / (float)texture.height;
+      quadYPos = transform.localScale.y * relativeYPos;
+
+      return new Vector3(quadXPos, quadYPos, -0.0001f);
+    }
+
     // creates a label for axes
     private void setAxesLabel(int number, float[] labelValues, Vector3 pos) {
       // instantiate label at the specific pos and parent
-      GameObject newAxisLabel = (GameObject)Instantiate(AxisLabelPrefab, AxisLabelParentTransform);
+      GameObject newAxisLabel = (GameObject)Instantiate(axisLabelPrefab, axisLabelParentTransform);
       newAxisLabel.transform.localPosition = pos;
 
       // assign correct value to TextMeshPro
       TextMeshPro currentTMP = newAxisLabel.GetComponentInChildren<TextMeshPro>();
       // display decimal if necessary
-      if (Mathf.Abs(labelValues[0]) < 1.0f && Mathf.Abs(labelValues[0]) > 0.0f) {
+      if (Mathf.Abs(labelValues[1]) < 1.0f) {
         currentTMP.SetText("{0:1}", labelValues[number]);
       } else {
         currentTMP.SetText("{0}", labelValues[number]);
@@ -262,31 +285,58 @@ namespace Kosmos
       }
 
       return new float[] {0, gridStep, gridStep * 2, gridStep * 3, gridStep * 4, gridStep * 5};
-
-
     }
 
-    // creates a line graph
-    public void GraphLine(List<float> xValues, List<float> yValues, int _blockWidthLine, int _blockHeightLine, Color[] colors, string _xAxisTitle, string _yAxisTitle) {
-      // check if lengths of x values and y values match, if not return
-      if (xValues.Count != yValues.Count) {
-        Debug.Log("GraphLine error: number of xValues and yValues need to be the same.");
-        return;
-      }
+    private void drawLegend(string legendName, Color legendColor, int legendRow) {
+      // draw pixels first
+      int legendXPos = lengthX + border + 30;
+      int legendYPos = lengthY + border + blockHeightLine - legendBlockHeight - legendRow * 25;
+
+      Color[] legendColors = Enumerable.Repeat<Color>(legendColor, legendBlockWidth * legendBlockHeight).ToArray<Color>();
+
+      drawPixelBlock(legendXPos, legendYPos, legendBlockWidth, legendBlockHeight, legendColors);
+
+      // instantiate text
+      float legendTextPosX = (float)(legendXPos + legendBlockWidth + 68);
+      float legendTextPosY = (float)(legendYPos + legendBlockHeight / 2);
+      Vector3 legendTextPos = texturePosToWorldSpace(legendTextPosX, legendTextPosY);
+
+      GameObject newDataLegend = (GameObject)Instantiate(dataLegendPrefab, dataLegendParentTransform);
+      newDataLegend.transform.localPosition = legendTextPos;
+
+      TextMeshPro currentTMP = newDataLegend.GetComponentInChildren<TextMeshPro>();
+      currentTMP.text = legendName;
+    }
+
+    // charts multiple data sets on one graph
+    public void GraphLines(List<GraphableData> graphableDataList, GraphableDescription graphableDescription, int _blockWidthLine, int _blockHeightLine) {
 
       blockWidthLine = _blockWidthLine;
       blockHeightLine = _blockHeightLine;
-      xAxisTitle = _xAxisTitle;
-      yAxisTitle = _yAxisTitle;
+      xAxisTitle = graphableDescription.XAxisTitle;
+      yAxisTitle = graphableDescription.YAxisTitle;
 
-      // axis color (might take in as argument also)
-      colorsAxis = Enumerable.Repeat<Color>(new Color(0.95f, 0.95f, 0.95f), blockWidthLine * blockHeightLine).ToArray<Color>();
+      // loop through every list and get maximum values and minimum values
+      // creates temp new lists
+      List<float> xMaxList = new List<float>();
+      List<float> yMaxList = new List<float>();
+      List<float> xMinList = new List<float>();
+      List<float> yMinList = new List<float>();
 
-      // get maximum and minimum values of x and y axes (used to scale the graph correctly)
-      float xMax = xValues.Max();
-      float yMax = yValues.Max();
-      float xMin = xValues.Min();
-      float yMin = yValues.Min();
+      for (int i = 0; i < graphableDataList.Count; i++) {
+        // get max and min from each value set
+        // future: maybe do it more efficiently with List.Select() or something
+        xMaxList.Add(graphableDataList[i].XDataList.Max());
+        yMaxList.Add(graphableDataList[i].YDataList.Max());
+        xMinList.Add(graphableDataList[i].XDataList.Min());
+        yMinList.Add(graphableDataList[i].YDataList.Min());
+      }
+
+      // from those list, again get max and min values
+      float xMax = xMaxList.Max();
+      float yMax = yMaxList.Max();
+      float xMin = xMinList.Min();
+      float yMin = yMinList.Min();
 
       // create arrays with axis label values
       xAxisLabelValues = createAxisLabelValues(xMax, xMin);
@@ -300,11 +350,20 @@ namespace Kosmos
       float yFactor = (lengthY - blockHeightLine) / yLabelMax;
 
       // scale up / down values
-      int[] scaledXValues = xValues.Select(x => (int)(x * xFactor)).ToArray();
-      int[] scaledYValues = yValues.Select(x => (int)(x * yFactor)).ToArray();
-      
+      // List<int[]> scaledXValuesList = new List<int[]>();
+      // List<int[]> scaledYValuesList = new List<int[]>();
+      List<GraphableData> scaledGraphableDataList = new List<GraphableData>();
 
+      for (int i = 0; i < graphableDataList.Count; i++) {
+        List<float> scaledXValues = graphableDataList[i].XDataList.Select(x => x * xFactor).ToList();
+        List<float> scaledYValues = graphableDataList[i].YDataList.Select(x => x * yFactor).ToList();
+
+        scaledGraphableDataList.Add(new GraphableData(scaledXValues, scaledYValues, graphableDataList[i].Name, graphableDataList[i].Color));
+      }
+      
       // draw x and y axes
+      colorsAxis = Enumerable.Repeat<Color>(new Color(0.95f, 0.95f, 0.95f), blockWidthLine * blockHeightLine).ToArray<Color>();
+
       drawAxis("x", colorsAxis);
       drawAxis("y", colorsAxis);
 
@@ -314,10 +373,17 @@ namespace Kosmos
       // draw grid
       drawGrid();
 
-      // loop through xValues and call drawPixelBlock for each xValue-yValue pair
-      // add border so that it's drawn within the axes
-      for (int i = 0; i < scaledXValues.Length; i++) {
-        drawPixelBlock(border + scaledXValues[i], border + scaledYValues[i], blockWidthLine, blockHeightLine, colors);
+
+      for (int i = 0; i < scaledGraphableDataList.Count; i++) {
+        // loop through xValues and call drawPixelBlock for each xValue-yValue pair
+        // add border so that it's drawn within the axes
+        Color[] currentColors = Enumerable.Repeat<Color>(scaledGraphableDataList[i].Color, blockWidthLine * blockHeightLine).ToArray<Color>();
+        // draw legend
+        drawLegend(scaledGraphableDataList[i].Name, scaledGraphableDataList[i].Color, i);
+
+        for (int y = 0; y < scaledGraphableDataList[i].XDataList.Count; y++) {
+          drawPixelBlock(border + (int)scaledGraphableDataList[i].XDataList[y], border + (int)scaledGraphableDataList[i].YDataList[y], blockWidthLine, blockHeightLine, currentColors);
+        }
       }
 
       // upload to graphics card

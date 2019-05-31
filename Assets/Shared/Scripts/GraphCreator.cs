@@ -4,13 +4,14 @@ using System.Linq;
 using UnityEngine;
 using TMPro;
 
-namespace Kosmos
-{ 
+namespace Kosmos {
+
   // Handles Graph controls
   public class GraphCreator : MonoBehaviour {
 
     private List<GameObject> graphsList;
     private List<TabButton> graphTabButtonsList;
+    private GraphableDataSet dataSet;
 
     [SerializeField] GameObject graphPrefab;
     [SerializeField] GameObject graphTabPrefab;
@@ -21,28 +22,40 @@ namespace Kosmos
     void Awake() {
       graphsList = new List<GameObject>();
       graphTabButtonsList = new List<TabButton>();
+      dataSet = new GraphableDataSet();
     }
 
-    // Creates Graphs and Tabs
-    public void CreateGraph(List<GraphableData> graphableDataList, List<GraphableDescription> graphableDescription) {
+    // creates empty graphs to be filled later
+    public void CreateEmptyGraph(GraphableDescription graphableDescription) {
+      dataSet.AddNewGraph(graphableDescription);
+    }
+
+    // adds data to dataset
+    public void AddToDataSet(GraphableData newData, string graphTitle) {
+      dataSet.AddData(newData, graphTitle);
+    }
+
+    // Creates Graphs and Tabs based on data in dataSet variable
+    public void CreateGraph() {
+
+      if (dataSet.GraphableDataListList.Count == 0) return;
 
       // define params
       int blockWidthLine = 4;
       int blockHeightLine = 4;
-      Color[] colorsMagenta = Enumerable.Repeat<Color>(Color.magenta, blockWidthLine * blockHeightLine).ToArray<Color>();
-
+    
       // if graphableDataList and graphableDescription don't match, return
-      if (graphableDataList.Count != graphableDescription.Count) {
-        Debug.Log("CreateGraph Error: graphableDataList and graphableDescription have different Counts");
+      if (dataSet.GraphableDataListList.Count != dataSet.GraphableDescriptionList.Count) {
+        Debug.Log("CreateGraph Error: dataSet.GraphableDataListList and dataSet.graphableDescriptionList have different Counts");
         return;
       }
 
-      // for each y and x data pair in graphableDataList, create new graph and graph line
-      for (int i = 0; i < graphableDataList.Count; i++) {
+      for (int i = 0; i < dataSet.GraphableDataListList.Count; i++) {
         GameObject newGraph = (GameObject)Instantiate(graphPrefab, graphsParentTransform);
         Grapher currentGrapher = newGraph.GetComponentInChildren<Grapher>();
 
-        currentGrapher.GraphLine(graphableDataList[i].XDataList, graphableDataList[i].YDataList, blockWidthLine, blockHeightLine, colorsMagenta, graphableDescription[i].XAxisTitle, graphableDescription[i].YAxisTitle);
+        // create new graph for each GraphableDataListList (x and y values list list)
+        currentGrapher.GraphLines(dataSet.GraphableDataListList[i], dataSet.GraphableDescriptionList[i], blockWidthLine, blockHeightLine);
 
         // create tab also
         GameObject newTab = (GameObject)Instantiate(graphTabPrefab, graphsTabParentTransform);
@@ -50,7 +63,7 @@ namespace Kosmos
         newTab.transform.localPosition = new Vector3(i * newTab.transform.localScale.x,  newTab.transform.localPosition.y, newTab.transform.localPosition.z);
         // update tab title
         TextMeshPro currentTMP = newTab.GetComponentInChildren<TextMeshPro>();
-        currentTMP.text = graphableDescription[i].GraphTabTitle;
+        currentTMP.text = dataSet.GraphableDescriptionList[i].GraphTabTitle;
         // assign index and this instance of the GraphCreator
         TabButton currentTabButton = newTab.GetComponent<TabButton>();
         currentTabButton.GraphIndex = i;
@@ -65,8 +78,21 @@ namespace Kosmos
           newGraph.active = false;
           currentTabButton.SetSelected(false);
         }
-
       }
+    }
+
+    public void ClearGraphs() {
+      // destroy graphs and tabs
+      foreach (Transform child in graphsParentTransform) {
+        Destroy(child.gameObject);
+      }
+
+      foreach (Transform child in graphsTabParentTransform) {
+        Destroy(child.gameObject);
+      }
+
+      // clear dataset
+      dataSet.Clear();
     }
 
     // switches to new graph based on tab button press
