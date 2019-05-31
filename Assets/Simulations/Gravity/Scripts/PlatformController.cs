@@ -224,6 +224,7 @@ namespace Kosmos {
       // if all objects have dropped, graph line chart
       if (dropCompleteCounter == objectsList.Count) {
         graphCreator.CreateGraph();
+        dropCompleteCounter = 0;
       }
     }
   }

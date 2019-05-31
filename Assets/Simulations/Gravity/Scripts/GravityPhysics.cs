@@ -10,6 +10,7 @@ namespace Kosmos {
 
     private bool isOnGround;
     private bool readOnly;
+    private bool timeZeroAdded;
     private float airDensity;
     private float currentYSpeed;
     private float prevYSpeed;
@@ -52,29 +53,14 @@ namespace Kosmos {
 
     void Start() {
       rb = GetComponent<Rigidbody>();
-      initialAcceleration = 9.81f;
-      prevAcceleration = currentAcceleration = initialAcceleration;
-
-      airDensity = 1.229f; 
-      accelerationG = 9.81f;
-
-      isOnGround = false;
 
       if (!isActive) {
         rb.isKinematic = true;
       }
-
       readOnly = false;
+      isOnGround = false;
 
-      intervalTime = 0f;
-      intervalTimeCounter = 1;
-
-      // initialize data graph stuff
-      //GraphableDataList = new List<GraphableData>();
-      graphDataTime = new List<float>();
-      graphDataSpeed = new List<float>();
-      graphDataAcceleration = new List<float>();
-      //GraphableDescriptionList = new List<GraphableDescription>();
+      initializeData();
     }
 
     void FixedUpdate() {
@@ -89,6 +75,15 @@ namespace Kosmos {
 
       rb.velocity = new Vector3(0, -currentYSpeed, 0);
 
+      // add time 0 (special case)
+      if (!timeZeroAdded) {
+        timeZeroAdded = true;
+
+        graphDataTime.Add(0f);
+        graphDataSpeed.Add(0f);
+        graphDataAcceleration.Add(initialAcceleration);
+
+      }
       // update data every graphTimeStep sec
       intervalTime += Time.deltaTime;
       if (intervalTime > graphTimeStep) {
@@ -111,9 +106,8 @@ namespace Kosmos {
       isActive = false;
       //rb.isKinematic = true;
       readOnly = false;
-      intervalTime = 0f;
-      intervalTimeCounter = 1;
       addDataToGraph();
+      initializeData();
       // let platformController now that the object has dropped
       platformController.DropComplete(true);
     }
@@ -151,18 +145,26 @@ namespace Kosmos {
     private void addDataToGraph() {
       if (!graphCreator || graphDataTime.Count == 0) return;
 
-      // add velocity graph
-      //GraphableDataList.Add(new GraphableData(graphDataTime, graphDataSpeed));
-      //GraphableDescriptionList.Add(new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]"));
-      // add acceleration graph
-      //GraphableDataList.Add(new GraphableData(graphDataTime, graphDataAcceleration));
-      //GraphableDescriptionList.Add(new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]"));
-      // new Color(1f, 1f, 0.6f)
-      // new Color(0.6f, 0.99f, 0.88f)
-
-      //graphCreator.CreateGraph(GraphableDataList, GraphableDescriptionList);
       graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
       graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");      
+    }
+
+    private void initializeData() {
+      initialAcceleration = 9.81f;
+      prevAcceleration = currentAcceleration = initialAcceleration;
+      currentYSpeed = 0.0f;
+      prevYSpeed = 0.0f;
+      intervalTime = 0f;
+      intervalTimeCounter = 1;
+
+      airDensity = 1.229f; 
+      accelerationG = 9.81f;
+
+      timeZeroAdded = false;
+
+      graphDataTime = new List<float>();
+      graphDataSpeed = new List<float>();
+      graphDataAcceleration = new List<float>();
     }
 
     public void SetActive(bool value) {

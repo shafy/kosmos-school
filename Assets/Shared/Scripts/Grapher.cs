@@ -383,6 +383,16 @@ namespace Kosmos
 
         for (int y = 0; y < scaledGraphableDataList[i].XDataList.Count; y++) {
           drawPixelBlock(border + (int)scaledGraphableDataList[i].XDataList[y], border + (int)scaledGraphableDataList[i].YDataList[y], blockWidthLine, blockHeightLine, currentColors);
+
+          // interpolate between current and last pixel
+          // linear interpolation to set pixels between previous and new point
+          if (y > 0) {
+            for (float t = 0.1f; t < 1.0f; t += 0.1f){
+              int lerpX = (int)Mathf.Lerp(border + scaledGraphableDataList[i].XDataList[y - 1], border + scaledGraphableDataList[i].XDataList[y], t);
+              int lerpY = (int)Mathf.Lerp(border + scaledGraphableDataList[i].YDataList[y - 1], border + scaledGraphableDataList[i].YDataList[y], t);
+              drawPixelBlock(lerpX, lerpY, blockWidthLine, blockHeightLine, currentColors);
+            }
+          }
         }
       }
 

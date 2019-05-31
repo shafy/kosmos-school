@@ -806,6 +806,11 @@ PrefabInstance:
       propertyPath: dataColor.b
       value: 0.3137255
       objectReference: {fileID: 0}
+    - target: {fileID: 1773564113734015486, guid: b8210c288f3124b72bce6808b0a9b974,
+        type: 3}
+      propertyPath: graphTimeStep
+      value: 0.25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8210c288f3124b72bce6808b0a9b974, type: 3}
 --- !u!4 &432605733744168648 stripped
@@ -911,6 +916,11 @@ PrefabInstance:
         type: 3}
       propertyPath: dataColor.b
       value: 0.8392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845243410287072729, guid: a1f3123060437405ead2cc3c25e137fd,
+        type: 3}
+      propertyPath: graphTimeStep
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1f3123060437405ead2cc3c25e137fd, type: 3}
@@ -1079,6 +1089,11 @@ PrefabInstance:
         type: 3}
       propertyPath: dataColor.b
       value: 0.7372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 670508519966805989, guid: 6488421b598b248dfaca6fa573d10310,
+        type: 3}
+      propertyPath: graphTimeStep
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6488421b598b248dfaca6fa573d10310, type: 3}
@@ -1381,6 +1396,11 @@ PrefabInstance:
       propertyPath: dataColor.b
       value: 0.49411765
       objectReference: {fileID: 0}
+    - target: {fileID: 876215372347732880, guid: 714794d7cce8b4d9e80fd81960bde383,
+        type: 3}
+      propertyPath: graphTimeStep
+      value: 0.25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 714794d7cce8b4d9e80fd81960bde383, type: 3}
 --- !u!1001 &7753948242248696876
@@ -1479,6 +1499,11 @@ PrefabInstance:
         type: 3}
       propertyPath: dataColor.b
       value: 0.79607844
+      objectReference: {fileID: 0}
+    - target: {fileID: 8779003115122677178, guid: 8f564266f87c5432ea347ebd95afb4ae,
+        type: 3}
+      propertyPath: graphTimeStep
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f564266f87c5432ea347ebd95afb4ae, type: 3}

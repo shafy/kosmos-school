@@ -20,9 +20,13 @@ namespace Kosmos {
 
 
     void Awake() {
+      initializeVars();
+      dataSet = new GraphableDataSet();
+    }
+
+    private void initializeVars() {
       graphsList = new List<GameObject>();
       graphTabButtonsList = new List<TabButton>();
-      dataSet = new GraphableDataSet();
     }
 
     // creates empty graphs to be filled later
@@ -91,7 +95,8 @@ namespace Kosmos {
         Destroy(child.gameObject);
       }
 
-      // clear dataset
+      // clear dataset and vars
+      initializeVars();
       dataSet.Clear();
     }
 
