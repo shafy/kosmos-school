@@ -110,6 +110,12 @@ namespace Kosmos
                 if (interactible) {
                     worldEndPoint = hit.point;
                 }
+                    //DisplayReticle(hit);
+                // } else {
+                //     if (m_Reticle) {
+                //         m_Reticle.Hide();
+                //     }
+                // }
 
                 m_CurrentInteractible = interactible;
 
@@ -163,6 +169,8 @@ namespace Kosmos
             if (m_Reticle) {
                 m_Reticle.Show();
                 m_Reticle.SetPosition(hit.point);
+
+                Debug.Log("hit.point " + hit.point);
             }
         }
 

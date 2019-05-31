@@ -21,6 +21,7 @@ namespace Kosmos
     private Rigidbody currentGrabbableRb;
 
     [SerializeField] private ControllerRayCaster controllerRayCaster;
+    [SerializeField] private GameObject destinationPS;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private ParticleSystem particleSystem;
     [SerializeField] private PlayerController playerController;
@@ -40,6 +41,8 @@ namespace Kosmos
       psInitialStartSize = pMain.startSize;
 
       lineRendererActive = lineRenderer.enabled;
+
+      setDestinationPS(false);
     }
 
     public void Update() {
@@ -48,6 +51,12 @@ namespace Kosmos
         enableLineRenderer(false);
       } else if (!lineRendererActive && !playerController.IsWalking) {
         enableLineRenderer(true);
+      }
+
+      if (!playerController.IsWalking && controllerRayCaster.CurrentInteractible) {
+        setDestinationPS(true);
+      } else {
+        setDestinationPS(false);
       }
 
       // only triggered once one player presses the trigger down
@@ -189,6 +198,16 @@ namespace Kosmos
     private void enableLineRenderer(bool enabled) {
       lineRendererActive = enabled;
       lineRenderer.enabled = enabled;
+    }
+
+    private void setDestinationPS(bool value) {
+      if (value) {
+        destinationPS.active = true;
+        destinationPS.transform.position = controllerRayCaster.CurrentHit.point;
+      } else {
+        destinationPS.active = false;
+      }
+      
     }
   }
 }
