@@ -174,7 +174,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  - {fileID: 2100000, guid: 53caf0dd43a344e8da637a7e6be84f8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -232,8 +232,9 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: 0 m
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
+  m_sharedMaterial: {fileID: 21422954054896030, guid: 7dc16d1937a754ffa8f1b692dd2843a1,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -599,6 +600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d3104907c36546f184ee1c1778e7942, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  graphCreator: {fileID: 0}
   SpotTransforms:
   - {fileID: 2367403950870384980}
   - {fileID: 596544300038681517}
@@ -962,7 +964,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  - {fileID: 2100000, guid: 53caf0dd43a344e8da637a7e6be84f8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1020,7 +1022,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Drop objects with green button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1101,7 +1103,7 @@ MonoBehaviour:
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 1
   m_inputSource: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_renderer: {fileID: 6481279234130391046}
   m_subTextObjects:
   - {fileID: 0}
@@ -1539,7 +1541,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  - {fileID: 2100000, guid: 53caf0dd43a344e8da637a7e6be84f8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1597,8 +1599,9 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Set height using arrows, then press green button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
+  m_sharedMaterial: {fileID: 21422954054896030, guid: 7dc16d1937a754ffa8f1b692dd2843a1,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2352,7 +2355,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  - {fileID: 2100000, guid: 53caf0dd43a344e8da637a7e6be84f8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2410,7 +2413,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Howdy!\nGrab objects from the left and drop them on the platform
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2491,7 +2494,7 @@ MonoBehaviour:
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 1
   m_inputSource: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_renderer: {fileID: 8577171980969046478}
   m_subTextObjects:
   - {fileID: 0}
@@ -2559,7 +2562,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  - {fileID: 2100000, guid: 53caf0dd43a344e8da637a7e6be84f8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2617,8 +2620,9 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: 'Drop Height:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 539d32ff4aaa34c76938f63d2cea3bce, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
+  m_sharedMaterial: {fileID: 21422954054896030, guid: 7dc16d1937a754ffa8f1b692dd2843a1,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

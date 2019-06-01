@@ -9,24 +9,35 @@ namespace Kosmos {
 
     private bool isShowing;
     private bool firstClick;
+    private GameObject mainCamera;
 
-    [SerializeField] private GameObject infoWindow;
+    [SerializeField] private GameObject windowAndTexts;
     [SerializeField] private TextMeshPro textTitle;
     [SerializeField] private TextMeshPro textBody;
     [SerializeField] private GameObject clickedBlock;
     [SerializeField] private GameObject unclickedBlock;
+    [SerializeField] private string titleText;
+    [SerializeField, TextArea] private string bodyText;
 
 
     void Start() {
+      mainCamera = GameObject.FindWithTag("MainCamera");
+
       isShowing = false;
       firstClick = true;
       showWindow(false);
+
+      textTitle.text = titleText;
+      textBody.text = bodyText;
     }
 
     private void showWindow(bool value) {
-      infoWindow.active = value;
-      textTitle.gameObject.active = value;
-      textBody.gameObject.active = value;
+      windowAndTexts.active = value;
+      // rotate towards user on Y axis
+      Vector3 lookPos =  windowAndTexts.transform.position - mainCamera.transform.position;
+      Quaternion tempRotation = Quaternion.LookRotation(lookPos);
+      Quaternion newRotation = Quaternion.Euler(0, tempRotation.eulerAngles.y, tempRotation.eulerAngles.z);
+      windowAndTexts.transform.rotation = newRotation;
     }
 
     public void QuestionClick() {
