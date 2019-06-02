@@ -11,6 +11,7 @@ namespace Kosmos {
     private bool firstClick;
     private GameObject mainCamera;
 
+    [SerializeField] private bool openAtStart = false;
     [SerializeField] private GameObject windowAndTexts;
     [SerializeField] private TextMeshPro textTitle;
     [SerializeField] private TextMeshPro textBody;
@@ -23,9 +24,11 @@ namespace Kosmos {
     void Start() {
       mainCamera = GameObject.FindWithTag("MainCamera");
 
-      isShowing = false;
-      firstClick = true;
-      showWindow(false);
+      isShowing = openAtStart;
+      firstClick = !openAtStart;
+      showWindow(openAtStart);
+      unclickedBlock.active = openAtStart;
+      clickedBlock.active = !openAtStart;
 
       textTitle.text = titleText;
       textBody.text = bodyText;
