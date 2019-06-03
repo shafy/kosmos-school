@@ -387,7 +387,7 @@ namespace Kosmos
           // interpolate between current and last pixel
           // linear interpolation to set pixels between previous and new point
           if (y > 0) {
-            for (float t = 0.1f; t < 1.0f; t += 0.1f){
+            for (float t = 0.05f; t < 1.0f; t += 0.05f){
               int lerpX = (int)Mathf.Lerp(border + scaledGraphableDataList[i].XDataList[y - 1], border + scaledGraphableDataList[i].XDataList[y], t);
               int lerpY = (int)Mathf.Lerp(border + scaledGraphableDataList[i].YDataList[y - 1], border + scaledGraphableDataList[i].YDataList[y], t);
               drawPixelBlock(lerpX, lerpY, blockWidthLine, blockHeightLine, currentColors);

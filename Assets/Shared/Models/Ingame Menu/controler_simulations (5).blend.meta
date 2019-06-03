@@ -1,44 +1,37 @@
 fileFormatVersion: 2
-guid: 8b33349ea9adc4ad5aeebf107a1ec3fc
+guid: 2bf819e8f60614af3bcf6be7de91837f
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: button_blue
-    100002: button_light_blue
-    100004: button_light_rose
-    100006: button_pink
-    100008: in_game_menu
-    100010: //RootNode
-    400000: button_blue
-    400002: button_light_blue
-    400004: button_light_rose
-    400006: button_pink
-    400008: in_game_menu
-    400010: //RootNode
-    2100000: Material_003
-    2100002: Material_002
-    2100004: Material_001
-    2100006: Material
-    2100008: Chair_001
-    2100010: Chair
-    2300000: button_blue
-    2300002: button_light_blue
-    2300004: button_light_rose
-    2300006: button_pink
-    2300008: in_game_menu
-    3300000: button_blue
-    3300002: button_light_blue
-    3300004: button_light_rose
-    3300006: button_pink
-    3300008: in_game_menu
-    4300000: button_light_rose
-    4300002: button_light_blue
-    4300004: button_pink
-    4300006: button_blue
-    4300008: in_game_menu
+    100000: //RootNode
+    100002: startscreen_000
+    100004: startscreen_001
+    400000: //RootNode
+    400002: startscreen_000
+    400004: startscreen_001
+    2100000: Chair_001
+    2100002: Chair
+    2300000: startscreen_000
+    2300002: startscreen_001
+    3300000: startscreen_000
+    3300002: startscreen_001
+    4300000: startscreen_001
+    4300002: startscreen_000
+    6400000: startscreen_000
+    6400002: startscreen_001
     7400000: Default Take
     9500000: //RootNode
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chair
+    second: {fileID: 2100000, guid: 035eb88c55bc44171a78c5065bb8a98b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chair_001
+    second: {fileID: 2100000, guid: fae0602d6b3e5428aa1f4e5649b464fe, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -71,14 +64,14 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     useSRGBMaterialColor: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
@@ -100,7 +93,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  importAnimation: 0
+  importAnimation: 1
   copyAvatar: 0
   humanDescription:
     serializedVersion: 2

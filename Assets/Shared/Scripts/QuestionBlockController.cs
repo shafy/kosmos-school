@@ -27,11 +27,27 @@ namespace Kosmos {
       isShowing = openAtStart;
       firstClick = !openAtStart;
       showWindow(openAtStart);
-      unclickedBlock.active = openAtStart;
-      clickedBlock.active = !openAtStart;
+      unclickedBlock.active = !openAtStart;
+      clickedBlock.active = openAtStart;
 
       textTitle.text = titleText;
       textBody.text = bodyText;
+
+      // has seen intro block before
+      if (openAtStart && PlayerPrefs.GetInt("hasSeenInstruction") == 1) {
+        showWindow(false);
+        unclickedBlock.active = true;
+        clickedBlock.active = false;
+      }
+
+      // hasn't seen before
+      if (openAtStart && PlayerPrefs.GetInt("hasSeenInstruction", 0) == 0) {
+        showWindow(true);
+        unclickedBlock.active = false;
+        clickedBlock.active = true;
+
+        PlayerPrefs.SetInt("hasSeenInstruction", 1);
+      }
     }
 
     private void showWindow(bool value) {

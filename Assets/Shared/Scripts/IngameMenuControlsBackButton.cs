@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Kosmos {
   // goes back to main display of ingame menu
-  public class IngameMenuControlsBackButton : Button {
+  public class IngameMenuControlsBackButton : TextureButton {
 
     [SerializeField] private IngameMenuController ingameMenuController;
 

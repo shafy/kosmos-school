@@ -6,6 +6,7 @@ namespace Kosmos {
   // general controls for the game
   public class GameController : MonoBehaviour {
 
+    [SerializeField] private ControllerRayCaster controllerRayCaster;
     [SerializeField] private GameObject ingameMenu;
     [SerializeField] private PlayerController playerController;
 
@@ -23,18 +24,26 @@ namespace Kosmos {
       if (ingameMenu.activeSelf) {
         ingameMenu.SetActive(false);
         playerController.WalkingAllowed = true;
+
+        // when menu deactivated, raycast ignores trigger colliders
+        controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
       } else {
         ingameMenu.SetActive(true);
         playerController.WalkingAllowed = false;
-        // position 3 meters in front of user and rotate towards user
-        Vector3 newPosMenu = playerController.transform.position + playerController.transform.forward * 2;
-        newPosMenu.y = 0.0f;
+        // position 2.5 meters in front of user and rotate towards user
+        Vector3 newPosMenu = playerController.transform.position + playerController.transform.forward * 2.5f;
+        newPosMenu.y = 1.3f;
         ingameMenu.transform.position = newPosMenu;
 
         Vector3 lookPos = ingameMenu.transform.position - playerController.transform.position;
         Quaternion tempRotation = Quaternion.LookRotation(lookPos);
         Quaternion newRotation = Quaternion.Euler(0, tempRotation.eulerAngles.y, tempRotation.eulerAngles.z);
         ingameMenu.transform.rotation = newRotation;
+
+        // when menu is activated, raycast doesn't ignore trigger colliders 
+        // we use trigger colliders in menu buttons so that if menu is opened over another
+        // collider, there is no conflict
+        controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Collide;
       }
     }
   }

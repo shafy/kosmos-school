@@ -178,9 +178,13 @@ namespace Kosmos {
     private void createEmptyGraphs() {
       GraphableDescription speedGraph = new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]");
       GraphableDescription accelerationGraph = new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]");
+      GraphableDescription distanceGraph = new GraphableDescription("Distance", "Distance", "Time [s]", "Distance [m]");
+      GraphableDescription fResGraph = new GraphableDescription("F(res)", "F(res)", "Time [s]", "F(res) [N]");
 
       graphCreator.CreateEmptyGraph(speedGraph);
       graphCreator.CreateEmptyGraph(accelerationGraph);
+      graphCreator.CreateEmptyGraph(distanceGraph);
+      graphCreator.CreateEmptyGraph(fResGraph);
     }
 
     public void IncrementHeightValue(float incrementalValue) {

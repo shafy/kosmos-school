@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Kosmos {
   // show controls in ingame menu
-  public class IngameMenuControlsButton : Button {
+  public class IngameMenuControlsButton : TextureButton {
 
     [SerializeField] private IngameMenuController ingameMenuController;
 

@@ -18,6 +18,9 @@ namespace Kosmos {
     private float initialAcceleration;
     private float prevAcceleration;
     private float accelerationG;
+    private float initialYDistance;
+    private float currentYDistance;
+    private float prevYDistance;
     private float currentFixedTime;
     private float intervalTime;
     private GraphCreator graphCreator;
@@ -25,6 +28,8 @@ namespace Kosmos {
     private List<float> graphDataTime;
     private List<float> graphDataSpeed;
     private List<float> graphDataAcceleration;
+    private List<float> graphDataDistance;
+    private List<float> graphDataFRes;
     private Rigidbody rb;
 
     [SerializeField] private bool isActive = false;
@@ -73,6 +78,9 @@ namespace Kosmos {
       currentAcceleration = calculateAcceleration();
       prevAcceleration = currentAcceleration;
 
+      currentYDistance = calculateYDistance();
+      prevYDistance = currentYDistance;
+
       rb.velocity = new Vector3(0, -currentYSpeed, 0);
 
       // add time 0 (special case)
@@ -82,6 +90,8 @@ namespace Kosmos {
         graphDataTime.Add(0f);
         graphDataSpeed.Add(0f);
         graphDataAcceleration.Add(initialAcceleration);
+        graphDataDistance.Add(initialYDistance);
+        graphDataFRes.Add(fRes());
 
       }
       // update data every graphTimeStep sec
@@ -95,6 +105,12 @@ namespace Kosmos {
         graphDataSpeed.Add(currentYSpeed);
         // add acceleration to graphDataAcceleration
         graphDataAcceleration.Add(currentAcceleration);
+        // add distance
+        graphDataDistance.Add(currentYDistance);
+        //graphDataDistance.Add(5.0f);
+        // add F_res
+        graphDataFRes.Add(fRes());
+        //graphDataFRes.Add(1.0f);
       }
     }
 
@@ -122,6 +138,10 @@ namespace Kosmos {
       return prevAcceleration * Time.deltaTime + prevYSpeed;
     }
 
+    private float calculateYDistance() {
+      return (currentYSpeed + prevYSpeed) / 2 * Time.deltaTime + prevYDistance;
+    }
+
     // calculate current acceleration
     private float calculateAcceleration() {
       return fRes() / mass;
@@ -146,14 +166,17 @@ namespace Kosmos {
       if (!graphCreator || graphDataTime.Count == 0) return;
 
       graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
-      graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");      
+      graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");
+      graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataDistance, dataName, dataColor), "Distance");
+      graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataFRes, dataName, dataColor), "F(res)");      
     }
 
     private void initializeData() {
       initialAcceleration = 9.81f;
       prevAcceleration = currentAcceleration = initialAcceleration;
-      currentYSpeed = 0.0f;
-      prevYSpeed = 0.0f;
+      currentYSpeed = prevYSpeed = 0.0f;
+      initialYDistance = 0.0f;
+      currentYDistance = prevYDistance = initialYDistance;
       intervalTime = 0f;
       intervalTimeCounter = 1;
 
@@ -165,6 +188,8 @@ namespace Kosmos {
       graphDataTime = new List<float>();
       graphDataSpeed = new List<float>();
       graphDataAcceleration = new List<float>();
+      graphDataDistance = new List<float>();
+      graphDataFRes = new List<float>();
     }
 
     public void SetActive(bool value) {

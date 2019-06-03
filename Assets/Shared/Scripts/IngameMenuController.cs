@@ -7,10 +7,10 @@ namespace Kosmos {
   // Ingame Menu Logic
   public class IngameMenuController : MonoBehaviour {
 
-    [SerializeField] GameObject mainDisplay;
-    [SerializeField] GameObject controlsDisplay;
+    [SerializeField] private GameObject mainDisplay;
+    [SerializeField] private GameObject controlsDisplay;
 
-    void Start() {
+    void OnEnable() {
       ShowMain();
     }
 

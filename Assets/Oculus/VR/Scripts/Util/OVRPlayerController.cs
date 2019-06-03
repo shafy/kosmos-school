@@ -260,6 +260,11 @@ public class OVRPlayerController : MonoBehaviour
 		MoveThrottle.y = (MoveThrottle.y > 0.0f) ? (MoveThrottle.y / motorDamp) : MoveThrottle.y;
 		MoveThrottle.z /= motorDamp;
 
+		// this is just a hack by me
+		// else, player moves a little bit also when touchpad is not pressed
+		// i think it's because of motorDamp
+		MoveThrottle = new Vector3(0, 0, 0);
+
 		moveDirection += MoveThrottle * SimulationRate * Time.deltaTime;
 
 		// Gravity

@@ -12,6 +12,7 @@ namespace Kosmos
         private InteractiveItem m_CurrentInteractible;                //The current interactive item
         private InteractiveItem m_LastInteractible;                   //The last interactive item
         private RaycastHit currentHit;
+        private QueryTriggerInteraction currentQuerryTriggerInteraction;
 
         [SerializeField] private Transform m_Camera;
         [SerializeField] private LayerMask m_ExclusionLayers;           // Layers to exclude from the raycast.
@@ -53,6 +54,16 @@ namespace Kosmos
         public RaycastHit CurrentHit {
             get { return currentHit; }
             private set { currentHit = value;}
+        }
+
+        public QueryTriggerInteraction CurrentQuerryTriggerInteraction {
+            get { return currentQuerryTriggerInteraction; }
+            set { currentQuerryTriggerInteraction = value;}
+        }
+
+        private void Start() {
+            // ignore trigger colliders per default
+            currentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
         }
 
         private void Update()
@@ -101,7 +112,7 @@ namespace Kosmos
             
             // Do the raycast forweards to see if we hit an interactive item
             // ignore colliders that have isTrigger = true
-            if (Physics.Raycast(ray, out hit, m_RayLength, ~m_ExclusionLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out hit, m_RayLength, ~m_ExclusionLayers, currentQuerryTriggerInteraction))
             {
                 InteractiveItem interactible = hit.collider.GetComponent<InteractiveItem>(); //attempt to get the InteractiveItem on the hit object
 
