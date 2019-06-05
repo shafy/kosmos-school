@@ -40,7 +40,7 @@ namespace Kosmos
       // save default lifetime from particle system so we can go back to it later
       psInitialStartSize = pMain.startSize;
 
-      lineRendererActive = lineRenderer.enabled;
+      lineRendererActive = lineRenderer.gameObject.activeInHierarchy;
 
       setDestinationPS(false);
     }

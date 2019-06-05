@@ -28,6 +28,7 @@ namespace Kosmos {
       IsWalking = false;
       walkingSoundPlaying = false;
       audioSource = GetComponent<AudioSource>();
+      setOtherHandAnchorInactive();
     }
     
     // override OVRPlayerController's Update
@@ -74,6 +75,17 @@ namespace Kosmos {
 
       // default to right hand
       return GameObject.FindWithTag("RightHandAnchor");
+    }
+
+    // deactivate other hand
+    private void setOtherHandAnchorInactive() {
+      if (HandAnchor().CompareTag("RightHandAnchor")) {
+        GameObject.FindWithTag("LeftHandAnchor").SetActive(false);
+        return;
+      } else {
+        GameObject.FindWithTag("RightHandAnchor").SetActive(false);
+        return;
+      }
     }
   }
 }

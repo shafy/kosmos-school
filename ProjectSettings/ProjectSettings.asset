@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Humbot Inc.
-  productName: Kosmos School
+  productName: Science Simulations by Kosmos School
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -40,7 +40,7 @@ PlayerSettings:
     width: 1
     height: 1
   m_SplashScreenLogos: []
-  m_VirtualRealitySplashScreen: {fileID: 2800000, guid: 374e4da67540342d8b66613ca6efaac3,
+  m_VirtualRealitySplashScreen: {fileID: 2800000, guid: d6e3bf632b48b4174bd170a57603cde8,
     type: 3}
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1024
@@ -119,7 +119,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.1
+  bundleVersion: 1.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -154,10 +154,10 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.kosmosschool.KosmosSchool_can
+    Android: com.kosmosschool.KosmosSchool
     Standalone: com.oculus.UnitySample
   buildNumber: {}
-  AndroidBundleVersionCode: 1
+  AndroidBundleVersionCode: 12
   AndroidMinSdkVersion: 21
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 0
@@ -246,8 +246,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 5
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: 
-  AndroidKeyaliasName: 
+  AndroidKeystoreName: /Users/can/Apps/keystores/kosmos-school.keystore
+  AndroidKeyaliasName: kosmos-school
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 1
   AndroidIsGame: 1
@@ -628,7 +628,8 @@ PlayerSettings:
   webGLThreadsSupport: 0
   scriptingDefineSymbols: {}
   platformArchitecture: {}
-  scriptingBackend: {}
+  scriptingBackend:
+    Android: 1
   il2cppCompilerConfiguration: {}
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}

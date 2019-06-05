@@ -814,6 +814,11 @@ PrefabInstance:
       propertyPath: m_ClearFlags
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3212654533351760805, guid: 732f9eb33dcb7402e83c3d8772e831c8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 732f9eb33dcb7402e83c3d8772e831c8, type: 3}
 --- !u!1 &1133317732

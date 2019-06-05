@@ -58,6 +58,7 @@ namespace Kosmos {
 
     private void showWindow(bool value) {
       windowAndTexts.active = value;
+
       // rotate towards user on Y axis
       Vector3 lookPos =  windowAndTexts.transform.position - mainCamera.transform.position;
       Quaternion tempRotation = Quaternion.LookRotation(lookPos);

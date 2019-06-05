@@ -82,7 +82,7 @@ namespace Kosmos
       lengthY = lengthY - (lengthY % nGridLines);
 
       // these are predefined grid stepss
-      predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f};
+      predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f};
 
     }
 
@@ -265,11 +265,7 @@ namespace Kosmos
 
     // creates arrays with axis label values based on max values as arguments
     private float[] createAxisLabelValues(float maxValue, float minValue) {
-      // available grid steps:
-      // 0.1, 0.2, 0.5,
-      // 1, 2, 10, 20, 50,
-      // 100, 200, 500,
-      // 1000
+      // available grid steps: see predefinedAxisLabels variable
       
       // divide max value by nGridLInes
       float gridDivider = maxValue / nGridLines;
