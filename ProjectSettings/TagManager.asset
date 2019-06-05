@@ -9,6 +9,7 @@ TagManager:
   - OVRPlayerController
   - TrackingSpace
   - PlatformFloor
+  - UIAudioSource
   layers:
   - Default
   - TransparentFX

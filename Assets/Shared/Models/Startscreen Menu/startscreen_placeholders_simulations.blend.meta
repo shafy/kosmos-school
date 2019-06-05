@@ -51,6 +51,15 @@ ModelImporter:
     4300012: simulation_icons_002
     4300014: simulation_icons_001
     4300016: simulation_icons_009
+    6400000: simulation_icons_001
+    6400002: simulation_icons_002
+    6400004: simulation_icons_003
+    6400006: simulation_icons_004
+    6400008: simulation_icons_005
+    6400010: simulation_icons_006
+    6400012: simulation_icons_007
+    6400014: simulation_icons_008
+    6400016: simulation_icons_009
     7400000: Default Take
     9500000: //RootNode
   externalObjects:
@@ -58,7 +67,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Chair
-    second: {fileID: 2100000, guid: caf05d47923b34c6a90cc9afec5b0608, type: 2}
+    second: {fileID: 2100000, guid: 1ca0774953f2147c8826001eca21bf12, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -91,14 +100,14 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     useSRGBMaterialColor: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 1
+    generateSecondaryUV: 0
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
@@ -120,7 +129,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  importAnimation: 0
+  importAnimation: 1
   copyAvatar: 0
   humanDescription:
     serializedVersion: 2

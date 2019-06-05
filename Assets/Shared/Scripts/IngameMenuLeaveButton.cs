@@ -9,6 +9,7 @@ namespace Kosmos {
     [SerializeField] private SceneLoader sceneLoader;
 
     public override void Press () {
+      base.Press();
       sceneLoader.LoadNewScene("WelcomeScreen");
     }
   }

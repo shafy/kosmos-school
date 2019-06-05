@@ -7,10 +7,13 @@ namespace Kosmos {
   // Main controls of Question Block logic
   public class QuestionBlockController : MonoBehaviour {
 
+    private AudioSource audioSource;
     private bool isShowing;
     private bool firstClick;
     private GameObject mainCamera;
 
+    [SerializeField] private AudioClip openClip;
+    [SerializeField] private AudioClip closeClip;
     [SerializeField] private bool openAtStart = false;
     [SerializeField] private GameObject windowAndTexts;
     [SerializeField] private TextMeshPro textTitle;
@@ -33,11 +36,14 @@ namespace Kosmos {
       textTitle.text = titleText;
       textBody.text = bodyText;
 
+      audioSource = GetComponent<AudioSource>();
+
       // has seen intro block before
       if (openAtStart && PlayerPrefs.GetInt("hasSeenInstruction") == 1) {
         showWindow(false);
-        unclickedBlock.active = true;
-        clickedBlock.active = false;
+        unclickedBlock.active = false;
+        clickedBlock.active = true;
+        isShowing = false;
       }
 
       // hasn't seen before
@@ -68,9 +74,19 @@ namespace Kosmos {
           clickedBlock.active = true;
           firstClick = false;
         }
+
+        if (audioSource) {
+          audioSource.clip = openClip;
+          audioSource.Play();
+        }
       } else {
         showWindow(false);
         isShowing = false;
+
+        if (audioSource) {
+          audioSource.clip = closeClip;
+          audioSource.Play();
+        }
       }
     }
 

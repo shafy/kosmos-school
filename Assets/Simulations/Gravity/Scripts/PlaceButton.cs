@@ -46,6 +46,8 @@ namespace Kosmos {
     }
 
     public override void Press () {
+      base.Press();
+      
       // if objects are not place, place them, else, drop them
       if (platformController.IsPlaced) {
         for (int i = 0; i < platformItemsList.Count; i++) {

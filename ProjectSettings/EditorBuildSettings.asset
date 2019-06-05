@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Shared/Scenes/WelcomeScreen.unity
     guid: 213796b44f3e44de0a746d0b711258dd
-  - enabled: 0
+  - enabled: 1
     path: Assets/Simulations/Gravity/Gravity.unity
     guid: 7ca184a6bbd04450a8ca6cfe7074eabf
   m_configObjects: {}

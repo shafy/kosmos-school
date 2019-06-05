@@ -19,6 +19,8 @@ namespace Kosmos {
     }
 
     public override void Press () {
+      base.Press();
+      
       float incrementalValue = incrementStep;
 
       if (direction == Direction.Decrease) {

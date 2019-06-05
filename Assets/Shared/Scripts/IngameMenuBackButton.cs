@@ -9,6 +9,7 @@ namespace Kosmos {
     [SerializeField] private GameController gameController;
 
     public override void Press () {
+      base.Press();
       gameController.ToggleIngameMenu();
     }
   }

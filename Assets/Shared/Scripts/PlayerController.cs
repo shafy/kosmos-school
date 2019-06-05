@@ -5,8 +5,10 @@ using UnityEngine;
 namespace Kosmos {
   // all logic related to player controll and movement
   public class PlayerController : OVRPlayerController {
-   
+    
+    private AudioSource audioSource;
     private bool isWalking;
+    private bool walkingSoundPlaying;
     private CharacterController character;
     private GameObject centerEyeAnchor;
     private Quaternion controllerRotation;
@@ -24,6 +26,8 @@ namespace Kosmos {
       character = GetComponent<CharacterController>();
       centerEyeAnchor = GameObject.FindWithTag("MainCamera");
       IsWalking = false;
+      walkingSoundPlaying = false;
+      audioSource = GetComponent<AudioSource>();
     }
     
     // override OVRPlayerController's Update
@@ -39,8 +43,18 @@ namespace Kosmos {
        
         character.SimpleMove(movement * 5);
 
+        if (audioSource && !walkingSoundPlaying) {
+          audioSource.Play();
+          walkingSoundPlaying = true;
+        }
+
         IsWalking = true;
+
       } else {
+        if (audioSource && walkingSoundPlaying) {
+          audioSource.Stop();
+          walkingSoundPlaying = false;
+        }
         IsWalking = false;
       }
     }

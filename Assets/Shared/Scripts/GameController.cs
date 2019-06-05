@@ -6,28 +6,43 @@ namespace Kosmos {
   // general controls for the game
   public class GameController : MonoBehaviour {
 
+    private AudioSource audioSource;
+
+    [SerializeField] private AudioClip openMenuClip;
+    [SerializeField] private AudioClip closeMenuClip;
     [SerializeField] private ControllerRayCaster controllerRayCaster;
     [SerializeField] private GameObject ingameMenu;
     [SerializeField] private PlayerController playerController;
 
     void Start() {
       ingameMenu.SetActive(false);
+      controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
+
+      audioSource = GameObject.FindWithTag("UIAudioSource").GetComponent<AudioSource>();
     }
 
     void Update() {
       if (OVRInput.GetDown(OVRInput.Button.Back)) {
         ToggleIngameMenu();
+        
       }
     }
 
     public void ToggleIngameMenu() {
       if (ingameMenu.activeSelf) {
+
+        if (audioSource) {
+          audioSource.clip = closeMenuClip;
+          audioSource.Play();
+        }
         ingameMenu.SetActive(false);
         playerController.WalkingAllowed = true;
 
         // when menu deactivated, raycast ignores trigger colliders
         controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
+
       } else {
+
         ingameMenu.SetActive(true);
         playerController.WalkingAllowed = false;
         // position 2.5 meters in front of user and rotate towards user
@@ -44,6 +59,13 @@ namespace Kosmos {
         // we use trigger colliders in menu buttons so that if menu is opened over another
         // collider, there is no conflict
         controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Collide;
+
+        if (audioSource) {
+          audioSource.clip = openMenuClip;
+          audioSource.Play();
+        }
+        
+
       }
     }
   }

@@ -8,6 +8,7 @@ namespace Kosmos {
   // this class sets the velocity of the Rigidbody, overriding mass, drag etc.
   public class GravityPhysics : KosmosPhysics {
 
+    private AudioSource audioSource;
     private bool isOnGround;
     private bool readOnly;
     private bool timeZeroAdded;
@@ -66,6 +67,8 @@ namespace Kosmos {
       isOnGround = false;
 
       initializeData();
+
+      audioSource = GetComponent<AudioSource>();
     }
 
     void FixedUpdate() {
@@ -126,6 +129,10 @@ namespace Kosmos {
       initializeData();
       // let platformController now that the object has dropped
       platformController.DropComplete(true);
+
+      if (audioSource) {
+        audioSource.Play();
+      }
     }
 
     void OnCollisionExit(Collision collision) {

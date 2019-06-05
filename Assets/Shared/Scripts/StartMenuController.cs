@@ -12,13 +12,10 @@ namespace Kosmos {
     private float scrollRange;
 
     [SerializeField] private GameObject iconSheet;
-    [SerializeField] private Texture gravityTexture;
-    [SerializeField] private Renderer gravityRenderer;
 
     void Start() {
       resetTouchPadY();
-      gravityRenderer.material.mainTexture = gravityTexture;
-
+      
       startY = iconSheet.transform.position.y;
       scrollRange = 0.6f;
     }
