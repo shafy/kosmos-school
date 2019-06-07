@@ -37,3 +37,4 @@ sysinfo.txt
 
 # ignore env keys
 EnvKeys.cs
+EnvKeys.cs.meta
