@@ -40,18 +40,25 @@ namespace Kosmos
       // save default lifetime from particle system so we can go back to it later
       psInitialStartSize = pMain.startSize;
 
-      lineRendererActive = lineRenderer.gameObject.activeInHierarchy;
+      //lineRendererActive = lineRenderer.gameObject.activeInHierarchy;
 
       setDestinationPS(false);
     }
 
     public void Update() {
+      // stop executing Update if playerController is Frozen
+      if (playerController.Frozen) {
+        setDestinationPS(true);
+        return;
+      }
+
       // if player is walking, always disable linerender
       if (lineRendererActive && playerController.IsWalking) {
         enableLineRenderer(false);
       } else if (!lineRendererActive && !playerController.IsWalking) {
         enableLineRenderer(true);
       }
+     
 
       if (!playerController.IsWalking && controllerRayCaster.CurrentInteractible) {
         setDestinationPS(true);
@@ -91,8 +98,6 @@ namespace Kosmos
         }
         // move object with ElectroGrabber
         moveItem();
-        // disable linerender
-        enableLineRenderer(false);
 
         // change item distance from player (only if not walking)
         if (playerController.IsWalking) {
@@ -138,8 +143,6 @@ namespace Kosmos
       if (currentGrabbable == null) return;
 
       currentGrabbableRb.isKinematic = false;
-      // show linerenderer again
-      enableLineRenderer(true);
 
       resetLaser();
       currentGrabbable.Ungrabbed();

@@ -20,5 +20,4 @@ namespace Kosmos {
         OVRPlugin.gpuLevel = 2;
       }      
     }
-
 }

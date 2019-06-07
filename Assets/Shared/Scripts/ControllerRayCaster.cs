@@ -89,9 +89,9 @@ namespace Kosmos
             worldEndPoint = Vector3.zero;
 
             // enable line renderer component if controller is connected
-            // if (m_LineRenderer != null) {
-            //     m_LineRenderer.enabled = ControllerIsConnected && ShowLineRenderer;
-            // }
+            if (m_LineRenderer != null) {
+                m_LineRenderer.enabled = ControllerIsConnected && ShowLineRenderer;
+            }
 
             // if controller connected, create a laser pointer
             if (ControllerIsConnected && m_TrackingSpace != null) {
@@ -183,6 +183,11 @@ namespace Kosmos
 
                 Debug.Log("hit.point " + hit.point);
             }
+        }
+
+        public void EnableLineRenderer(bool isEnabled) {
+            ShowLineRenderer = isEnabled;
+            m_LineRenderer.enabled = isEnabled;
         }
 
 

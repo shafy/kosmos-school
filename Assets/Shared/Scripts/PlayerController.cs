@@ -9,6 +9,7 @@ namespace Kosmos {
     private AudioSource audioSource;
     private bool isWalking;
     private bool walkingSoundPlaying;
+    private bool frozen;
     private CharacterController character;
     private GameObject centerEyeAnchor;
     private Quaternion controllerRotation;
@@ -22,13 +23,18 @@ namespace Kosmos {
       private set { isWalking = value; }
     }
 
+    public bool Frozen {
+      get { return frozen; }
+      set { frozen = value; }
+    }
+
     void Start () {
       character = GetComponent<CharacterController>();
       centerEyeAnchor = GameObject.FindWithTag("MainCamera");
       IsWalking = false;
       walkingSoundPlaying = false;
+      frozen = false;
       audioSource = GetComponent<AudioSource>();
-      setOtherHandAnchorInactive();
     }
     
     // override OVRPlayerController's Update
@@ -63,29 +69,6 @@ namespace Kosmos {
     // enables straiht physics raycaster
     public void EnableRay(bool enable) {
       centerEyeAnchor.GetComponent<ControllerRayCaster>().ShowLineRenderer = enable;
-    }
-
-    // gets hand anchor based on dominant hand
-    public GameObject HandAnchor() {
-      if (OVRInput.GetDominantHand() == OVRInput.Handedness.RightHanded) {
-        return GameObject.FindWithTag("RightHandAnchor");
-      } else if (OVRInput.GetDominantHand() == OVRInput.Handedness.LeftHanded) {
-        return GameObject.FindWithTag("LeftHandAnchor");
-      }
-
-      // default to right hand
-      return GameObject.FindWithTag("RightHandAnchor");
-    }
-
-    // deactivate other hand
-    private void setOtherHandAnchorInactive() {
-      if (HandAnchor().CompareTag("RightHandAnchor")) {
-        GameObject.FindWithTag("LeftHandAnchor").SetActive(false);
-        return;
-      } else {
-        GameObject.FindWithTag("RightHandAnchor").SetActive(false);
-        return;
-      }
     }
   }
 }
