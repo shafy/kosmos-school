@@ -22,8 +22,6 @@ namespace Kosmos {
       if (audioSource1) clipLength1 = audioSource1.clip.length;
       if (audioSource1) clipLength2 = audioSource2.clip.length;
 
-      Debug.Log("clipLength1 " + clipLength1);
-
       play1 = false;
       timer1 = 0.0f;
       randomWaitTime1 = randomWaitTime(0.0f, 10.0f);

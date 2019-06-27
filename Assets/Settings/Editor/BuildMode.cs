@@ -63,10 +63,11 @@ namespace Kosmos
 
     static void setEntitlementCheck(bool isEnabled) {
         EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-        EditorSceneManager.OpenScene("Assets/Shared/Scenes/WelcomeScreen.unity");
+        EditorSceneManager.OpenScene("Assets/Shared/Scenes/WelcomeScreen.unity", OpenSceneMode.Additive);
         GameObject gameController = GameObject.Find("GameController");
         gameController.GetComponent<OculusPlatformSetup>().DoEntitlementCheck = isEnabled;
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+        EditorSceneManager.CloseScene(EditorSceneManager.GetActiveScene(), true);
     }
   }
 }
