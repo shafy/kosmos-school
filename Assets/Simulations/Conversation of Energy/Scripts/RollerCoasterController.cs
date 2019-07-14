@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Kosmos {
@@ -24,6 +25,14 @@ namespace Kosmos {
       }
     }
 
+    void Start() {
+      rollerCoasterCart.gameObject.SetActive(false);
+    }
+
+    public void StartStopCart() {
+      rollerCoasterCart.StartStop();
+    }
+
     public void AddElement(Transform element, bool isStartHill = false) {
       // parent element to this
       element.parent = this.transform;
@@ -37,9 +46,11 @@ namespace Kosmos {
         WaypointSystemsList.Add(waypointsStart);
         WaypointSystemsList.Add(waypointsFinish);
 
-        // position at 0 0 0
+        // position at parent's pos
         element.transform.position = element.parent.transform.position;
 
+        // enable cart
+        rollerCoasterCart.gameObject.SetActive(true);
         // reset RC cart
         rollerCoasterCart.ResetCart();
       } else {
@@ -47,8 +58,25 @@ namespace Kosmos {
         WaypointSystem waypoints = element.Find("Waypoints").GetComponent<WaypointSystem>();
         WaypointSystemsList.Insert(WaypointSystemsList.Count - 1, waypoints);
       }
-      
+    }
 
+    public void RemoveElement() {
+      Transform lastElement = elementList.Last();
+      elementList.RemoveAt(elementList.Count - 1);
+      Destroy(lastElement.gameObject);
+
+      // removed start hill in this case
+      if (elementList.Count == 0) {
+        // clear list
+        WaypointSystemsList = new List<WaypointSystem>();
+        // hide cart
+        rollerCoasterCart.gameObject.SetActive(false);
+        return;
+      }
+      // also remove from waypoinstlist
+      WaypointSystemsList.RemoveAt(WaypointSystemsList.Count - 2);
+      return;
+      
     }
   }
 }

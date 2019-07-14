@@ -35,7 +35,7 @@ namespace Kosmos {
     [SerializeField] private Transform sensorTop;
     [SerializeField] private Transform sensorBottom;
 
-    void Start() {
+    void Awake() {
       // mass in kg
       massCart = 700f;
       accelerationGravity = 9.81f;
@@ -72,7 +72,6 @@ namespace Kosmos {
       transform.position = Vector3.Lerp(prevWaypointPos, nextWaypointPos, fracSegment);
 
       // update rotation
-      
       transform.rotation = Quaternion.FromToRotation(transform.forward, currentUnitVectorInter) * transform.rotation;
 
       // handle z rotation
@@ -84,7 +83,6 @@ namespace Kosmos {
       transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, currentZRotation);
 
       rotateWheels(currentSpeed * 50);
-     
     }
 
     void OnTriggerEnter(Collider collider) {

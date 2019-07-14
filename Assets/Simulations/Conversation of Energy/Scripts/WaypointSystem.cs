@@ -23,15 +23,6 @@ namespace Kosmos {
       }
 
       for (int i = 0; i < allChildren.Count; i = i + 3) {
-        //Mesh mesh = child.GetComponent<MeshFilter>().mesh;
-        // add sphere collider
-
-        // SphereCollider sc = child.gameObject.AddComponent<SphereCollider>() as SphereCollider;
-        // sc.radius = 0.1f;
-        // sc.center = new Vector3(0, 0, 0);
-        // sc.isTrigger = true;
-        // sc.gameObject.tag = "Waypoint";
-
         // there are three gameobjects per waypoint. we need to get a vector between the first 2
         // in order to know the "tilt" of the roller coaster tracks
         // and we need to add a spherecollider to the third
@@ -76,5 +67,4 @@ namespace Kosmos {
       waypointVec = _waypointVec;
     }
   }
-
 }

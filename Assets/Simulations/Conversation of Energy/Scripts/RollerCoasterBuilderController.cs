@@ -242,5 +242,14 @@ namespace Kosmos {
     public void AddElementToRC(Transform element, bool isStartHill = false) {
       rollerCoasterController.AddElement(element, isStartHill);
     }
+
+    // removes most recent element
+    public void RemoveLastItem() {
+      if (rcItemList.Count == 0) return;
+
+      rollerCoasterController.RemoveElement();
+      rcItemList.RemoveAt(rcItemList.Count - 1);
+      updateAddableList();
+    }
   }
 }

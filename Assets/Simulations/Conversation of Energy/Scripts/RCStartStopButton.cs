@@ -6,13 +6,13 @@ namespace Kosmos {
   // starts and stops/resets rollercoaster
   public class RCStartStopButton : Button {
 
-    [SerializeField] private RollerCoasterCart rcCart;
+    [SerializeField] private RollerCoasterController rollerCoasterController;
 
 
     public override void Press () {
       base.Press();
 
-      rcCart.StartStop();
+      rollerCoasterController.StartStopCart();
       
     }
   }
