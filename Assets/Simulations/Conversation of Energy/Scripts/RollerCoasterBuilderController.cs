@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 
@@ -10,7 +11,16 @@ namespace Kosmos {
     private bool operationInProgress;
     private int currentItemIndex;
     private List<GameObject> previewItemsList;
+    private List <RollerCoasterItem.RCItemType> rcItemList;
+    private List<RollerCoasterItem.RCItemType> addableList;
+    private RollerCoasterItem.RCItemType itemTypeStartHill = RollerCoasterItem.RCItemType.StartHill;
+    private RollerCoasterItem.RCItemType itemTypeHill = RollerCoasterItem.RCItemType.Hill;
+    private RollerCoasterItem.RCItemType itemTypeBankedCurve10 = RollerCoasterItem.RCItemType.BankedCurve10;
+    private RollerCoasterItem.RCItemType itemTypeBankedCurve15 = RollerCoasterItem.RCItemType.BankedCurve15;
+    private RollerCoasterItem.RCItemType itemTypeBankedCurve20 = RollerCoasterItem.RCItemType.BankedCurve20;
+    private RollerCoasterItem.RCItemType itemTypeLooping = RollerCoasterItem.RCItemType.Looping;
 
+    [SerializeField] private RollerCoasterController rollerCoasterController;
     [SerializeField] private TextMeshPro nameText;
     [SerializeField] private TextMeshPro sizeText;
 
@@ -39,6 +49,18 @@ namespace Kosmos {
       SetItemNameTMP(currentPreviewItem.CurrentItemName);
 
       operationInProgress = false;
+
+      // assign the types to variables to keep them shorter
+      itemTypeStartHill = RollerCoasterItem.RCItemType.StartHill;
+      itemTypeHill = RollerCoasterItem.RCItemType.Hill;
+      itemTypeBankedCurve10 = RollerCoasterItem.RCItemType.BankedCurve10;
+      itemTypeBankedCurve15 = RollerCoasterItem.RCItemType.BankedCurve15;
+      itemTypeBankedCurve20 = RollerCoasterItem.RCItemType.BankedCurve20;
+      itemTypeLooping = RollerCoasterItem.RCItemType.Looping;
+
+      rcItemList = new List<RollerCoasterItem.RCItemType>();
+      addableList = new List<RollerCoasterItem.RCItemType>();
+      updateAddableList();
     }
 
     private void displayItem(int nextIndex, string direction) {
@@ -61,6 +83,98 @@ namespace Kosmos {
       RollerCoasterBuilderPreviewItem currentItem = item.GetComponent<RollerCoasterBuilderPreviewItem>();
       currentItem.FadeIn(direction);
       SetItemNameTMP(currentItem.CurrentItemName);
+    }
+
+    private bool isAnyBankedCurve(RollerCoasterItem.RCItemType itemType) {
+      if (itemType == itemTypeBankedCurve10 || itemType == itemTypeBankedCurve15 || itemType == itemTypeBankedCurve20) return true;
+      return false;
+    }
+
+    private bool isHillOrLooping(RollerCoasterItem.RCItemType itemType) {
+      if (itemType == itemTypeHill || itemType == itemTypeLooping) return true;
+      return false;
+    }
+
+    // updates list of items that are currently addable
+    private void updateAddableList() {
+
+      // always clear list
+      addableList = new List<RollerCoasterItem.RCItemType>();
+
+      // if empty, only start hill an be added
+      if (rcItemList.Count == 0) {
+         addableList.Add(itemTypeHill);
+         return;
+      }
+      
+      // *** Main Case 1: Adding looping or hill after start hill ***
+
+      // start hill -> next can be anything
+      if (rcItemList.Count == 1) {
+        addableList.Add(itemTypeHill);
+        addableList.Add(itemTypeBankedCurve10);
+        addableList.Add(itemTypeBankedCurve15);
+        addableList.Add(itemTypeBankedCurve20);
+        addableList.Add(itemTypeLooping);
+        return;
+      }
+
+      // start hill + looping || hill -> next must be banked curve
+
+      if (rcItemList.Count == 2 && isHillOrLooping(rcItemList[1])) {
+        addableList.Add(itemTypeBankedCurve10);
+        addableList.Add(itemTypeBankedCurve15);
+        addableList.Add(itemTypeBankedCurve20);
+        return;
+      }
+
+      // start hill + looping|| hill + banked curved -> next can't be banked curve
+      if (rcItemList.Count == 3 && isHillOrLooping(rcItemList[1]) && isAnyBankedCurve(rcItemList[2])) {
+        addableList.Add(itemTypeHill);
+        addableList.Add(itemTypeLooping);
+        return;
+      }
+
+      // start hill + looping|| hill + banked curved + looping || hill -> next can't be banked curve
+      if (rcItemList.Count == 4 && isHillOrLooping(rcItemList[1]) && isAnyBankedCurve(rcItemList[2]) && isHillOrLooping(rcItemList[3])) {
+        addableList.Add(itemTypeHill);
+        addableList.Add(itemTypeLooping);
+        return;
+      }
+
+      // start hill + looping|| hill + banked curved + looping || hill + looping || hill + looping
+      // -> next must be banked curve of same radius as the first one
+      if (rcItemList.Count == 5 && isHillOrLooping(rcItemList[1]) && isAnyBankedCurve(rcItemList[2]) && isHillOrLooping(rcItemList[3])) {
+        addableList.Add(rcItemList[2]);
+        return;
+      }
+
+      // if we have 6 items, no more items can be added
+      if (rcItemList.Count == 6) return;
+
+      // *** Main Case 2: Adding banked curve directly after start hill ***
+      // start hill + banked curve -> next can't be banked curve
+      if (rcItemList.Count == 2 && isAnyBankedCurve(rcItemList[1])) {
+        addableList.Add(itemTypeHill);
+        addableList.Add(itemTypeLooping);
+        return;
+      }
+
+      // start hill + banked curve + looping || hill -> next must be banked curve of same radius as the first one
+      if (rcItemList.Count == 3 && isAnyBankedCurve(rcItemList[1]) && isHillOrLooping(rcItemList[2])) {
+        addableList.Add(rcItemList[1]);
+        return;
+      }
+
+      // if we have 4 and already two banked curves, no more items can be added
+      if (rcItemList.Count == 4 && isAnyBankedCurve(rcItemList[1]) && isHillOrLooping(rcItemList[2]) && isAnyBankedCurve(rcItemList[3])) {
+        return;
+      }
+    }
+
+    // checks if current item can be addeed to rollercoaster
+    private bool isItemAddable(RollerCoasterItem.RCItemType itemType) {
+      return addableList.Contains(itemType);
     }
 
     // switch to next or previous item
@@ -104,8 +218,29 @@ namespace Kosmos {
 
     // places current item in scene
     public void PlaceCurrentItem() {
+
       RollerCoasterBuilderPreviewItem currentPreviewItem = previewItemsList[currentItemIndex].GetComponent<RollerCoasterBuilderPreviewItem>();
-      currentPreviewItem.PlaceFullsizedItem();
+      RollerCoasterItem currentFullItem = currentPreviewItem.GetCurrentFullSize().GetComponent<RollerCoasterItem>();
+
+      if (!isItemAddable(currentFullItem.ItemType)) return;
+
+      // special case: if it's the first item, make sure to add a start hill
+      if (rcItemList.Count == 0) {
+        currentPreviewItem.PlaceStartHill();
+        rcItemList.Add(itemTypeStartHill);
+        updateAddableList();
+        return;
+      }
+      
+      Transform mostRecentElement = rollerCoasterController.ElementList.Last();
+      currentPreviewItem.PlaceFullsizedItem(mostRecentElement);
+
+      rcItemList.Add(currentFullItem.ItemType);
+      updateAddableList();
+    }
+
+    public void AddElementToRC(Transform element, bool isStartHill = false) {
+      rollerCoasterController.AddElement(element, isStartHill);
     }
   }
 }

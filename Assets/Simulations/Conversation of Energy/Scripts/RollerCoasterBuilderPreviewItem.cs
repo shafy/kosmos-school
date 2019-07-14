@@ -24,9 +24,10 @@ namespace Kosmos {
     private Vector3 endPos;
 
     [SerializeField] private GameObject[] fullPrefabsArray;
+    // starthill prefabs are only needed by the hill previewitem
+    [SerializeField] private GameObject[] startHillPrefabs;
     [SerializeField] private RollerCoasterBuilderController rollerCoasterBuilderController;
     [SerializeField] private string itemName;
-    [SerializeField] private Transform nextInstantiationTransform;
 
     public string CurrentItemName {
       get { return currentItemName; }
@@ -175,10 +176,43 @@ namespace Kosmos {
       selectSize(nextIndex);
     }
 
+    public GameObject GetCurrentFullSize() {
+      return fullPrefabsArray[currentSizeIndex]; 
+    }
+
     // places full sized item in scene
-    public void PlaceFullsizedItem() {
-      //nextInstantiationTransform.position = new Vector3(0, 0, 0);
-      GameObject fullItem = (GameObject)Instantiate(fullPrefabsArray[currentSizeIndex], nextInstantiationTransform, false);
+    public void PlaceFullsizedItem(Transform mostRecentElement) {
+      GameObject fullItem = (GameObject)Instantiate(GetCurrentFullSize(), new Vector3(0, 0, 0), Quaternion.identity);
+
+      // get connectors
+      Transform connectorBackwardNew = fullItem.transform.Find("Connector Backward");
+      Transform connectorForwardAOld = mostRecentElement.Find("Connector Forward A");
+      Transform connectorForwardBOld = mostRecentElement.Find("Connector Forward B");
+
+      // find out direction vector and apply rotation
+      Vector3 directionVec = (connectorForwardBOld.position - connectorForwardAOld.position).normalized;
+
+      Quaternion newRotation = Quaternion.FromToRotation(Vector3.forward, directionVec);
+      fullItem.transform.rotation = Quaternion.Euler(fullItem.transform.rotation.eulerAngles.x, newRotation.eulerAngles.y, fullItem.transform.rotation.eulerAngles.z);
+
+      // based on the most recently placed element (before this one), find out where to place the current one
+      // apply same rotation to new item
+      Vector3 vectorConnectorBackwardToCenter = fullItem.transform.position - connectorBackwardNew.position;
+
+      // apply this vector to connectorForwardOld
+      Vector3 newPos = connectorForwardAOld.position + vectorConnectorBackwardToCenter;
+
+      fullItem.transform.position = newPos;
+
+      // add item to list for roller coaster
+      rollerCoasterBuilderController.AddElementToRC(fullItem.transform);
+
+    }
+
+    // places full sized Start Hill (this is the first item an a special case of PlaceFullsizedItem())
+    public void PlaceStartHill() {
+      GameObject fullItem = (GameObject)Instantiate(startHillPrefabs[currentSizeIndex], new Vector3(0, 0, 0), Quaternion.identity);
+      rollerCoasterBuilderController.AddElementToRC(fullItem.transform, true);
     }
   }
 }
