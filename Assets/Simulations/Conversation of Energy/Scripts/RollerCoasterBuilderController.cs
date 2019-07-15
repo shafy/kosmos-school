@@ -22,6 +22,7 @@ namespace Kosmos {
 
     [SerializeField] private RollerCoasterController rollerCoasterController;
     [SerializeField] private TextMeshPro nameText;
+    [SerializeField] private TextMeshPro additionalText;
     [SerializeField] private TextMeshPro sizeText;
 
     public bool OperationInProgress {
@@ -61,6 +62,9 @@ namespace Kosmos {
       rcItemList = new List<RollerCoasterItem.RCItemType>();
       addableList = new List<RollerCoasterItem.RCItemType>();
       updateAddableList();
+
+      // set start instructions
+      additionalText.text = "Get started by adding a Hill part first. Select a size by clicking on the up and down arrows and pressing the green button to add it.";
     }
 
     private void displayItem(int nextIndex, string direction) {
@@ -80,9 +84,17 @@ namespace Kosmos {
 
     private void fadeInItem(int index, string direction) {
       GameObject item = previewItemsList[index];
-      RollerCoasterBuilderPreviewItem currentItem = item.GetComponent<RollerCoasterBuilderPreviewItem>();
-      currentItem.FadeIn(direction);
-      SetItemNameTMP(currentItem.CurrentItemName);
+      RollerCoasterBuilderPreviewItem currentPreviewItem = item.GetComponent<RollerCoasterBuilderPreviewItem>();
+      currentPreviewItem.FadeIn(direction);
+
+      // check if current item is addable
+      RollerCoasterItem currentFullItem = currentPreviewItem.GetCurrentFullSize().GetComponent<RollerCoasterItem>();
+      if (!isItemAddable(currentFullItem.ItemType)) {
+        additionalText.text = "You can't add this part next. Choose another.";
+        return;
+      }
+
+      SetItemNameTMP(currentPreviewItem.CurrentItemName);
     }
 
     private bool isAnyBankedCurve(RollerCoasterItem.RCItemType itemType) {
@@ -229,9 +241,16 @@ namespace Kosmos {
         currentPreviewItem.PlaceStartHill();
         rcItemList.Add(itemTypeStartHill);
         updateAddableList();
+        // update text also
+        additionalText.text = "Great job! Now choose different items by clicking on the right and left arrows.";
         return;
       }
       
+      // clear text
+      if (rcItemList.Count == 1) {
+        additionalText.text = "";
+      }
+
       Transform mostRecentElement = rollerCoasterController.ElementList.Last();
       currentPreviewItem.PlaceFullsizedItem(mostRecentElement);
 
@@ -245,7 +264,10 @@ namespace Kosmos {
 
     // removes most recent element
     public void RemoveLastItem() {
-      if (rcItemList.Count == 0) return;
+      if (rcItemList.Count == 0) {
+        additionalText.text = "Get started by adding a Hill part first. Select a size by clicking on the up and down arrows and pressing the green button to add it.";
+        return;
+      }
 
       rollerCoasterController.RemoveElement();
       rcItemList.RemoveAt(rcItemList.Count - 1);

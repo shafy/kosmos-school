@@ -8,7 +8,7 @@ namespace Kosmos {
 
     private bool isRunning;
     private bool isMoving;
-    private bool isFirstWaypoint;
+    private bool reverseMode;
     private float currentSegmentLength;
     private float currentSpeed;
     private float timeCounter;
@@ -22,7 +22,6 @@ namespace Kosmos {
     private float currentEndVelocity;
     private float currentStartVelocity;
     private float currentAcceleration;
-    private float pushAcceleration;
     private int waypointIndex;
     private int waypointSystemsIndex;
     private Vector3 prevWaypointPos;
@@ -39,8 +38,6 @@ namespace Kosmos {
       // mass in kg
       massCart = 700f;
       accelerationGravity = 9.81f;
-      //pushAcceleration = 1.0f;
-      //isFirstWaypoint = true;
     }
 
     void Update() {
@@ -49,21 +46,10 @@ namespace Kosmos {
 
       if (!isMoving) return;
 
-      // if (isFirstWaypoint) {
-      //   // if it's the first waypoint, we have to give the cart a push so to speak
-      //   currentAcceleration = pushAcceleration;
-      //   isFirstWaypoint = false;
-      // }
-
       timeCounter += Time.deltaTime;
      
-      // Debug.Log("currentStartVelocity " + currentStartVelocity);
-      // Debug.Log("currentAcceleration " + currentAcceleration);
-
       // calculate speed for current time baed on start velocity and acceleration
       currentSpeed = currentStartVelocity + currentAcceleration * timeCounter;
-
-      //Debug.Log("currentSpeed " + currentSpeed);
 
       // calculate what fraction of the segment we've already covered in order to lerp
       distCovered = timeCounter * currentSpeed;
@@ -73,13 +59,15 @@ namespace Kosmos {
 
       // update rotation
       transform.rotation = Quaternion.FromToRotation(transform.forward, currentUnitVectorInter) * transform.rotation;
-
+  
       // handle z rotation
-      Vector3 WaypointVec = rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList[waypointIndex].WaypointVec;
-      Quaternion tiltRotation = Quaternion.FromToRotation(transform.right, WaypointVec) * transform.rotation;
+      Vector3 waypointVec = rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList[waypointIndex].WaypointVec;;
 
+      Quaternion tiltRotation = Quaternion.FromToRotation(transform.right, waypointVec) * transform.rotation;
+     
       // apply z rotation
       float currentZRotation = tiltRotation.eulerAngles.z;
+
       transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, currentZRotation);
 
       rotateWheels(currentSpeed * 50);
@@ -110,32 +98,60 @@ namespace Kosmos {
 
     // moves to next waypoint
     private void toNextWaypoint() {
-      // switch to next waypointSystem if no more waypoints in current one
-      // stop moving if there's no next waypointsystem
-      if (waypointIndex + 1 == rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList.Count) {
-        // check if there's a next waypoint system
-        if (waypointSystemsIndex + 1 == rollerCoasterController.WaypointSystemsList.Count) {
-          // if not, stop moving
-          isMoving = false;
-          return;
-        } else {
-          // if there is, increment index counter
-          waypointSystemsIndex++;
-          waypointIndex = 0;
+
+      if (!reverseMode) {
+        // switch to next waypointSystem if no more waypoints in current one
+        // stop moving if there's no next waypointsystem
+        if (waypointIndex + 1 == rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList.Count) {
+          // check if there's a next waypoint system
+          if (waypointSystemsIndex + 1 == rollerCoasterController.WaypointSystemsList.Count) {
+            // if not, stop moving
+            isMoving = false;
+            return;
+          } else {
+            // if there is, increment index counter
+            waypointSystemsIndex++;
+            waypointIndex = 0;
+          }
+        }
+      } else {
+        // in this case, we're counting down the waypoints because the cart is going backwards
+        // switch to next waypointSystem if no more waypoints in current one
+        // stop moving if there's no next waypointsystem
+        if (waypointIndex == 0) {
+          // check if there's a next waypoint system
+          if (waypointSystemsIndex == 0) {
+            // if not, stop moving
+            isMoving = false;
+            return;
+          } else {
+            // if there is, decrement index counter
+            waypointSystemsIndex--;
+            waypointIndex = rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList.Count;
+          }
         }
       }
 
       // get waypoint positions;
       prevWaypointPos = transform.position;
-      nextWaypointPos = rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList[waypointIndex + 1].WaypointTransform.position;
 
-      // get a normalized vector between wayopints
-      currentUnitVectorInter = (prevWaypointPos - nextWaypointPos).normalized;
+      if (!reverseMode) {
+        nextWaypointPos = rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList[waypointIndex + 1].WaypointTransform.position;
+        waypointIndex++;
 
+        // get a normalized vector between wayopints
+        currentUnitVectorInter = (prevWaypointPos - nextWaypointPos).normalized;
+      } else {
+        nextWaypointPos = rollerCoasterController.WaypointSystemsList[waypointSystemsIndex].WaypointList[waypointIndex - 1].WaypointTransform.position;
+        waypointIndex--;
+
+        // get a normalized vector between wayopints
+        currentUnitVectorInter = (nextWaypointPos - prevWaypointPos).normalized;
+      }
+      
       // get the segment length to be able to move at correct speed
       currentSegmentLength = Vector3.Distance(prevWaypointPos, nextWaypointPos);
 
-      waypointIndex++;
       timeCounter = 0f;
       isMoving = true;
 
@@ -145,6 +161,18 @@ namespace Kosmos {
       ePot = massCart * accelerationGravity * nextWaypointPos.y;
       // calculate kinetic energy based on difference from total energy
       eKin = eTot - ePot;
+
+      // if eKin becomes negative, reverse waypoints
+      if (eKin <= 0) {
+        eKin = 0;
+        reverseMode = !reverseMode;
+
+        if (reverseMode) {
+          waypointIndex--;
+        } else {
+          waypointIndex++;
+        }
+      }
 
       // calculate velocity and acceleration
       // assign last waypoints endvelocity as current start velocity
@@ -159,7 +187,7 @@ namespace Kosmos {
     }
 
     public void ResetCart() {
-       // total energy - we use height of first waypoint
+      // total energy - we use height of first waypoint
       eTot = massCart * accelerationGravity * rollerCoasterController.WaypointSystemsList[0].WaypointList[0].WaypointTransform.position.y;
 
       waypointIndex = 0;
@@ -173,6 +201,7 @@ namespace Kosmos {
       currentStartVelocity = 0f;
 
       isRunning = false;
+      reverseMode = false;
 
       transform.rotation = Quaternion.identity;
 

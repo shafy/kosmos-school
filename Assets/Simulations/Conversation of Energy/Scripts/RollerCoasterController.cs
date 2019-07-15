@@ -76,7 +76,6 @@ namespace Kosmos {
       // also remove from waypoinstlist
       WaypointSystemsList.RemoveAt(WaypointSystemsList.Count - 2);
       return;
-      
     }
   }
 }
