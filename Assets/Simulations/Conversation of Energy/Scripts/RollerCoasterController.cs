@@ -43,6 +43,9 @@ namespace Kosmos {
         WaypointSystem waypointsStart = element.Find("Waypoints (Start)").GetComponent<WaypointSystem>();
         WaypointSystem waypointsFinish = element.Find("Waypoints (Finish)").GetComponent<WaypointSystem>();
 
+        waypointsStart.SetupWaypoints();
+        waypointsFinish.SetupWaypoints();
+
         WaypointSystemsList.Add(waypointsStart);
         WaypointSystemsList.Add(waypointsFinish);
 
@@ -56,6 +59,7 @@ namespace Kosmos {
       } else {
         // add Waypoints to WaypointSystemsList at second to last position
         WaypointSystem waypoints = element.Find("Waypoints").GetComponent<WaypointSystem>();
+        waypoints.SetupWaypoints();
         WaypointSystemsList.Insert(WaypointSystemsList.Count - 1, waypoints);
       }
     }

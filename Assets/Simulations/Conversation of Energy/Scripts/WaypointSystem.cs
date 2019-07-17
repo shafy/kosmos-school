@@ -14,7 +14,20 @@ namespace Kosmos {
       get { return waypointList; }
     }
 
-    void Awake() {
+    // void Awake() {
+    //   SetupWaypoints();
+    // }
+
+    private void addSphereCollider(GameObject currentGO) {
+      SphereCollider sc = currentGO.AddComponent<SphereCollider>() as SphereCollider;
+      sc.radius = 0.1f;
+      sc.center = new Vector3(0, 0, 0);
+      sc.isTrigger = true;
+      sc.gameObject.tag = "Waypoint";
+    }
+  
+
+    public void SetupWaypoints() {
       allChildren = new List<Transform>();
       waypointList = new List<Waypoint>();
       // save all children transforms to list (without getting current gameobject)
@@ -31,20 +44,13 @@ namespace Kosmos {
         Vector3 secondPos = allChildren[i+1].position;
         Vector3 firstToSecondVec = (firstPos - secondPos).normalized;
 
+
         // add sphere collider
         Transform thirdPos = allChildren[i+2];
         addSphereCollider(thirdPos.gameObject);
 
         waypointList.Add(new Waypoint(thirdPos, firstToSecondVec));
       }
-    }
-
-    private void addSphereCollider(GameObject currentGO) {
-      SphereCollider sc = currentGO.AddComponent<SphereCollider>() as SphereCollider;
-      sc.radius = 0.1f;
-      sc.center = new Vector3(0, 0, 0);
-      sc.isTrigger = true;
-      sc.gameObject.tag = "Waypoint";
     }
   }
 
