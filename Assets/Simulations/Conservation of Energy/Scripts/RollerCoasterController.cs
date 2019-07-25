@@ -56,10 +56,6 @@ namespace Kosmos {
         // position at parent's pos
         element.transform.position = element.parent.transform.position;
 
-        // enable cart
-        //rollerCoasterCart.gameObject.SetActive(true);
-        // reset RC cart
-        //rollerCoasterCart.ResetCart();
       } else {
         // add Waypoints to WaypointSystemsList at second to last position
         Transform waypointsTranform = element.Find("Waypoints");
@@ -99,6 +95,11 @@ namespace Kosmos {
       rollerCoasterCart = _rollerCoasterCart;
       syncWaypointsWithCart();
       rollerCoasterCart.ResetCart();
+    }
+
+    public bool IsRunning() {
+      if (!rollerCoasterCart) return false;
+      return rollerCoasterCart.IsRunning;
     }
   }
 }

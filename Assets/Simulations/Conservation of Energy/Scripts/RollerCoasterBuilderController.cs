@@ -28,6 +28,7 @@ namespace Kosmos {
     [SerializeField] private TextMeshPro nameText;
     [SerializeField] private TextMeshPro additionalText;
     [SerializeField] private TextMeshPro sizeText;
+    [SerializeField] private GraphCreator graphCreator;
 
     public bool OperationInProgress {
       get { return operationInProgress; }
@@ -250,6 +251,9 @@ namespace Kosmos {
 
     // places current item in scene
     public void PlaceCurrentItem() {
+      if (operationInProgress) return;
+
+      if (rollerCoasterController.IsRunning()) return;
 
       RollerCoasterBuilderPreviewItem currentPreviewItem = previewItemsList[currentItemIndex].GetComponent<RollerCoasterBuilderPreviewItem>();
       RollerCoasterItem currentFullItem = currentPreviewItem.GetCurrentFullSize().GetComponent<RollerCoasterItem>();
@@ -275,10 +279,10 @@ namespace Kosmos {
       } else {
         rcItemList.Add(currentFullItem.ItemType);
       }
-
-      updateItemAdditionalText(currentFullItem);
       
       updateAddableList();
+
+      updateItemAdditionalText(currentFullItem);
     }
 
     public void AddElementToRC(Transform element, bool isStartHill = false) {
@@ -287,6 +291,10 @@ namespace Kosmos {
 
     // removes most recent element
     public void RemoveLastItem() {
+      if (operationInProgress) return;
+      
+      if (rollerCoasterController.IsRunning()) return;
+
       if (rcItemList.Count == 0) {
         //additionalText.text = startText;
         return;
@@ -302,16 +310,19 @@ namespace Kosmos {
 
       RollerCoasterBuilderPreviewItem currentPreviewItem = previewItemsList[currentItemIndex].GetComponent<RollerCoasterBuilderPreviewItem>();
       RollerCoasterItem currentFullItem = currentPreviewItem.GetCurrentFullSize().GetComponent<RollerCoasterItem>();
-
-      updateItemAdditionalText(currentFullItem);
       
       updateAddableList();
+
+      updateItemAdditionalText(currentFullItem);
     }
 
     // adds roller coaster cart reference to roller coaster controller and rc portal
     public void AddCartReference(RollerCoasterCart rollerCoasterCart) {
       rollerCoasterController.AddCartReference(rollerCoasterCart);
       rcCartPortal.AddCartReference(rollerCoasterCart);
+
+      // add graph reph to cart
+      rollerCoasterCart.AddGraphReference(graphCreator);
     }
   }
 }

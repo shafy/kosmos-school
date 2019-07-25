@@ -6,6 +6,7 @@ namespace Kosmos {
   // controls logic for preview items
   public class RollerCoasterBuilderPreviewItem : MonoBehaviour {
 
+    private AudioSource audioSource;
     private bool isFadingOut;
     private bool isFadingIn;
     private Color currentColor;
@@ -27,6 +28,7 @@ namespace Kosmos {
     [SerializeField] private GameObject[] fullPrefabsArray;
     // starthill prefabs are only needed by the hill previewitem
     [SerializeField] private GameObject[] startHillPrefabs;
+    [SerializeField] private GameObject particleSystemPrefab;
     [SerializeField] private RollerCoasterBuilderController rollerCoasterBuilderController;
     [SerializeField] private string itemName;
 
@@ -62,6 +64,8 @@ namespace Kosmos {
 
        // select the first one
       selectSize(0);
+
+      audioSource = GetComponent<AudioSource>();
     }
 
     void Update() {
@@ -127,6 +131,13 @@ namespace Kosmos {
 
       // update text on display also
       rollerCoasterBuilderController.SetItemSizeTMP(sizeToTextDict[currentSizeIndex]);
+    }
+
+    private IEnumerator PlaceItemCoroutine(GameObject currentGO) {
+      rollerCoasterBuilderController.OperationInProgress = true;
+      yield return new WaitForSeconds(2.0f);
+      currentGO.SetActive(true);
+      rollerCoasterBuilderController.OperationInProgress = false;
     }
 
     // fades item out
@@ -208,6 +219,17 @@ namespace Kosmos {
 
         // add item to list for roller coaster
         rollerCoasterBuilderController.AddElementToRC(fullItem.transform);
+
+        // also instantiate particle system
+        GameObject particleSystem = (GameObject)Instantiate(particleSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        particleSystem.transform.position = newPos;
+        // play building audio
+        audioSource.Play();
+
+        // deactivate item and start coroutine to re-activate it
+        fullItem.SetActive(false);
+        StartCoroutine(PlaceItemCoroutine(fullItem));
+
       } else {
         // in this case it's a cart
         RollerCoasterCart rollerCoasterCart = fullItem.GetComponent<RollerCoasterCart>();
@@ -219,6 +241,16 @@ namespace Kosmos {
     public void PlaceStartHill() {
       GameObject fullItem = (GameObject)Instantiate(startHillPrefabs[currentSizeIndex], new Vector3(0, 0, 0), Quaternion.identity);
       rollerCoasterBuilderController.AddElementToRC(fullItem.transform, true);
+
+      // also instantiate particle system
+      GameObject particleSystem = (GameObject)Instantiate(particleSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+      particleSystem.transform.position = fullItem.transform.position;
+      // play building audio
+      audioSource.Play();
+
+      // deactivate item and start coroutine to re-activate it
+      fullItem.SetActive(false);
+      StartCoroutine(PlaceItemCoroutine(fullItem));
     }
   }
 }

@@ -82,7 +82,7 @@ namespace Kosmos
       lengthY = lengthY - (lengthY % nGridLines);
 
       // these are predefined grid stepss
-      predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f};
+      predefinedAxisLabels = new List<float> {0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f, 20f, 50f, 100f, 200f, 500f, 1000f, 2000f, 5000f, 10000f};
 
     }
 
@@ -103,12 +103,12 @@ namespace Kosmos
     }
 
     // draw x or y axis for graph
-    private void drawAxis(string axis, Color[] colors) {
+    private void drawAxis(string axis, int minLabel, Color[] colors) {
       if (axis == "x") {
         // draw line
         // draw pixel blocks, make sure to increase i by blockWidth
         for (int i = 0; i < lengthX; i += blockWidthLine) {
-          drawPixelBlock(i + border, border, blockWidthLine, blockHeightLine, colors);
+          drawPixelBlock(i + border, border - minLabel, blockWidthLine, blockHeightLine, colors);
         }
         // add one more pixel block but starting blockWidthGrid earlier so that the grid isn't
         // wider than the axis
@@ -122,7 +122,7 @@ namespace Kosmos
           // draw line
           // draw pixel blocks, make sure to increase i by blockHeight
           for (int i = 0; i < lengthY; i += blockHeightLine) {
-            drawPixelBlock(border, i + border, blockWidthLine, blockHeightLine, colors);
+            drawPixelBlock(border - minLabel, i + border, blockWidthLine, blockHeightLine, colors);
           }
 
           // add one more pixel block but starting blockHeightGrid earlier so that the grid isn't
@@ -174,10 +174,14 @@ namespace Kosmos
         int yPos = border + i * xGridHeight;
         // length should be as long as x axis, make sure to increment by blockWidth
         // don't draw gridline for the first one
-        if (i != 0) {
-          for (int y = blockWidthLine; y <= lengthX; y += blockWidthGrid) {
-            drawPixelBlock(border + y, yPos, blockWidthGrid, blockHeightGrid, colorsGrid);
-          }
+        // if (i != 0) {
+        //   for (int y = blockWidthLine; y <= lengthX; y += blockWidthGrid) {
+        //     drawPixelBlock(border + y, yPos, blockWidthGrid, blockHeightGrid, colorsGrid);
+        //   }
+        // }
+
+        for (int y = blockWidthLine; y <= lengthX; y += blockWidthGrid) {
+          drawPixelBlock(border + y, yPos, blockWidthGrid, blockHeightGrid, colorsGrid);
         }
 
         // set label
@@ -268,7 +272,16 @@ namespace Kosmos
       // available grid steps: see predefinedAxisLabels variable
       
       // divide max value by nGridLInes
-      float gridDivider = maxValue / nGridLines;
+      float gridDivider;
+      float gridStartValue = 0f;
+
+      if (minValue >= 0f) {
+        gridDivider = maxValue / nGridLines;
+      } else {
+        // minValue is negative
+        gridDivider = (maxValue - minValue) / nGridLines;
+      }
+      
       // always take the next biggest scale of maxValue / nGridLines
 
       float gridStep = predefinedAxisLabels.OrderBy(l => l).FirstOrDefault(l => l > gridDivider);
@@ -276,11 +289,22 @@ namespace Kosmos
       // if no higher value found
       if (gridStep == 0f) {
         Debug.Log("GraphLine error: Max Value too high for predefinedAxisLabels");
-        // default to 1000
-        gridStep = 1000f;
+        // default
+        gridStep = 1000000f;
       }
 
-      return new float[] {0, gridStep, gridStep * 2, gridStep * 3, gridStep * 4, gridStep * 5};
+      // get min. start value
+      if (minValue < 0f) {
+        gridStartValue = gridStep * Mathf.Floor(minValue / gridStep);
+      }
+
+      float[] returnArray = new float[6];
+
+      for (int i = 0; i < 6; i++) {
+        returnArray[i] = gridStartValue + (i * gridStep);
+      }
+
+      return returnArray;
     }
 
     private void drawLegend(string legendName, Color legendColor, int legendRow) {
@@ -306,6 +330,9 @@ namespace Kosmos
 
     // charts multiple data sets on one graph
     public void GraphLines(List<GraphableData> graphableDataList, GraphableDescription graphableDescription, int _blockWidthLine, int _blockHeightLine) {
+
+      // stop executing if no data
+      if (graphableDataList.Count == 0) return;
 
       blockWidthLine = _blockWidthLine;
       blockHeightLine = _blockHeightLine;
@@ -340,10 +367,12 @@ namespace Kosmos
 
       float xLabelMax = xAxisLabelValues[nGridLines];
       float yLabelMax = yAxisLabelValues[nGridLines];
+      float xLabelMin = xAxisLabelValues[0];
+      float yLabelMin = yAxisLabelValues[0];
 
       // get ratio to length of axes
-      float xFactor = (lengthX - blockWidthLine) / xLabelMax;
-      float yFactor = (lengthY - blockHeightLine) / yLabelMax;
+      float xFactor = (lengthX - blockWidthLine) / (xLabelMax - xLabelMin);
+      float yFactor = (lengthY - blockHeightLine) / (yLabelMax - yLabelMin);
 
       // scale up / down values
       // List<int[]> scaledXValuesList = new List<int[]>();
@@ -360,8 +389,12 @@ namespace Kosmos
       // draw x and y axes
       colorsAxis = Enumerable.Repeat<Color>(new Color(0.95f, 0.95f, 0.95f), blockWidthLine * blockHeightLine).ToArray<Color>();
 
-      drawAxis("x", colorsAxis);
-      drawAxis("y", colorsAxis);
+      // scale also the min values so we can use them as offset later
+      int xLabelMinScaled = (int)(xLabelMin * xFactor);
+      int yLabelMinScaled = (int)(yLabelMin * yFactor);
+
+      drawAxis("x", yLabelMinScaled, colorsAxis);
+      drawAxis("y", xLabelMinScaled, colorsAxis);
 
       // set their description
       setAxesTitles();
@@ -378,14 +411,15 @@ namespace Kosmos
         drawLegend(scaledGraphableDataList[i].Name, scaledGraphableDataList[i].Color, i);
 
         for (int y = 0; y < scaledGraphableDataList[i].XDataList.Count; y++) {
-          drawPixelBlock(border + (int)scaledGraphableDataList[i].XDataList[y], border + (int)scaledGraphableDataList[i].YDataList[y], blockWidthLine, blockHeightLine, currentColors);
+          // draw each pixel based on start of axis (= border) and origin offset (= xLabelMin and yLabelMin)
+          drawPixelBlock(border - xLabelMinScaled + (int)scaledGraphableDataList[i].XDataList[y], border - yLabelMinScaled + (int)scaledGraphableDataList[i].YDataList[y], blockWidthLine, blockHeightLine, currentColors);
 
           // interpolate between current and last pixel
           // linear interpolation to set pixels between previous and new point
           if (y > 0) {
             for (float t = 0.05f; t < 1.0f; t += 0.05f){
-              int lerpX = (int)Mathf.Lerp(border + scaledGraphableDataList[i].XDataList[y - 1], border + scaledGraphableDataList[i].XDataList[y], t);
-              int lerpY = (int)Mathf.Lerp(border + scaledGraphableDataList[i].YDataList[y - 1], border + scaledGraphableDataList[i].YDataList[y], t);
+              int lerpX = (int)Mathf.Lerp(border - xLabelMinScaled + scaledGraphableDataList[i].XDataList[y - 1], border - xLabelMinScaled+ scaledGraphableDataList[i].XDataList[y], t);
+              int lerpY = (int)Mathf.Lerp(border - yLabelMinScaled + scaledGraphableDataList[i].YDataList[y - 1], border - yLabelMinScaled + scaledGraphableDataList[i].YDataList[y], t);
               drawPixelBlock(lerpX, lerpY, blockWidthLine, blockHeightLine, currentColors);
             }
           }

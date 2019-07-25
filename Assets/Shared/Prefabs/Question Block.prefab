@@ -25,6 +25,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63401272aa8124aa7ac1b34962ebfaa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
   questionBlockController: {fileID: 7223476554864391458}
 --- !u!114 &4129193218551887287
 MonoBehaviour:
@@ -162,6 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63401272aa8124aa7ac1b34962ebfaa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
   questionBlockController: {fileID: 7223476554864391458}
 --- !u!114 &4327105318180577655
 MonoBehaviour:
@@ -789,6 +791,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: question_block_unclicked
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 65ee0b5bbbdec4c31be2a5ed231e2bc4, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 65ee0b5bbbdec4c31be2a5ed231e2bc4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
@@ -862,6 +868,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 5261f570c3a0c4618b15a9d9a1c65dbe, type: 3}
       propertyPath: m_Name
       value: question_block_clicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 5261f570c3a0c4618b15a9d9a1c65dbe, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5261f570c3a0c4618b15a9d9a1c65dbe, type: 3}
       propertyPath: m_LocalPosition.x

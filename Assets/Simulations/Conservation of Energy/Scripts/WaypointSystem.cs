@@ -10,13 +10,11 @@ namespace Kosmos {
     private List<Transform> allChildren;
     private List<Waypoint> waypointList;
 
+    [SerializeField] private AudioClip audioClipTrack;
+
     public List<Waypoint> WaypointList {
       get { return waypointList; }
     }
-
-    // void Awake() {
-    //   SetupWaypoints();
-    // }
 
     private void addSphereCollider(GameObject currentGO) {
       SphereCollider sc = currentGO.AddComponent<SphereCollider>() as SphereCollider;
@@ -25,8 +23,12 @@ namespace Kosmos {
       sc.isTrigger = true;
       sc.gameObject.tag = "Waypoint";
     }
-  
 
+    private void addSingleWaypoint(GameObject currentGO) {
+      RCSingleWaypoint singleWaypoint = currentGO.AddComponent<RCSingleWaypoint>() as RCSingleWaypoint;
+      singleWaypoint.AudioClipTrack = audioClipTrack;
+    }
+  
     public void SetupWaypoints() {
       allChildren = new List<Transform>();
       waypointList = new List<Waypoint>();
@@ -48,6 +50,12 @@ namespace Kosmos {
         // add sphere collider
         Transform thirdPos = allChildren[i+2];
         addSphereCollider(thirdPos.gameObject);
+
+        // only add to every second element (odd numbers)
+        if (i % 2 != 0) {
+          addSingleWaypoint(thirdPos.gameObject);
+        }
+        
 
         waypointList.Add(new Waypoint(thirdPos, firstToSecondVec));
       }

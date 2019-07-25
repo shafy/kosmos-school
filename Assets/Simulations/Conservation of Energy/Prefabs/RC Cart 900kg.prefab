@@ -118,10 +118,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   massCart: 900
+  graphTimeStep: 0.5
+  dataName: Cart (900 kg)
+  dataColor: {r: 0.96862745, g: 0.84705883, b: 0.7372549, a: 0}
   wheelsFront: {fileID: 4263216955993879906}
   wheelsBack: {fileID: 4263216955993879916}
   sensorTop: {fileID: 502609885667628465}
   sensorBottom: {fileID: 502609886963406990}
+  particleSystemPrefab: {fileID: 2236324779184876803, guid: 2ea3042691696448d9195f57e1256297,
+    type: 3}
+  audioClipInstantiate: {fileID: 8300000, guid: 49716ee5b19ef4e2996a051005d52a22,
+    type: 3}
   WaypointSystemsList: []
 --- !u!114 &5359852475900551331
 MonoBehaviour:

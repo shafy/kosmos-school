@@ -1278,10 +1278,10 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "We use the following values:\\ng: Acceleration due to gravity (9.81m/s^2)\nm:
-    Mass of the object\nc: Air constant (depends on the cross-sectional area of the
-    object)\nv: Velocity of the object\n\u03C1: Air density (1.229 kg/m^3)\nA: Cross-sectional
-    area of the object "
+  m_text: "We use the following values:\\ng: Acceleration due to gravity [9.81m/s^2]\nm:
+    Mass of the object [kg]\nc: Air constant (depends on the cross-sectional area
+    of the object)\nv: Velocity of the object [m/s]\n\u03C1: Air density [1.229 kg/m^3]\nA:
+    Cross-sectional area of the object [m^2]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cbcaac556821a47e1a88ccd35dab50c6, type: 2}
   m_sharedMaterial: {fileID: 21588895925502042, guid: cbcaac556821a47e1a88ccd35dab50c6,
@@ -1359,11 +1359,11 @@ MonoBehaviour:
     lineCount: 7
     pageCount: 1
     materialCount: 2
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 1208670783}
@@ -2980,7 +2980,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8127595062256678065, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
+    - target: {fileID: 2746942169649491390, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3724989780057499656, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
@@ -2990,15 +2995,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
-    - target: {fileID: 3724989780057499656, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
+    - target: {fileID: 8127595062256678065, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 2746942169649491390, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3125820322580048960, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
         type: 3}

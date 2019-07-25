@@ -20,7 +20,7 @@ namespace Kosmos {
 
     void Start() {
       if (audioSource1) clipLength1 = audioSource1.clip.length;
-      if (audioSource1) clipLength2 = audioSource2.clip.length;
+      if (audioSource2) clipLength2 = audioSource2.clip.length;
 
       play1 = false;
       timer1 = 0.0f;
@@ -34,32 +34,32 @@ namespace Kosmos {
     void Update() {
       // we can generalize this later on with an array and for loop
       // start playing clip 1
-      if (play1) {
+      if (play1 && audioSource1) {
         audioSource1.Play();
         play1 = false;
       }
 
-      if (play2) {
+      if (play2 && audioSource2) {
         audioSource2.Play();
         play2 = false;
       }
 
-      if (timer1 > randomWaitTime1) {
+      if (timer1 > randomWaitTime1 && audioSource1) {
         play1 = true;
         timer1 = 0.0f;
         // set next timer to know when to start playing
         randomWaitTime1 = randomWaitTime(clipLength1, clipLength1 + 60.0f);
       }
 
-      if (timer2 > randomWaitTime2) {
+      if (timer2 > randomWaitTime2 && audioSource2) {
         play2 = true;
         timer2 = 0.0f;
         // set next timer to know when to start playing
         randomWaitTime2 = randomWaitTime(clipLength2, clipLength2 + 100.0f);
       }
 
-      timer1 += Time.deltaTime;
-      timer2 += Time.deltaTime;
+      if (audioSource1) timer1 += Time.deltaTime;
+      if (audioSource2) timer2 += Time.deltaTime;
      
     }
 
