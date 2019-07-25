@@ -17,6 +17,7 @@ namespace Kosmos {
     void Start() {
       audioSourceTrack = gameObject.AddComponent<AudioSource>();
       audioSourceTrack.playOnAwake = false;
+      audioSourceTrack.volume = 0.5f;
       audioSourceTrack.clip = audioClipTrack;
     }
 

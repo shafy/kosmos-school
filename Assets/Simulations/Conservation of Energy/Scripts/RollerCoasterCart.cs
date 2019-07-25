@@ -6,13 +6,16 @@ namespace Kosmos {
   // handles roller coaster cart logic
   public class RollerCoasterCart : KosmosPhysics {
 
-    private AudioSource audioSourceInstantiate; 
+    private AudioSource audioSourceInstantiate;
+    private AudioSource audioSourceCountdown;
     private bool isRunning;
     private bool isMoving;
     private bool reverseMode;
     private bool reversingProc;
     private bool syncPlayerController;
     private bool timeZeroAdded;
+    private bool physicsActive;
+    private bool trackIsComplete;
     private float currentSegmentLength;
     private float currentSpeed;
     private float timeCounter;
@@ -35,28 +38,33 @@ namespace Kosmos {
     private List<float> graphDataAcceleration;
     private List<float> graphDataSpeed;
     private GameObject ovrCameraRig;
+    private GameObject playerControllerGO;
     private GraphCreator graphCreator;
     private int waypointIndex;
     private int prevWaypointIndex;
     private int waypointSystemsIndex;
     private int intervalTimeCounter;
-    private PlayerController playerController;
     private Quaternion prevRotation;
     private Quaternion nextRotation;
+    private Quaternion ovrCameraPrevRot;
+    private PlayerController playerController;
+    private Rigidbody rb;
     private Vector3 prevWaypointPos;
     private Vector3 nextWaypointPos;
     private Vector3 nextUnitVectorInter;
 
+    [SerializeField] private BoxCollider fallBoxCollider;
+    [SerializeField] private Color dataColor;
     [SerializeField] private float massCart;
     [SerializeField] private float graphTimeStep = 0.5f;
     [SerializeField] private string dataName;
-    [SerializeField] private Color dataColor;
     [SerializeField] private Transform wheelsFront;
     [SerializeField] private Transform wheelsBack;
     [SerializeField] private Transform sensorTop;
     [SerializeField] private Transform sensorBottom;
     [SerializeField] private GameObject particleSystemPrefab;
     [SerializeField] private AudioClip audioClipInstantiate;
+    [SerializeField] private AudioClip audioClipCountDown;
 
 
     public List<WaypointSystem> WaypointSystemsList;
@@ -70,20 +78,31 @@ namespace Kosmos {
       accelerationGravity = 9.81f;
       tracksMinHeight = 3.7f;
 
-      playerController = GameObject.FindWithTag("OVRPlayerController").GetComponent<PlayerController>();
-      ovrCameraRig = playerController.transform.Find("OVRCameraRig").gameObject;
+      playerControllerGO = GameObject.FindWithTag("OVRPlayerController");
+      playerController = playerControllerGO.GetComponent<PlayerController>();
+      ovrCameraRig = playerControllerGO.transform.Find("OVRCameraRig").gameObject;
 
       audioSourceInstantiate = gameObject.AddComponent<AudioSource>();
       audioSourceInstantiate.playOnAwake = false;
+      audioSourceInstantiate.volume = 0.5f;
       audioSourceInstantiate.clip = audioClipInstantiate;
+
+      audioSourceCountdown = gameObject.AddComponent<AudioSource>();
+      audioSourceCountdown.playOnAwake = false;
+      audioSourceCountdown.volume = 0.5f;
+      audioSourceCountdown.clip = audioClipCountDown;
+
+      rb = GetComponent<Rigidbody>();
+      fallBoxCollider.enabled = false;
     }
 
     void Update() {
 
-      if (syncPlayerController) {
-        //playerController.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
+      if (syncPlayerController && !isRunning) {
         ovrCameraRig.transform.position = new Vector3(transform.position.x, transform.position.y + 2.5f, transform.position.z);
       }
+
+      if (physicsActive) return;
 
       if (!isRunning) return; 
 
@@ -93,8 +112,9 @@ namespace Kosmos {
         timeZeroAdded = true;
 
         graphDataTime.Add(0f);
-        graphDataEKin.Add(eKin / 1000);
-        graphDataEPot.Add(ePot / 1000);
+        graphDataEKin.Add(0);
+        // we add eTot for ePot on purpose
+        graphDataEPot.Add(eTot / 1000);
         graphDataETot.Add(eTot / 1000);
         graphDataAcceleration.Add(0f);
         graphDataSpeed.Add(0f);
@@ -132,11 +152,6 @@ namespace Kosmos {
 
 
       rotateWheels(currentSpeed * 50);
-
-      if (syncPlayerController) {
-        //playerController.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
-        ovrCameraRig.transform.position = new Vector3(transform.position.x, transform.position.y + 2.5f, transform.position.z);
-      }
 
       intervalTime += Time.deltaTime;
       if (intervalTime > graphTimeStep) {
@@ -183,6 +198,7 @@ namespace Kosmos {
 
     // moves to next waypoint
     private void toNextWaypoint() {
+
       if (reversingProc) {
         reversingProc = false;
       }
@@ -252,6 +268,17 @@ namespace Kosmos {
       // get the segment length to be able to move at correct speed
       currentSegmentLength = Vector3.Distance(prevWaypointPos, nextWaypointPos);
 
+      if (!trackIsComplete) {
+        if (waypointIndex + 4 == WaypointSystemsList[waypointSystemsIndex].WaypointList.Count && waypointSystemsIndex + 1 == WaypointSystemsList.Count - 1)  {
+          Debug.Log("waypointSystemsIndex" + waypointSystemsIndex);
+          Debug.Log("WaypointSystemsList.Count " + WaypointSystemsList.Count);
+          activatePhysics();
+          isMoving = false;
+          return;
+        }
+      }
+      
+
       timeCounter = 0f;
       isMoving = true;
 
@@ -271,8 +298,14 @@ namespace Kosmos {
     }
 
     private void rotateWheels(float rotationSpeed) {
-      wheelsFront.Rotate(new Vector3(-1, 0, 0), rotationSpeed * Time.deltaTime);
-      wheelsBack.Rotate(new Vector3(-1, 0, 0), rotationSpeed * Time.deltaTime);
+      Vector3 rotationVector;
+      if (!reverseMode) {
+        rotationVector = new Vector3(-1, 0, 0);
+      } else {
+        rotationVector = new Vector3(1, 0, 0);
+      }
+      wheelsFront.Rotate(rotationVector, rotationSpeed * Time.deltaTime);
+      wheelsBack.Rotate(rotationVector, rotationSpeed * Time.deltaTime);
     }
 
     private void createEmptyGraphs() {
@@ -289,15 +322,43 @@ namespace Kosmos {
       graphCreator.CreateEmptyGraph(accelerationGraph);
     }
 
+    // activates unity physics (happens when cart goes off tracks)
+    private void activatePhysics() {
+      fallBoxCollider.enabled = true;
+      float thrust = currentEndVelocity * massCart * 1.5f;
+      rb.useGravity = true;
+      rb.isKinematic = false;
+      rb.AddForce(transform.forward * thrust, ForceMode.Impulse);
+
+      physicsActive = true;
+
+      // make sure car resets after x seconds
+      StartCoroutine(resetCartCoroutine());
+    }
+
+    private IEnumerator resetCartCoroutine() {
+      yield return new WaitForSeconds(5.0f);
+      StartStop();
+    }
+
+    private IEnumerator syncPlayerStopCoroutine() {
+      yield return new WaitForSeconds(4.0f);
+      SyncPlayerController(false);
+    }
+
 
     public void ResetCart() {
       // total energy - we use height of first waypoint
       eTot = massCart * accelerationGravity * WaypointSystemsList[0].WaypointList[0].WaypointTransform.position.y - tracksMinHeight;
 
+      eKin = 0;
+      ePot = eTot;
+
       waypointIndex = 0;
       waypointSystemsIndex = 0;
       isMoving = false;
       isRunning = false;
+      physicsActive = false;
       syncPlayerController = false;
       reversingProc = false;
       timeZeroAdded = false;
@@ -314,6 +375,11 @@ namespace Kosmos {
 
       transform.rotation = Quaternion.Euler(0, 180, 0);
 
+      rb.useGravity = false;
+      rb.isKinematic = true;
+
+      fallBoxCollider.enabled = false;
+
       graphDataTime = new List<float>();
       graphDataSpeed = new List<float>();
       graphDataAcceleration = new List<float>();
@@ -328,14 +394,17 @@ namespace Kosmos {
 
     public void StartStop() {
       if (isRunning) {
+        if (syncPlayerController) {
+          StartCoroutine(syncPlayerStopCoroutine());
+        }
+        graphData();
         ResetCart();
       } else {
         isRunning = true;
       }
     }
 
-    public void FinishRide() {
-      if (isRunning) {
+    private void graphData() {
         graphCreator.ClearGraphs();
         createEmptyGraphs();
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataEKin, dataName, dataColor), "Kinetic Energy");
@@ -344,19 +413,33 @@ namespace Kosmos {
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");
         graphCreator.CreateGraph();
-
-        ResetCart();
-      }
     }
 
     // take player along for the ride :-)
     public void SyncPlayerController(bool enable) {
-      ovrCameraRig.transform.parent = transform;
+      if (enable) {
+        // parent camera to cart
+        Transform userPosCart = transform.Find("User Position");
+        ovrCameraPrevRot = ovrCameraRig.transform.rotation;
+        ovrCameraRig.transform.parent = userPosCart;
+        audioSourceCountdown.Play();
+      } else {
+        // parent camera to playercontroller
+        ovrCameraRig.transform.parent = playerControllerGO.transform;
+        ovrCameraRig.transform.position = playerControllerGO.transform.position;
+        ovrCameraRig.transform.rotation = ovrCameraPrevRot;
+      }
+
       syncPlayerController = enable;
+      playerController.EnableRay(!enable);
     }
 
     public void AddGraphReference(GraphCreator _graphCreator) {
       graphCreator = _graphCreator;
+    }
+
+    public void TrackIsComplete(bool isComplete) {
+      trackIsComplete = isComplete;
     }
   }
 }

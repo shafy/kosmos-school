@@ -66,7 +66,7 @@ namespace Kosmos {
       }
     }
 
-    // enables straiht physics raycaster
+    // enables physics raycaster
     public void EnableRay(bool enable) {
       centerEyeAnchor.GetComponent<ControllerRayCaster>().ShowLineRenderer = enable;
     }

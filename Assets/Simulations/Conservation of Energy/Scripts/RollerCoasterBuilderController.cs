@@ -10,10 +10,13 @@ namespace Kosmos {
 
     private bool operationInProgress;
     private bool cartHasBeenAdded;
+    private bool trackIsComplete;
     private int currentItemIndex;
     private List<GameObject> previewItemsList;
     private List <RollerCoasterItem.RCItemType> rcItemList;
+    private List<RollerCoasterItem.RCItemType> bankedCurveSizes;
     private List<RollerCoasterItem.RCItemType> addableList;
+    private RollerCoasterCart rollerCoasterCart;
     private RollerCoasterItem.RCItemType itemTypeStartHill;
     private RollerCoasterItem.RCItemType itemTypeHill;
     private RollerCoasterItem.RCItemType itemTypeBankedCurve10;
@@ -22,7 +25,12 @@ namespace Kosmos {
     private RollerCoasterItem.RCItemType itemTypeLooping;
     private RollerCoasterItem.RCItemType itemTypeCart;
     private string startText;
+    private string prevNameText;
+    private string prevAdditionalText;
+    private string prevSizeText;
 
+    [SerializeField] private GameObject modelPlayButton;
+    [SerializeField] private GameObject modelStopButton;
     [SerializeField] private RCCartPortal rcCartPortal;
     [SerializeField] private RollerCoasterController rollerCoasterController;
     [SerializeField] private TextMeshPro nameText;
@@ -41,6 +49,9 @@ namespace Kosmos {
       previewItemsList = new List<GameObject>();
       cartHasBeenAdded = false;
 
+      modelPlayButton.SetActive(true);
+      modelStopButton.SetActive(false);
+
       // get all preview items into list
       Transform previewParent = transform.Find("Previews");
       foreach (Transform child in previewParent) {
@@ -57,6 +68,7 @@ namespace Kosmos {
       SetItemNameTMP(currentPreviewItem.CurrentItemName);
 
       operationInProgress = false;
+      trackIsComplete = false;
 
       // assign the types to variables to keep them shorter
       itemTypeStartHill = RollerCoasterItem.RCItemType.StartHill;
@@ -70,6 +82,11 @@ namespace Kosmos {
       rcItemList = new List<RollerCoasterItem.RCItemType>();
       addableList = new List<RollerCoasterItem.RCItemType>();
       updateAddableList();
+
+      bankedCurveSizes = new List<RollerCoasterItem.RCItemType>();
+      bankedCurveSizes.Add(itemTypeBankedCurve10);
+      bankedCurveSizes.Add(itemTypeBankedCurve15);
+      bankedCurveSizes.Add(itemTypeBankedCurve20);
 
       // set start instructions
       additionalText.text = startText;;
@@ -97,7 +114,7 @@ namespace Kosmos {
 
       // check if current item is addable
       RollerCoasterItem currentFullItem = currentPreviewItem.GetCurrentFullSize().GetComponent<RollerCoasterItem>();
-      updateItemAdditionalText(currentFullItem);
+      updateItemAdditionalText(currentFullItem.ItemType);
 
       SetItemNameTMP(currentPreviewItem.CurrentItemName);
     }
@@ -117,6 +134,8 @@ namespace Kosmos {
 
       // always clear list
       addableList = new List<RollerCoasterItem.RCItemType>();
+      if (rollerCoasterCart) rollerCoasterCart.TrackIsComplete(false);
+      trackIsComplete = false;
 
       // if empty, only start hill an be added
       if (rcItemList.Count == 0) {
@@ -172,7 +191,11 @@ namespace Kosmos {
       }
 
       // if we have 6 items, no more items can be added
-      if (rcItemList.Count == 6) return;
+      if (rcItemList.Count == 6) {
+        if (rollerCoasterCart) rollerCoasterCart.TrackIsComplete(true);
+        trackIsComplete = true;
+        return;
+      }
 
       // *** Main Case 2: Adding banked curve directly after start hill ***
       // start hill + banked curve -> next can't be banked curve
@@ -190,6 +213,8 @@ namespace Kosmos {
 
       // if we have 4 and already two banked curves, no more items can be added
       if (rcItemList.Count == 4 && isAnyBankedCurve(rcItemList[1]) && isHillOrLooping(rcItemList[2]) && isAnyBankedCurve(rcItemList[3])) {
+        if (rollerCoasterCart) rollerCoasterCart.TrackIsComplete(true);
+        trackIsComplete = true;
         return;
       }
     }
@@ -199,11 +224,11 @@ namespace Kosmos {
       return addableList.Contains(itemType);
     }
 
-    private void updateItemAdditionalText(RollerCoasterItem currentFullItem) {
-      if (!isItemAddable(currentFullItem.ItemType)) {
+    private void updateItemAdditionalText(RollerCoasterItem.RCItemType itemType) {
+      if (!isItemAddable(itemType)) {
         additionalText.text = "You can't add this part right now.";
       } else {
-        if (rcItemList.Count == 0 && currentFullItem.ItemType == itemTypeHill) {
+        if (rcItemList.Count == 0 && itemType == itemTypeHill) {
           additionalText.text = startText;;
         } else {
           additionalText.text = "";
@@ -238,7 +263,9 @@ namespace Kosmos {
     public void ChangeItemSize(string direction) {
       GameObject item = previewItemsList[currentItemIndex];
       RollerCoasterBuilderPreviewItem currentPreviewItem = item.GetComponent<RollerCoasterBuilderPreviewItem>();
-      currentPreviewItem.ChangeSize(direction);
+      int nextSizeIndex = currentPreviewItem.ChangeSize(direction);
+      
+      updateItemAdditionalText(bankedCurveSizes[nextSizeIndex]);
     }
 
     public void SetItemNameTMP(string text) {
@@ -282,7 +309,7 @@ namespace Kosmos {
       
       updateAddableList();
 
-      updateItemAdditionalText(currentFullItem);
+      updateItemAdditionalText(currentFullItem.ItemType);
     }
 
     public void AddElementToRC(Transform element, bool isStartHill = false) {
@@ -292,13 +319,10 @@ namespace Kosmos {
     // removes most recent element
     public void RemoveLastItem() {
       if (operationInProgress) return;
-      
+
       if (rollerCoasterController.IsRunning()) return;
 
-      if (rcItemList.Count == 0) {
-        //additionalText.text = startText;
-        return;
-      }
+      if (rcItemList.Count == 0) return;
 
       rollerCoasterController.RemoveElement();
 
@@ -313,16 +337,56 @@ namespace Kosmos {
       
       updateAddableList();
 
-      updateItemAdditionalText(currentFullItem);
+      updateItemAdditionalText(currentFullItem.ItemType);
     }
 
     // adds roller coaster cart reference to roller coaster controller and rc portal
-    public void AddCartReference(RollerCoasterCart rollerCoasterCart) {
+    public void AddCartReference(RollerCoasterCart _rollerCoasterCart) {
+      rollerCoasterCart = _rollerCoasterCart;
       rollerCoasterController.AddCartReference(rollerCoasterCart);
       rcCartPortal.AddCartReference(rollerCoasterCart);
 
       // add graph reph to cart
       rollerCoasterCart.AddGraphReference(graphCreator);
+
+      if (trackIsComplete) {
+        rollerCoasterCart.TrackIsComplete(true);
+      }
+    }
+
+    public void StartStopCart() {
+      
+      if (rollerCoasterController.IsRunning()) {
+        modelPlayButton.SetActive(true);
+        modelStopButton.SetActive(false);
+
+        // update texts
+        additionalText.text = prevAdditionalText;
+        sizeText.text = prevSizeText;
+        nameText.text = prevNameText;
+
+        operationInProgress = false;
+
+        previewItemsList[currentItemIndex].SetActive(true);
+      } else {
+        modelPlayButton.SetActive(false);
+        modelStopButton.SetActive(true);
+        
+        // update text fields
+        prevAdditionalText = additionalText.text;
+        prevSizeText = sizeText.text;
+        prevNameText = nameText.text;
+
+        additionalText.text = "Roller Coaster ride in progress. Press Stop button to stop.";
+        sizeText.text = "";
+        nameText.text = "";
+
+        operationInProgress = true;
+
+        previewItemsList[currentItemIndex].SetActive(false);
+      }
+
+      rollerCoasterController.StartStopCart();
     }
   }
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4f72b4280507344a1bd9a743aa67b15b
+guid: 9c70fd2cd38bd4f00b101b811816f65c
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -14,6 +14,8 @@ ModelImporter:
     100016: screen
     100018: select
     100020: smaller
+    100022: stop
+    100024: stop_v2
     400000: bigger
     400002: delete
     400004: left
@@ -25,6 +27,8 @@ ModelImporter:
     400016: screen
     400018: select
     400020: smaller
+    400022: stop
+    400024: stop_v2
     2100000: Material_004
     2100002: Arrow_down_004
     2100004: Arrow_down_001
@@ -44,6 +48,8 @@ ModelImporter:
     2300014: screen
     2300016: select
     2300018: smaller
+    2300020: stop
+    2300022: stop_v2
     3300000: bigger
     3300002: delete
     3300004: left
@@ -54,16 +60,20 @@ ModelImporter:
     3300014: screen
     3300016: select
     3300018: smaller
-    4300000: play
-    4300002: select
-    4300004: right
-    4300006: bigger
-    4300008: delete
-    4300010: smaller
-    4300012: screen
-    4300014: pole
-    4300016: left
-    4300018: podest
+    3300020: stop
+    3300022: stop_v2
+    4300000: stop_v2
+    4300002: stop
+    4300004: play
+    4300006: select
+    4300008: right
+    4300010: bigger
+    4300012: delete
+    4300014: smaller
+    4300016: screen
+    4300018: pole
+    4300020: left
+    4300022: podest
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}

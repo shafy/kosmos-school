@@ -24,10 +24,6 @@ namespace Kosmos {
       }
     }
 
-    void Start() {
-      //rollerCoasterCart.gameObject.SetActive(false);
-    }
-
     private void syncWaypointsWithCart() {
       if (!rollerCoasterCart) return;
       rollerCoasterCart.WaypointSystemsList = WaypointSystemsList;
@@ -54,7 +50,9 @@ namespace Kosmos {
         WaypointSystemsList.Add(waypointsFinish);
 
         // position at parent's pos
-        element.transform.position = element.parent.transform.position;
+        element.position = element.parent.transform.position;
+        // rotate
+        element.rotation = this.transform.rotation;
 
       } else {
         // add Waypoints to WaypointSystemsList at second to last position
@@ -68,7 +66,6 @@ namespace Kosmos {
       }
 
       syncWaypointsWithCart();
-
     }
 
     public void RemoveElement() {

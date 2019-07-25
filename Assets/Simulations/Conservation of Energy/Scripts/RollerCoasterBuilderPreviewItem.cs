@@ -169,7 +169,7 @@ namespace Kosmos {
       rollerCoasterBuilderController.SetItemSizeTMP(sizeToTextDict[currentSizeIndex]);
     }
 
-    public void ChangeSize(string direction) {
+    public int ChangeSize(string direction) {
       int nextIndex;
       if (direction == "larger") {
         nextIndex = currentSizeIndex + 1;
@@ -186,6 +186,7 @@ namespace Kosmos {
       }
 
       selectSize(nextIndex);
+      return nextIndex;
     }
 
     public GameObject GetCurrentFullSize() {

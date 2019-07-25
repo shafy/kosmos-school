@@ -73,6 +73,7 @@ Transform:
   - {fileID: 502609885667628465}
   - {fileID: 502609886963406990}
   - {fileID: 4263216955993879904}
+  - {fileID: 5416447775198168392}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -87,8 +88,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 0.5, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0.3, z: 0}
 --- !u!54 &502609886735059627
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -117,10 +118,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 108b46874acc64124b76ec224e4db4ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fallBoxCollider: {fileID: 6792274483112064813}
+  dataColor: {r: 0.96862745, g: 0.84705883, b: 0.7372549, a: 0}
   massCart: 900
   graphTimeStep: 0.5
   dataName: Cart (900 kg)
-  dataColor: {r: 0.96862745, g: 0.84705883, b: 0.7372549, a: 0}
   wheelsFront: {fileID: 4263216955993879906}
   wheelsBack: {fileID: 4263216955993879916}
   sensorTop: {fileID: 502609885667628465}
@@ -129,6 +131,7 @@ MonoBehaviour:
     type: 3}
   audioClipInstantiate: {fileID: 8300000, guid: 49716ee5b19ef4e2996a051005d52a22,
     type: 3}
+  audioClipCountDown: {fileID: 8300000, guid: 3dda033b5e3f8437abcab6f418980af7, type: 3}
   WaypointSystemsList: []
 --- !u!114 &5359852475900551331
 MonoBehaviour:
@@ -182,6 +185,97 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 502609886963406993}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &5711781802892472930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5416447775198168392}
+  - component: {fileID: 4366127958041349868}
+  - component: {fileID: 3312459931235726899}
+  - component: {fileID: 6792274483112064813}
+  m_Layer: 2
+  m_Name: FallBoxCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5416447775198168392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5711781802892472930}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.86, z: 0}
+  m_LocalScale: {x: 1.6738386, y: 1.4164989, z: 2.1008}
+  m_Children: []
+  m_Father: {fileID: 502609886735059625}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &4366127958041349868
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5711781802892472930}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &3312459931235726899
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5711781802892472930}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!65 &6792274483112064813
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5711781802892472930}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4263216955993485284
 PrefabInstance:
   m_ObjectHideFlags: 0
