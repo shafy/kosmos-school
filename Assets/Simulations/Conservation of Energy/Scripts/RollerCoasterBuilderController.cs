@@ -355,6 +355,8 @@ namespace Kosmos {
     }
 
     public void StartStopCart() {
+
+      if (!rollerCoasterCart) return;
       
       if (rollerCoasterController.IsRunning()) {
         modelPlayButton.SetActive(true);

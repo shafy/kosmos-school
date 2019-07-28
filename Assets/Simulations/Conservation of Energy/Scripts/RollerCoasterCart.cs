@@ -26,6 +26,7 @@ namespace Kosmos {
     private float eTot;
     private float ePot;
     private float eKin;
+    private float eKinStart;
     private float currentEndVelocity;
     private float currentStartVelocity;
     private float currentAcceleration;
@@ -37,6 +38,7 @@ namespace Kosmos {
     private List<float> graphDataETot;
     private List<float> graphDataAcceleration;
     private List<float> graphDataSpeed;
+    private List<float> graphDataHeight;
     private GameObject ovrCameraRig;
     private GameObject playerControllerGO;
     private GraphCreator graphCreator;
@@ -49,6 +51,7 @@ namespace Kosmos {
     private Quaternion ovrCameraPrevRot;
     private PlayerController playerController;
     private Rigidbody rb;
+    private RollerCoasterBuilderController rollerCoasterBuilderController;
     private Vector3 prevWaypointPos;
     private Vector3 nextWaypointPos;
     private Vector3 nextUnitVectorInter;
@@ -76,7 +79,8 @@ namespace Kosmos {
     void Awake() {
       // mass in kg
       accelerationGravity = 9.81f;
-      tracksMinHeight = 3.7f;
+      tracksMinHeight = 3.66f;
+      eKinStart = massCart * 5;
 
       playerControllerGO = GameObject.FindWithTag("OVRPlayerController");
       playerController = playerControllerGO.GetComponent<PlayerController>();
@@ -94,6 +98,11 @@ namespace Kosmos {
 
       rb = GetComponent<Rigidbody>();
       fallBoxCollider.enabled = false;
+
+      rollerCoasterBuilderController = GameObject.Find("RollerCoasterBuilder").GetComponent<RollerCoasterBuilderController>();
+
+      isRunning = false;
+      isMoving = false;
     }
 
     void Update() {
@@ -112,12 +121,13 @@ namespace Kosmos {
         timeZeroAdded = true;
 
         graphDataTime.Add(0f);
-        graphDataEKin.Add(0);
+        graphDataEKin.Add(eKinStart / 1000);
         // we add eTot for ePot on purpose
         graphDataEPot.Add(eTot / 1000);
-        graphDataETot.Add(eTot / 1000);
+        graphDataETot.Add((eTot + eKinStart) / 1000);
         graphDataAcceleration.Add(0f);
         graphDataSpeed.Add(0f);
+        graphDataHeight.Add(WaypointSystemsList[0].WaypointList[0].WaypointTransform.position.y - tracksMinHeight);
       }
 
       timeCounter += Time.deltaTime;
@@ -153,6 +163,7 @@ namespace Kosmos {
 
       rotateWheels(currentSpeed * 50);
 
+      // add graph data
       intervalTime += Time.deltaTime;
       if (intervalTime > graphTimeStep) {
         intervalTime = 0f;
@@ -162,15 +173,18 @@ namespace Kosmos {
         // add to graphDataSpeed list
         graphDataEKin.Add(eKin / 1000);
         graphDataEPot.Add(ePot / 1000);
-        graphDataETot.Add(eTot / 1000);
+        graphDataETot.Add((eTot + eKinStart) / 1000);
         graphDataAcceleration.Add(currentAcceleration);
         graphDataSpeed.Add(currentSpeed);
+        graphDataHeight.Add(nextWaypointPos.y - tracksMinHeight);
       }
     }
 
     void OnTriggerEnter(Collider collider) {
       // check name to see if it's a waypoint
       if (!collider.CompareTag("Waypoint")) return;
+
+      if (!isMoving) return;
 
       toNextWaypoint();
     }
@@ -268,10 +282,9 @@ namespace Kosmos {
       // get the segment length to be able to move at correct speed
       currentSegmentLength = Vector3.Distance(prevWaypointPos, nextWaypointPos);
 
+      // make sure it goes off track if track ends prematurely
       if (!trackIsComplete) {
-        if (waypointIndex + 4 == WaypointSystemsList[waypointSystemsIndex].WaypointList.Count && waypointSystemsIndex + 1 == WaypointSystemsList.Count - 1)  {
-          Debug.Log("waypointSystemsIndex" + waypointSystemsIndex);
-          Debug.Log("WaypointSystemsList.Count " + WaypointSystemsList.Count);
+        if (waypointIndex + 2 == WaypointSystemsList[waypointSystemsIndex].WaypointList.Count && waypointSystemsIndex + 1 == WaypointSystemsList.Count - 1)  {
           activatePhysics();
           isMoving = false;
           return;
@@ -285,9 +298,9 @@ namespace Kosmos {
       // calculate end and start velocity and acceleration when switching waypoints
 
       // calculate potential energy based on height of next waypoint
-      ePot = massCart * accelerationGravity * nextWaypointPos.y - tracksMinHeight;
+      ePot = massCart * accelerationGravity * (nextWaypointPos.y - tracksMinHeight);
       // calculate kinetic energy based on difference from total energy
-      eKin = eTot - ePot;
+      eKin = eTot - ePot + eKinStart;
 
       // calculate velocity and acceleration
       // assign last waypoints endvelocity as current start velocity
@@ -314,18 +327,20 @@ namespace Kosmos {
       GraphableDescription eTotGraph = new GraphableDescription("Total Energy", "Total Energy", "Time [s]", "Energy [kJ]");
       GraphableDescription speedGraph = new GraphableDescription("Speed", "Speed", "Time [s]", "Speed [m/s]");
       GraphableDescription accelerationGraph = new GraphableDescription("Acceleration", "Acceleration", "Time [s]", "Acceleration [m/s^2]");
+      GraphableDescription heightGraph = new GraphableDescription("Height", "Height", "Time [s]", "Height [m]");
 
       graphCreator.CreateEmptyGraph(eKinGraph);
       graphCreator.CreateEmptyGraph(ePotGraph);
       graphCreator.CreateEmptyGraph(eTotGraph);
       graphCreator.CreateEmptyGraph(speedGraph);
       graphCreator.CreateEmptyGraph(accelerationGraph);
+      graphCreator.CreateEmptyGraph(heightGraph);
     }
 
     // activates unity physics (happens when cart goes off tracks)
     private void activatePhysics() {
       fallBoxCollider.enabled = true;
-      float thrust = currentEndVelocity * massCart * 1.5f;
+      float thrust = currentEndVelocity * massCart;
       rb.useGravity = true;
       rb.isKinematic = false;
       rb.AddForce(transform.forward * thrust, ForceMode.Impulse);
@@ -338,7 +353,7 @@ namespace Kosmos {
 
     private IEnumerator resetCartCoroutine() {
       yield return new WaitForSeconds(5.0f);
-      StartStop();
+      rollerCoasterBuilderController.StartStopCart();
     }
 
     private IEnumerator syncPlayerStopCoroutine() {
@@ -349,7 +364,7 @@ namespace Kosmos {
 
     public void ResetCart() {
       // total energy - we use height of first waypoint
-      eTot = massCart * accelerationGravity * WaypointSystemsList[0].WaypointList[0].WaypointTransform.position.y - tracksMinHeight;
+      eTot = massCart * accelerationGravity * (WaypointSystemsList[0].WaypointList[0].WaypointTransform.position.y - tracksMinHeight);
 
       eKin = 0;
       ePot = eTot;
@@ -374,6 +389,7 @@ namespace Kosmos {
       reverseMode = false;
 
       transform.rotation = Quaternion.Euler(0, 180, 0);
+      transform.Rotate(0, -45, 0, Space.World);
 
       rb.useGravity = false;
       rb.isKinematic = true;
@@ -382,6 +398,7 @@ namespace Kosmos {
 
       graphDataTime = new List<float>();
       graphDataSpeed = new List<float>();
+      graphDataHeight = new List<float>();
       graphDataAcceleration = new List<float>();
       graphDataEKin = new List<float>();
       graphDataEPot = new List<float>();
@@ -400,6 +417,7 @@ namespace Kosmos {
         graphData();
         ResetCart();
       } else {
+        toNextWaypoint();
         isRunning = true;
       }
     }
@@ -411,6 +429,7 @@ namespace Kosmos {
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataEPot, dataName, dataColor), "Potential Energy");
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataETot, dataName, dataColor), "Total Energy");
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataHeight, dataName, dataColor), "Height");
         graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");
         graphCreator.CreateGraph();
     }
