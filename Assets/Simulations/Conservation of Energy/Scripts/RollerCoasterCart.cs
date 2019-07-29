@@ -19,6 +19,7 @@ namespace Kosmos {
     private float currentSegmentLength;
     private float currentSpeed;
     private float timeCounter;
+    private float totalRunningTime;
     private float distCovered;
     private float fracSegment;
     private float prevFracSegment;
@@ -170,7 +171,7 @@ namespace Kosmos {
         // add to graphDataTime list
         graphDataTime.Add(intervalTimeCounter * graphTimeStep);
         intervalTimeCounter++;
-        // add to graphDataSpeed list
+        // add to dataa
         graphDataEKin.Add(eKin / 1000);
         graphDataEPot.Add(ePot / 1000);
         graphDataETot.Add((eTot + eKinStart) / 1000);
@@ -178,6 +179,8 @@ namespace Kosmos {
         graphDataSpeed.Add(currentSpeed);
         graphDataHeight.Add(nextWaypointPos.y - tracksMinHeight);
       }
+
+      totalRunningTime += Time.deltaTime;
     }
 
     void OnTriggerEnter(Collider collider) {
@@ -361,6 +364,31 @@ namespace Kosmos {
       SyncPlayerController(false);
     }
 
+     // "cooking" the data a bit so it make more sense on graph.
+    // we do this because of the timeinterval: we save data every x seconds, so if the ride ends in
+    // between an interval, the last data point might not make sense (e.g. acceleration is not 0 when ride ends)
+    // rather than explaining this to teachers/students, it's better to make the graph more readable
+    private void addFinalData() {
+      graphDataTime.Add(totalRunningTime);
+      graphDataEKin.Add(eKin / 1000);
+      graphDataEPot.Add(ePot / 1000);
+      graphDataETot.Add((eTot + eKinStart) / 1000);
+      graphDataAcceleration.Add(0f);
+      graphDataSpeed.Add(0f);
+      graphDataHeight.Add(WaypointSystemsList[0].WaypointList[0].WaypointTransform.position.y - tracksMinHeight);
+    }
+
+    private void graphData() {
+        graphCreator.ClearGraphs();
+        createEmptyGraphs();
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataEKin, dataName, dataColor), "Kinetic Energy");
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataEPot, dataName, dataColor), "Potential Energy");
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataETot, dataName, dataColor), "Total Energy");
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataHeight, dataName, dataColor), "Height");
+        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");
+        graphCreator.CreateGraph();
+    }
 
     public void ResetCart() {
       // total energy - we use height of first waypoint
@@ -381,6 +409,7 @@ namespace Kosmos {
       currentSpeed = 0.0f;
       timeCounter = 0f;
       intervalTime = 0f;
+      totalRunningTime = 0f;
       intervalTimeCounter = 1;
 
       currentEndVelocity = 0f;
@@ -414,24 +443,13 @@ namespace Kosmos {
         if (syncPlayerController) {
           StartCoroutine(syncPlayerStopCoroutine());
         }
+        addFinalData();
         graphData();
         ResetCart();
       } else {
         toNextWaypoint();
         isRunning = true;
       }
-    }
-
-    private void graphData() {
-        graphCreator.ClearGraphs();
-        createEmptyGraphs();
-        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataEKin, dataName, dataColor), "Kinetic Energy");
-        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataEPot, dataName, dataColor), "Potential Energy");
-        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataETot, dataName, dataColor), "Total Energy");
-        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataSpeed, dataName, dataColor), "Speed");
-        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataHeight, dataName, dataColor), "Height");
-        graphCreator.AddToDataSet(new GraphableData(graphDataTime, graphDataAcceleration, dataName, dataColor), "Acceleration");
-        graphCreator.CreateGraph();
     }
 
     // take player along for the ride :-)
