@@ -8,6 +8,8 @@ namespace Kosmos
   public class Grabbable : BaseInteractable {
 
     private bool isGrabbed;
+    private bool isPhantom;
+    private Vector3 phantomPosition;
 
     [SerializeField] private bool isGrabbable = true;
 
@@ -15,9 +17,30 @@ namespace Kosmos
       get { return isGrabbable; }
       set { isGrabbable = value; }
     }
+
+    public bool IsPhantom {
+      get { return isPhantom; }
+      set { isPhantom = value; }
+    }
+
+    public bool IsGrabbed {
+      get { return isGrabbed; }
+      set { isGrabbed = value; }
+    }
+
+    public Vector3 PhantomPosition {
+      get { return phantomPosition; }
+      set { phantomPosition = value; }
+    }
     
     void Start() {
       base.Start();
+    }
+
+    void Update() {
+      if (!isPhantom) {
+        phantomPosition = transform.position;
+      }
     }
 
     // this can be overriden in child
@@ -28,6 +51,7 @@ namespace Kosmos
     // this can be overriden in child
     public virtual void Ungrabbed() {
       isGrabbed = false;
+      isPhantom = false;
     }
   }
 }

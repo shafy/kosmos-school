@@ -47,7 +47,7 @@ namespace Kosmos {
         playerController.WalkingAllowed = false;
         // position 2.5 meters in front of user and rotate towards user
         Vector3 newPosMenu = playerController.transform.position + playerController.transform.forward * 2.5f;
-        newPosMenu.y = 1.3f;
+        //newPosMenu.y = playerController.transform.position.y ;
         ingameMenu.transform.position = newPosMenu;
 
         Vector3 lookPos = ingameMenu.transform.position - playerController.transform.position;

@@ -24,7 +24,7 @@ namespace Kosmos
     static void setMode(string mode) {
       if (mode == "dev" && currentMode != "dev") {
         // set dev mode
-        PlayerSettings.applicationIdentifier = "com.kosmosschool.KosmosSchool_can";
+        PlayerSettings.applicationIdentifier = "com.kosmosschool.KosmosSchoolcan";
         PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.Mono2x);
         OVRManifestPreprocessor.RemoveAndroidManifest();
         setKeystore(false);

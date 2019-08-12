@@ -11,7 +11,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Simulations/Gravity and Air Resistance/Gravity.unity
     guid: 7ca184a6bbd04450a8ca6cfe7074eabf
-  - enabled: 1
+  - enabled: 0
     path: Assets/Simulations/Conservation of Energy/Conservation of Energy.unity
     guid: a25be086e381d49b6966105bcbc04c70
+  - enabled: 1
+    path: Assets/Simulations/Magnetic Fields/Magnetic Fields.unity
+    guid: d6b162d2118ba4b939e63c851eab9ad3
   m_configObjects: {}

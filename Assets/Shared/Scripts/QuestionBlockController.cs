@@ -11,6 +11,7 @@ namespace Kosmos {
     private bool isShowing;
     private bool firstClick;
     private GameObject mainCamera;
+    private string name;
 
     [SerializeField] private AudioClip openClip;
     [SerializeField] private AudioClip closeClip;
@@ -38,8 +39,10 @@ namespace Kosmos {
 
       audioSource = GetComponent<AudioSource>();
 
+      name = gameObject.name;
+
       // has seen intro block before
-      if (openAtStart && PlayerPrefs.GetInt("hasSeenInstruction") == 1) {
+      if (openAtStart && PlayerPrefs.GetInt($"{name}_hasSeenInstruction") == 1) {
         showWindow(false);
         unclickedBlock.active = false;
         clickedBlock.active = true;
@@ -47,12 +50,12 @@ namespace Kosmos {
       }
 
       // hasn't seen before
-      if (openAtStart && PlayerPrefs.GetInt("hasSeenInstruction", 0) == 0) {
+      if (openAtStart && PlayerPrefs.GetInt($"{name}_hasSeenInstruction", 0) == 0) {
         showWindow(true);
         unclickedBlock.active = false;
         clickedBlock.active = true;
 
-        PlayerPrefs.SetInt("hasSeenInstruction", 1);
+        PlayerPrefs.SetInt($"{name}_hasSeenInstruction", 1);
       }
     }
 

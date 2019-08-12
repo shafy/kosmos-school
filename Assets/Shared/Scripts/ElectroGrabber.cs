@@ -159,7 +159,17 @@ namespace Kosmos
       localToWorld = trackingSpace.localToWorldMatrix;
       Vector3 targetPosWorld = localToWorld.MultiplyPoint(targetPos);
 
-      currentGrabbable.transform.position = Vector3.Lerp(currentGrabbable.transform.position, targetPosWorld, Time.deltaTime * 10);
+      Vector3 newPos = Vector3.Lerp(currentGrabbable.transform.position, targetPosWorld, Time.deltaTime * 10);
+
+      // phantom position means that the real position is controlled by something else but we still want to set
+      // the position it would have been
+      // phantom position can e.g. be used if grabbing an end of a cable and the cable can't be stretched
+      if (currentGrabbable.IsPhantom) {
+        currentGrabbable.PhantomPosition = newPos;
+      } else {
+        currentGrabbable.transform.position = newPos;
+      }
+      
     }
 
     private void changeItemDistance() {
