@@ -53,16 +53,21 @@ namespace Kosmos {
         toggleLine(true);
         showErrorWindow(false);
 
-        // if controller found, check if it's the right one
-        if (currentController == OVRInput.Controller.LTrackedRemote) {
-          rightHandAnchor.SetActive(false);
-          leftHandAnchor.SetActive(true);
-          return;
-        }
+        // this means we're on the Go or Gear
+        if (currentController != OVRInput.Controller.Touch) {
+          //if controller found, check if it's the right one
+          if (currentController == OVRInput.Controller.LTrackedRemote) {
+            rightHandAnchor.SetActive(false);
+            leftHandAnchor.SetActive(true);
+            return;
+          }
 
-        if (currentController == OVRInput.Controller.RTrackedRemote) {
-          leftHandAnchor.SetActive(false);
-          rightHandAnchor.SetActive(true);
+          if (currentController == OVRInput.Controller.RTrackedRemote) {
+            leftHandAnchor.SetActive(false);
+            rightHandAnchor.SetActive(true);
+            return;
+          }
+        } else {
           return;
         }
 

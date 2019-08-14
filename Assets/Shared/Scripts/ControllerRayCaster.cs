@@ -74,12 +74,6 @@ namespace Kosmos
       
         private void EyeRaycast()
         {
-            // Show the debug ray if required
-            if (m_ShowDebugRay)
-            {
-                Debug.DrawRay(m_Camera.position, m_Camera.forward * m_DebugRayLength, Color.blue, m_DebugRayDuration);
-            }
-
             // Create a ray that points forwards from the camera.
             Ray ray = new Ray(m_Camera.position, m_Camera.forward);
             RaycastHit hit;
@@ -101,6 +95,10 @@ namespace Kosmos
                 Vector3 localStartPoint = OVRInput.GetLocalControllerPosition(KosmosStatics.Controller);
                 Vector3 localEndPoint = localStartPoint + ((orientation * Vector3.forward) * m_RayLength);
                 Vector3 localEndPointLineRenderer = localStartPoint + ((orientation * Vector3.forward) * 2.0f);
+
+                Debug.Log("KosmosStatics.Controller " + KosmosStatics.Controller);
+
+                Debug.Log("localStartPoint " + localStartPoint);
 
                 worldStartPoint = localToWorld.MultiplyPoint(localStartPoint);
                 worldEndPoint = localToWorld.MultiplyPoint(localEndPoint);
@@ -180,8 +178,6 @@ namespace Kosmos
             if (m_Reticle) {
                 m_Reticle.Show();
                 m_Reticle.SetPosition(hit.point);
-
-                Debug.Log("hit.point " + hit.point);
             }
         }
 
