@@ -1,4 +1,9 @@
 /************************************************************************************
+This script is based on and is an adaptation of OVRGrabbable.cs distributed with the
+Unity Oculus Integration. The following is the source license text.
+************************************************************************************/
+
+/************************************************************************************
 Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
 
 Licensed under the Oculus Utilities SDK License Version 1.31 (the "License"); you may not use
@@ -18,12 +23,14 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// An object that can be grabbed and thrown by OVRGrabber.
+/// An object that can be grabbed and thrown by GrabberHands.
 /// </summary>
 
 namespace Kosmos {
-  public class OVRGrabbable : MonoBehaviour
-  {
+  public class GrabbableHands : MonoBehaviour
+  { 
+      private Collider playerCollider;
+
       [SerializeField]
       protected bool m_allowOffhandGrab = true;
       [SerializeField]
@@ -37,7 +44,7 @@ namespace Kosmos {
 
       protected bool m_grabbedKinematic = false;
       protected Collider m_grabbedCollider = null;
-      protected OVRGrabber m_grabbedBy = null;
+      protected GrabberHands m_grabbedBy = null;
 
     /// <summary>
     /// If true, the object can currently be grabbed.
@@ -80,9 +87,9 @@ namespace Kosmos {
       }
 
     /// <summary>
-    /// Returns the OVRGrabber currently grabbing this object.
+    /// Returns the GrabberHands currently grabbing this object.
     /// </summary>
-      public OVRGrabber grabbedBy
+      public GrabberHands grabbedBy
       {
           get { return m_grabbedBy; }
       }
@@ -114,11 +121,13 @@ namespace Kosmos {
     /// <summary>
     /// Notifies the object that it has been grabbed.
     /// </summary>
-    virtual public void GrabBegin(OVRGrabber hand, Collider grabPoint)
+    virtual public void GrabBegin(GrabberHands hand, Collider grabPoint)
       {
           m_grabbedBy = hand;
           m_grabbedCollider = grabPoint;
           gameObject.GetComponent<Rigidbody>().isKinematic = true;
+
+          Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), true);
       }
 
     /// <summary>
@@ -132,6 +141,8 @@ namespace Kosmos {
           rb.angularVelocity = angularVelocity;
           m_grabbedBy = null;
           m_grabbedCollider = null;
+
+          Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), false);
       }
 
       void Awake()
@@ -148,12 +159,33 @@ namespace Kosmos {
               // Create a default grab point
               m_grabPoints = new Collider[1] { collider };
           }
+
+          playerCollider = GameObject.FindWithTag("OVRPlayerController").GetComponent<Collider>();
       }
 
       protected virtual void Start()
       {
           m_grabbedKinematic = GetComponent<Rigidbody>().isKinematic;
       }
+
+
+      // void OnCollisionEnter(Collision collision) {
+      //   // make sure it doesn't collide with the player when it's being grabbed
+      //   Debug.Log("collision.collider.tag " + collision.collider.tag);
+      //   Debug.Log("collision.collider.name " + collision.collider.name);
+
+      //   Debug.Log("isGrabbed " + isGrabbed);
+
+      //   //if (!isGrabbed) return;
+
+      //   Debug.Log("here");
+
+      //   if (!collision.collider.CompareTag("OVRPlayerController")) return;
+
+      //   Debug.Log("here 2");
+
+      //   Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
+      // }
 
       void OnDestroy()
       {

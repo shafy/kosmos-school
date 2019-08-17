@@ -120,6 +120,9 @@ namespace Kosmos {
 
       // move to next free pos
       moveToSpot(collider.transform, SpotTransforms[objectsList.Count - 1].position);
+
+      // make sure it's kinematic
+      collider.GetComponent<Rigidbody>().isKinematic = true;
     }
 
     void OnTriggerExit(Collider collider) {

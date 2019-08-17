@@ -60,9 +60,6 @@ namespace Kosmos {
     void Start() {
       rb = GetComponent<Rigidbody>();
 
-      if (!isActive) {
-        rb.isKinematic = true;
-      }
       readOnly = false;
       isOnGround = false;
 

@@ -1,3 +1,8 @@
+/************************************************************************************
+This script is based on and is an adaptation of VREyeRayCaster.cs distributed with the
+Unity Oculus Integration.
+************************************************************************************/
+
 using System;
 using UnityEngine;
 
@@ -29,19 +34,32 @@ namespace Kosmos
         // For supporting Laser Pointer
         [SerializeField] private LineRenderer m_LineRenderer = null;
         // Laser pointer visibility
-        public bool ShowLineRenderer = true;
+        public bool ShowLineRenderer = false;
         public event Action<RaycastHit> OnRaycasthit;                   // This event is called every frame that the user's gaze is over a collider.
 
         // we make this public to access it from the HandleLaserInteraction script of the interactible object
         public Vector3 worldStartPoint;
         public Vector3 worldEndPoint;
         private Vector3 worldEndPontLineRenderer;
+        private Transform leftHand;
+        public bool RayCastEnabled = false;
 
         // we added the following two methods to get the currently connected controller
         public bool ControllerIsConnected {
             get {
-                OVRInput.Controller controller = OVRInput.GetConnectedControllers() & (OVRInput.Controller.LTrackedRemote | OVRInput.Controller.RTrackedRemote);
-                return controller == OVRInput.Controller.LTrackedRemote || controller == OVRInput.Controller.RTrackedRemote;
+                if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+                    OVRInput.Controller controller = OVRInput.GetConnectedControllers();
+                    // return true if LTouch is connected (don't check for RTouch for now)
+                    if ((controller & OVRInput.Controller.LTouch) == OVRInput.Controller.LTouch) {
+                        return true;
+                    }
+                    return false;
+                } else {
+                    // return true if either RTrackedRemote or LTrackedRemote is connected
+                    OVRInput.Controller controller = OVRInput.GetConnectedControllers() & (OVRInput.Controller.LTrackedRemote | OVRInput.Controller.RTrackedRemote);
+                    return controller == OVRInput.Controller.LTrackedRemote || controller == OVRInput.Controller.RTrackedRemote;
+                }
+                
             }
         }
 
@@ -64,11 +82,12 @@ namespace Kosmos
         private void Start() {
             // ignore trigger colliders per default
             currentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
+            leftHand = GameObject.FindWithTag("LeftHandAnchor").transform;
         }
 
         private void Update()
-        {   
-            EyeRaycast();
+        {  
+            if (RayCastEnabled) EyeRaycast();
         }
 
       
@@ -90,15 +109,27 @@ namespace Kosmos
             // if controller connected, create a laser pointer
             if (ControllerIsConnected && m_TrackingSpace != null) {
                 Matrix4x4 localToWorld = m_TrackingSpace.localToWorldMatrix;
-                Quaternion orientation = OVRInput.GetLocalControllerRotation(KosmosStatics.Controller);
+               
 
-                Vector3 localStartPoint = OVRInput.GetLocalControllerPosition(KosmosStatics.Controller);
+                OVRInput.Controller currentController;
+                
+                if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+                    currentController = OVRInput.Controller.LTouch;
+                } else {
+                    currentController = KosmosStatics.Controller;
+                }
+
+                Quaternion orientation = OVRInput.GetLocalControllerRotation(currentController);
+
+                Vector3 localStartPoint = OVRInput.GetLocalControllerPosition(currentController);
+
+                if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+                    // move a little to the right so that the line starts from inside the left hand
+                    localStartPoint = leftHand.localPosition - new Vector3(0.05f, 0f, 0f);
+                }
+
                 Vector3 localEndPoint = localStartPoint + ((orientation * Vector3.forward) * m_RayLength);
                 Vector3 localEndPointLineRenderer = localStartPoint + ((orientation * Vector3.forward) * 2.0f);
-
-                Debug.Log("KosmosStatics.Controller " + KosmosStatics.Controller);
-
-                Debug.Log("localStartPoint " + localStartPoint);
 
                 worldStartPoint = localToWorld.MultiplyPoint(localStartPoint);
                 worldEndPoint = localToWorld.MultiplyPoint(localEndPoint);
@@ -129,8 +160,9 @@ namespace Kosmos
                 m_CurrentInteractible = interactible;
 
                 // If we hit an interactive item and it's not the same as the last interactive item, then call Over
-                if (interactible && interactible != m_LastInteractible)
+                if (interactible && interactible != m_LastInteractible) {
                     interactible.Over(); 
+                }
 
                 // Deactive the last interactive item 
                 if (interactible != m_LastInteractible)
@@ -143,7 +175,7 @@ namespace Kosmos
 
                 // show reticle if hit UI layer
                 if (hit.transform.gameObject.layer == 5){
-                    DisplayReticle(hit);
+                    //DisplayReticle(hit);
                 } else {
                     if (m_Reticle) {
                         m_Reticle.Hide();
@@ -167,7 +199,7 @@ namespace Kosmos
                      
             }
 
-            // set the linerenderer's points to the same ones as the laser
+            // set the linerenderer's points to the same ones as the ray
             if (ControllerIsConnected && m_LineRenderer != null && m_LineRenderer.enabled) {
                 m_LineRenderer.SetPosition(0, worldStartPoint);
                 m_LineRenderer.SetPosition(1, worldEndPontLineRenderer);

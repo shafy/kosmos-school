@@ -77,7 +77,6 @@ namespace Kosmos
 
         // press the button
         currentButton.Press();
-
       }
 
       // play presses trigger button: grab item

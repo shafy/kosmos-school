@@ -8,6 +8,7 @@ namespace Kosmos {
 
     private Quaternion controllerOrientation;
 
+    // this is used for the Go
     public static OVRInput.Controller Controller {
       get {
           OVRInput.Controller controller = OVRInput.GetConnectedControllers();
@@ -23,5 +24,6 @@ namespace Kosmos {
     public static Quaternion ControllerOrientation() {
       return OVRInput.GetLocalControllerRotation(Controller);
     }
+
   }
 }

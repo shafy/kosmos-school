@@ -1,3 +1,8 @@
+/************************************************************************************
+This script is based on and is an adaptation of Hand.cs distributed with the
+Unity Oculus Integration. The following is the source license text.
+************************************************************************************/
+
 /********************************************************************************//**
 \file      Hand.cs
 \brief     Basic hand impementation.
@@ -14,7 +19,7 @@ using UnityEngine.SceneManagement;
 
 namespace Kosmos
 {
-    [RequireComponent(typeof(OVRGrabber))]
+    [RequireComponent(typeof(GrabberHands))]
     public class Hand : MonoBehaviour
     {
         public const string ANIM_LAYER_NAME_POINT = "Point Layer";
@@ -26,7 +31,7 @@ namespace Kosmos
         public const float INPUT_RATE_CHANGE = 20.0f;
 
         public const float COLLIDER_SCALE_MIN = 0.01f;
-        public const float COLLIDER_SCALE_MAX = 1.0f;
+        public const float COLLIDER_SCALE_MAX = 0.1f;
         public const float COLLIDER_SCALE_PER_SECOND = 1.0f;
 
         public const float TRIGGER_DEBOUNCE_TIME = 0.05f;
@@ -39,9 +44,12 @@ namespace Kosmos
         [SerializeField]
         private HandPose m_defaultGrabPose;
 
+        [SerializeField] private Collider pointerCollider;
+
         private Collider[] m_colliders = null;
         private bool m_collisionEnabled = true;
-        private OVRGrabber m_grabber;
+        private bool pointerCollisionEnabled = true;
+        private GrabberHands m_grabber;
 
         List<Renderer> m_showAfterInputFocusAcquired;
 
@@ -59,16 +67,17 @@ namespace Kosmos
 
         private void Awake()
         {
-            m_grabber = GetComponent<OVRGrabber>();
+            m_grabber = GetComponent<GrabberHands>();
         }
 
         private void Start()
-        {
+        {   
             m_showAfterInputFocusAcquired = new List<Renderer>();
 
             // Collision starts disabled. We'll enable it for certain cases such as making a fist.
             m_colliders = this.GetComponentsInChildren<Collider>().Where(childCollider => !childCollider.isTrigger).ToArray();
             CollisionEnable(false);
+            pointerCollisionEnable(false);
 
             // Get animator layer indices by name, for later use switching between hand visuals
             m_animLayerIndexPoint = m_animator.GetLayerIndex(ANIM_LAYER_NAME_POINT);
@@ -92,8 +101,13 @@ namespace Kosmos
 
             float flex = OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger, m_controller);
 
-            bool collisionEnabled = m_grabber.grabbedObject == null && flex >= THRESH_COLLISION_FLEX;
+            // enable fister collider when making a fist
+            bool collisionEnabled = m_grabber.grabbedObject == null && flex >= THRESH_COLLISION_FLEX && !m_isPointing;
             CollisionEnable(collisionEnabled);
+
+            // enable pointer collider when pointing
+            // fyi: either fister or pointer are enabled, never both at the same time
+            pointerCollisionEnable(m_isPointing);
 
             UpdateAnimStates();
         }
@@ -102,8 +116,8 @@ namespace Kosmos
         // debouncing.
         private void UpdateCapTouchStates()
         {
-            m_isPointing = !OVRInput.Get(OVRInput.NearTouch.PrimaryIndexTrigger, m_controller);
-            m_isGivingThumbsUp = !OVRInput.Get(OVRInput.NearTouch.PrimaryThumbButtons, m_controller);
+            m_isPointing = !OVRInput.Get(OVRInput.Touch.PrimaryIndexTrigger, m_controller);
+            m_isGivingThumbsUp = (!OVRInput.Get(OVRInput.Touch.PrimaryThumbstick, m_controller) && !OVRInput.Get(OVRInput.Touch.One, m_controller) && !OVRInput.Get(OVRInput.Touch.Two, m_controller));
         }
 
         private void LateUpdate()
@@ -203,6 +217,14 @@ namespace Kosmos
 
         private float m_collisionScaleCurrent = 0.0f;
 
+        private void pointerCollisionEnable(bool enabled) {
+            if (pointerCollisionEnabled == enabled) return;
+
+            pointerCollisionEnabled = enabled;
+
+            pointerCollider.enabled = enabled;
+        }
+
         private void CollisionEnable(bool enabled)
         {
             if (m_collisionEnabled == enabled)
@@ -229,6 +251,7 @@ namespace Kosmos
                     Collider collider = m_colliders[i];
                     collider.enabled = false;
                     collider.transform.localScale = new Vector3(COLLIDER_SCALE_MIN, COLLIDER_SCALE_MIN, COLLIDER_SCALE_MIN);
+                    
                 }
             }
         }

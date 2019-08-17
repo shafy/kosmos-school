@@ -11,6 +11,8 @@ TagManager:
   - PlatformFloor
   - UIAudioSource
   - Waypoint
+  - RightHandPointerCollider
+  - LeftHandPointerCollider
   layers:
   - Default
   - TransparentFX
@@ -21,8 +23,8 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - Non-Collision
-  - 
+  - InteractiveObject
+  - PlayerController
   - 
   - 
   - 

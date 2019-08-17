@@ -12,6 +12,7 @@ namespace Kosmos {
     private bool firstClick;
     private GameObject mainCamera;
     private string name;
+    private Vector3 initialPos;
 
     [SerializeField] private AudioClip openClip;
     [SerializeField] private AudioClip closeClip;
@@ -28,11 +29,13 @@ namespace Kosmos {
     void Start() {
       mainCamera = GameObject.FindWithTag("MainCamera");
 
+      initialPos = windowAndTexts.transform.position;
+
       isShowing = openAtStart;
       firstClick = !openAtStart;
-      showWindow(openAtStart);
-      unclickedBlock.active = !openAtStart;
-      clickedBlock.active = openAtStart;
+      showWindow(openAtStart, openAtStart);
+      unclickedBlock.SetActive(!openAtStart);
+      clickedBlock.SetActive(openAtStart);
 
       textTitle.text = titleText;
       textBody.text = bodyText;
@@ -51,7 +54,7 @@ namespace Kosmos {
 
       // hasn't seen before
       if (openAtStart && PlayerPrefs.GetInt($"{name}_hasSeenInstruction", 0) == 0) {
-        showWindow(true);
+        showWindow(true, true);
         unclickedBlock.active = false;
         clickedBlock.active = true;
 
@@ -59,14 +62,26 @@ namespace Kosmos {
       }
     }
 
-    private void showWindow(bool value) {
-      windowAndTexts.active = value;
+    private void showWindow(bool enabled, bool _openAtStart = false) {
+      windowAndTexts.SetActive(enabled);
+
+      if (!enabled || _openAtStart) {
+        // reset position and rotation if disabling or if openAtStart
+        windowAndTexts.transform.position = initialPos;
+        windowAndTexts.transform.rotation = Quaternion.identity;
+        return;
+      }
 
       // rotate towards user on Y axis
-      Vector3 lookPos =  windowAndTexts.transform.position - mainCamera.transform.position;
+      Vector3 lookPos = windowAndTexts.transform.position - mainCamera.transform.position;
       Quaternion tempRotation = Quaternion.LookRotation(lookPos);
       Quaternion newRotation = Quaternion.Euler(0, tempRotation.eulerAngles.y, tempRotation.eulerAngles.z);
       windowAndTexts.transform.rotation = newRotation;
+
+      // position 3 meters back, keep initial y pos
+      Vector3 posVector = (clickedBlock.transform.position - mainCamera.transform.position).normalized;
+      windowAndTexts.transform.position = mainCamera.transform.position + (posVector * 3f);
+      windowAndTexts.transform.position = new Vector3(windowAndTexts.transform.position.x, initialPos.y, windowAndTexts.transform.position.z);
     }
 
     public void QuestionClick() {

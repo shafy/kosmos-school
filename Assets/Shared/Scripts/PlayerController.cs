@@ -8,15 +8,10 @@ namespace Kosmos {
     
     private AudioSource audioSource;
     private bool isWalking;
-    private bool walkingSoundPlaying;
     private bool frozen;
-    private CharacterController character;
     private GameObject centerEyeAnchor;
     private Quaternion controllerRotation;
     private Vector2 primayTouchpadPos;
-
-    
-    public bool WalkingAllowed = true;
   
     public bool IsWalking {
       get { return isWalking; }
@@ -29,18 +24,30 @@ namespace Kosmos {
     }
 
     void Start () {
-      character = GetComponent<CharacterController>();
       centerEyeAnchor = GameObject.FindWithTag("MainCamera");
       IsWalking = false;
-      walkingSoundPlaying = false;
       frozen = false;
       audioSource = GetComponent<AudioSource>();
     }
     
     // override OVRPlayerController's Update
     void Update () {
+      //Debug.Log("UnityEngine.XR.XRDevice.model " + UnityEngine.XR.XRDevice.model);
+
+      // check if player is currently walking
+      if (!isWalking && Controller.velocity != Vector3.zero) {
+        isWalking = true;
+        playWalkingSound(true);
+      }
+
+      if (isWalking && Controller.velocity == Vector3.zero) {
+        isWalking = false;
+        playWalkingSound(false);
+      }
+
+      // ** GO ONLY **
       // only move if touchpad is pressed and walking is not disabled
-      if (OVRInput.Get(OVRInput.Button.PrimaryTouchpad) && WalkingAllowed) {
+      if (OVRInput.Get(OVRInput.Button.PrimaryTouchpad) && HaltUpdateMovement) {
         controllerRotation = KosmosStatics.ControllerOrientation();
 
         primayTouchpadPos = OVRInput.Get(OVRInput.Axis2D.PrimaryTouchpad);
@@ -48,21 +55,17 @@ namespace Kosmos {
         Vector3 movementDirection = new Vector3(primayTouchpadPos.x, 0.0f, primayTouchpadPos.y);
         Vector3 movement = controllerRotation * movementDirection;
        
-        character.SimpleMove(movement * 5);
+        Controller.SimpleMove(movement * 3);
+      }
+    }
 
-        if (audioSource && !walkingSoundPlaying) {
-          audioSource.Play();
-          walkingSoundPlaying = true;
-        }
+    private void playWalkingSound(bool enable) {
+      if (!audioSource) return;
 
-        IsWalking = true;
-
+      if (enable) {
+         audioSource.Play();
       } else {
-        if (audioSource && walkingSoundPlaying) {
-          audioSource.Stop();
-          walkingSoundPlaying = false;
-        }
-        IsWalking = false;
+        audioSource.Stop();
       }
     }
 

@@ -1,4 +1,9 @@
 /************************************************************************************
+This script is based on and is an adaptation of OVRGrabber.cs distributed with the
+Unity Oculus Integration. The following is the source license text.
+************************************************************************************/
+
+/************************************************************************************
 Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
 
 Licensed under the Oculus Utilities SDK License Version 1.31 (the "License"); you may not use
@@ -18,12 +23,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Allows grabbing and throwing of objects with the OVRGrabbable component on them.
+/// Allows grabbing and throwing of objects with the GrabbableHands component on them.
 /// </summary>
 
 namespace Kosmos {
     [RequireComponent(typeof(Rigidbody))]
-    public class OVRGrabber : MonoBehaviour
+    public class GrabberHands : MonoBehaviour
     {
         // Grip trigger thresholds for picking up objects, with some hysteresis.
         public float grabBegin = 0.55f;
@@ -52,27 +57,29 @@ namespace Kosmos {
         [SerializeField]
         protected Transform m_parentTransform;
 
+        [SerializeField] private Transform handAnchor;
+
         protected bool m_grabVolumeEnabled = true;
         protected Vector3 m_lastPos;
         protected Quaternion m_lastRot;
         protected Quaternion m_anchorOffsetRotation;
         protected Vector3 m_anchorOffsetPosition;
         protected float m_prevFlex;
-      protected OVRGrabbable m_grabbedObj = null;
+        protected GrabbableHands m_grabbedObj = null;
         protected Vector3 m_grabbedObjectPosOff;
         protected Quaternion m_grabbedObjectRotOff;
-      protected Dictionary<OVRGrabbable, int> m_grabCandidates = new Dictionary<OVRGrabbable, int>();
-      protected bool operatingWithoutOVRCameraRig = true;
+        protected Dictionary<GrabbableHands, int> m_grabCandidates = new Dictionary<GrabbableHands, int>();
+        protected bool operatingWithoutOVRCameraRig = true;
 
         /// <summary>
         /// The currently grabbed object.
         /// </summary>
-        public OVRGrabbable grabbedObject
+        public GrabbableHands grabbedObject
         {
             get { return m_grabbedObj; }
         }
 
-      public void ForceRelease(OVRGrabbable grabbable)
+      public void ForceRelease(GrabbableHands grabbable)
         {
             bool canRelease = (
                 (m_grabbedObj != null) &&
@@ -132,16 +139,23 @@ namespace Kosmos {
         // your hands or held objects, you may wish to switch to parenting.
         void OnUpdatedAnchors()
         {
-            Vector3 handPos = OVRInput.GetLocalControllerPosition(m_controller);
-            Quaternion handRot = OVRInput.GetLocalControllerRotation(m_controller);
-            Vector3 destPos = m_parentTransform.TransformPoint(m_anchorOffsetPosition + handPos);
-            Quaternion destRot = m_parentTransform.rotation * handRot * m_anchorOffsetRotation;
-            GetComponent<Rigidbody>().MovePosition(destPos);
-            GetComponent<Rigidbody>().MoveRotation(destRot);
+            // Vector3 handPos = OVRInput.GetLocalControllerPosition(m_controller);
+            // Quaternion handRot = OVRInput.GetLocalControllerRotation(m_controller);
+            // Vector3 destPos = m_parentTransform.TransformPoint(m_anchorOffsetPosition + handPos);
+            // Quaternion destRot = m_parentTransform.rotation * handRot * m_anchorOffsetRotation;
+            // GetComponent<Rigidbody>().MovePosition(destPos);
+            // GetComponent<Rigidbody>().MoveRotation(destRot);
+
+            // Vector3 destPos = handAnchor.position + m_anchorOffsetPosition;
+            // Quaternion destRot = handAnchor.rotation * m_anchorOffsetRotation;
+
+            // GetComponent<Rigidbody>().MovePosition(destPos);
+            // GetComponent<Rigidbody>().MoveRotation(destRot);
 
             if (!m_parentHeldObject)
             {
-                MoveGrabbedObject(destPos, destRot);
+                //MoveGrabbedObject(destPos, destRot);
+                MoveGrabbedObject(transform.position, transform.rotation);
             }
             m_lastPos = transform.position;
             m_lastRot = transform.rotation;
@@ -164,7 +178,7 @@ namespace Kosmos {
         void OnTriggerEnter(Collider otherCollider)
         {
             // Get the grab trigger
-        OVRGrabbable grabbable = otherCollider.GetComponent<OVRGrabbable>() ?? otherCollider.GetComponentInParent<OVRGrabbable>();
+        GrabbableHands grabbable = otherCollider.GetComponent<GrabbableHands>() ?? otherCollider.GetComponentInParent<GrabbableHands>();
             if (grabbable == null) return;
 
             // Add the grabbable
@@ -175,7 +189,7 @@ namespace Kosmos {
 
         void OnTriggerExit(Collider otherCollider)
         {
-        OVRGrabbable grabbable = otherCollider.GetComponent<OVRGrabbable>() ?? otherCollider.GetComponentInParent<OVRGrabbable>();
+        GrabbableHands grabbable = otherCollider.GetComponent<GrabbableHands>() ?? otherCollider.GetComponentInParent<GrabbableHands>();
             if (grabbable == null) return;
 
             // Remove the grabbable
@@ -211,11 +225,11 @@ namespace Kosmos {
         protected virtual void GrabBegin()
         {
             float closestMagSq = float.MaxValue;
-        OVRGrabbable closestGrabbable = null;
+        GrabbableHands closestGrabbable = null;
             Collider closestGrabbableCollider = null;
 
             // Iterate grab candidates and find the closest grabbable candidate
-        foreach (OVRGrabbable grabbable in m_grabCandidates.Keys)
+        foreach (GrabbableHands grabbable in m_grabCandidates.Keys)
             {
                 bool canGrab = !(grabbable.isGrabbed && !grabbable.allowOffhandGrab);
                 if (!canGrab)
@@ -366,7 +380,7 @@ namespace Kosmos {
             }
         }
 
-      protected virtual void OffhandGrabbed(OVRGrabbable grabbable)
+      protected virtual void OffhandGrabbed(GrabbableHands grabbable)
         {
             if (m_grabbedObj == grabbable)
             {

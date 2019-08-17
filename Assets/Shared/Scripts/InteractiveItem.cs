@@ -1,3 +1,8 @@
+/************************************************************************************
+This script is based on and is an adaptation of VRInteractiveItem.cs distributed with the
+Unity Oculus Integration. The following is the source license text.
+************************************************************************************/
+
 using System;
 using UnityEngine;
 

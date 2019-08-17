@@ -17,12 +17,17 @@ namespace Kosmos {
     void Start() {
       ingameMenu.SetActive(false);
       controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
-
       audioSource = GameObject.FindWithTag("UIAudioSource").GetComponent<AudioSource>();
+
+      if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+       controllerRayCaster.RayCastEnabled = false;
+       controllerRayCaster.EnableLineRenderer(false);
+      }
     }
 
     void Update() {
-      if (OVRInput.GetDown(OVRInput.Button.Back)) {
+      // Button.Back is for Go, Button.Start for Quest
+      if (OVRInput.GetDown(OVRInput.Button.Back) || OVRInput.GetDown(OVRInput.Button.Start)) {
         ToggleIngameMenu();
         
       }
@@ -36,15 +41,20 @@ namespace Kosmos {
           audioSource.Play();
         }
         ingameMenu.SetActive(false);
-        playerController.WalkingAllowed = true;
+        playerController.HaltUpdateMovement = false;
 
         // when menu deactivated, raycast ignores trigger colliders
         controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
+        if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+         controllerRayCaster.RayCastEnabled = false;
+         controllerRayCaster.EnableLineRenderer(false);
+        }
+
       } else {
 
         ingameMenu.SetActive(true);
-        playerController.WalkingAllowed = false;
+        playerController.HaltUpdateMovement = true;
         // position 2.5 meters in front of user and rotate towards user
         Vector3 newPosMenu = playerController.transform.position + playerController.transform.forward * 2.5f;
         //newPosMenu.y = playerController.transform.position.y ;
@@ -59,6 +69,11 @@ namespace Kosmos {
         // we use trigger colliders in menu buttons so that if menu is opened over another
         // collider, there is no conflict
         controllerRayCaster.CurrentQuerryTriggerInteraction = QueryTriggerInteraction.Collide;
+
+        if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+         controllerRayCaster.RayCastEnabled = true;
+         controllerRayCaster.EnableLineRenderer(true);
+        }
 
         if (audioSource) {
           audioSource.clip = openMenuClip;

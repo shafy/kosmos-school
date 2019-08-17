@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4872517742375098259}
   - component: {fileID: 670508519966805989}
   - component: {fileID: 366168342017721844}
+  - component: {fileID: 7400779910490195973}
   m_Layer: 0
   m_Name: gravity_simulation_item1
   m_TagString: Untagged
@@ -71,6 +72,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -104,8 +106,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1669387168553197775}
   serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
+  m_Mass: 4
+  m_Drag: 1.8
   m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -253,6 +255,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7400779910490195973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669387168553197775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13bd79d8839b245548c1ddc25fe5d394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_allowOffhandGrab: 1
+  m_snapPosition: 0
+  m_snapOrientation: 0
+  m_snapOffset: {fileID: 0}
+  m_grabPoints: []
 --- !u!1 &6105683117751799088
 GameObject:
   m_ObjectHideFlags: 0

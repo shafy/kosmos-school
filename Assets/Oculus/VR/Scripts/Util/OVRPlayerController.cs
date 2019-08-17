@@ -131,6 +131,7 @@ public class OVRPlayerController : MonoBehaviour
 	/// Rotation defaults to secondary thumbstick. You can allow either here. Note that this won't behave well if EnableLinearMovement is true.
 	/// </summary>
 	public bool RotationEitherThumbstick = false;
+	public bool HaltUpdateMovement = false;
 
 	protected CharacterController Controller = null;
 	protected OVRCameraRig CameraRig = null;
@@ -143,7 +144,7 @@ public class OVRPlayerController : MonoBehaviour
 	private float MoveScaleMultiplier = 1.0f;
 	private float RotationScaleMultiplier = 1.0f;
 	private bool SkipMouseRotation = true; // It is rare to want to use mouse movement in VR, so ignore the mouse by default.
-	private bool HaltUpdateMovement = false;
+	
 	private bool prevHatLeft = false;
 	private bool prevHatRight = false;
 	private float SimulationRate = 60f;

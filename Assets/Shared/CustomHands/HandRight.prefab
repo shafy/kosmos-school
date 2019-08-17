@@ -240,7 +240,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 422740}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &126558
 GameObject:
@@ -1103,7 +1103,7 @@ Transform:
   - {fileID: 423554}
   - {fileID: 435492}
   m_Father: {fileID: 422740}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &9575994
 Animator:
@@ -1457,7 +1457,7 @@ Transform:
   m_Children:
   - {fileID: 437990}
   m_Father: {fileID: 422740}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &13623232
 CapsuleCollider:
@@ -2016,10 +2016,10 @@ GameObject:
   m_Component:
   - component: {fileID: 422740}
   - component: {fileID: 5402888}
-  - component: {fileID: 4152977775031392160}
+  - component: {fileID: 3026591640609470581}
   - component: {fileID: 1847130756306050425}
   m_Layer: 0
-  m_Name: CustomHandRight
+  m_Name: HandRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2036,6 +2036,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4505790652163218245}
+  - {fileID: 1515463001744328743}
   - {fileID: 456902}
   - {fileID: 473518}
   - {fileID: 483364}
@@ -2059,7 +2061,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &4152977775031392160
+--- !u!114 &3026591640609470581
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2068,16 +2070,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 195418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 698259891a2b3402581a1e91ec46665a, type: 3}
+  m_Script: {fileID: 11500000, guid: b0bcab9dc19f24181ab16e6d578acd17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grabBegin: 0.55
   grabEnd: 0.35
   m_parentHeldObject: 0
   m_gripTransform: {fileID: 456902}
-  m_grabVolumes: []
+  m_grabVolumes:
+  - {fileID: 13623232}
+  - {fileID: 13638878}
   m_controller: 2
   m_parentTransform: {fileID: 0}
+  handAnchor: {fileID: 0}
 --- !u!114 &1847130756306050425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2094,6 +2099,7 @@ MonoBehaviour:
   m_animator: {fileID: 95024934887329368}
   m_defaultGrabPose: {fileID: 7370534485949655460, guid: 35525acb4c3b75c4a8c4dc2c117427be,
     type: 3}
+  pointerCollider: {fileID: 2562863140639246267}
 --- !u!1 &196690
 GameObject:
   m_ObjectHideFlags: 0
@@ -3020,7 +3026,7 @@ Transform:
   - {fileID: 4733718355831906}
   - {fileID: 4487581473819256}
   m_Father: {fileID: 422740}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95024934887329368
 Animator:
@@ -3256,3 +3262,110 @@ Transform:
   m_Father: {fileID: 4207000969376662}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8174275804400817000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1515463001744328743}
+  - component: {fileID: 6220812580505778020}
+  - component: {fileID: 1292509308158986192}
+  m_Layer: 0
+  m_Name: Fister
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1515463001744328743
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8174275804400817000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.023, y: 0.039, z: 0.009}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_Children: []
+  m_Father: {fileID: 422740}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &6220812580505778020
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8174275804400817000}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!135 &1292509308158986192
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8174275804400817000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8272927162608881151
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4505790652163218245}
+  - component: {fileID: 4506571404529461387}
+  - component: {fileID: 2562863140639246267}
+  m_Layer: 0
+  m_Name: Pointer
+  m_TagString: RightHandPointerCollider
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4505790652163218245
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8272927162608881151}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.033, y: 0.0343, z: 0.0511}
+  m_LocalScale: {x: 0.06, y: 0.07, z: 0.06}
+  m_Children: []
+  m_Father: {fileID: 422740}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!33 &4506571404529461387
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8272927162608881151}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!136 &2562863140639246267
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8272927162608881151}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1.9999994
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}

@@ -6,7 +6,7 @@ namespace Kosmos {
     public class InputSetup : MonoBehaviour {
 
       private bool controllerFound;
-      private bool playerWalkingAllowedInitial;
+      private bool haltUpdateMovementInitial;
       private ControllerRayCaster controllerRayCaster;
       private GameObject rightHandAnchor;
       private GameObject leftHandAnchor;
@@ -21,12 +21,11 @@ namespace Kosmos {
 
         controllerRayCaster = GameObject.FindWithTag("MainCamera").GetComponent<ControllerRayCaster>();
         playerController = GameObject.FindWithTag("OVRPlayerController").GetComponent<PlayerController>();
-        playerWalkingAllowedInitial = playerController.WalkingAllowed;
+        haltUpdateMovementInitial = playerController.HaltUpdateMovement;
       }
 
       void Start() {
         controllerFound = false;
-        toggleLine(false);
         showErrorWindow(false);
       }
 
@@ -45,30 +44,43 @@ namespace Kosmos {
       }
 
       private void checkForController() {
-        OVRInput.Controller currentController = OVRInput.GetActiveController();
+        OVRInput.Controller currentController = OVRInput.GetConnectedControllers();
         // return if no controller found
         if (currentController == OVRInput.Controller.None) return;
 
         controllerFound = true;
-        toggleLine(true);
         showErrorWindow(false);
 
-        // this means we're on the Go or Gear
-        if (currentController != OVRInput.Controller.Touch) {
-          //if controller found, check if it's the right one
-          if (currentController == OVRInput.Controller.LTrackedRemote) {
+        if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+
+          // make sure both controllers are connected
+          if (((currentController & OVRInput.Controller.LTouch) == OVRInput.Controller.LTouch) && ((currentController & OVRInput.Controller.RTouch) == OVRInput.Controller.RTouch)) {
+            // deactivate both ElectroGrabbers
+            rightHandAnchor.transform.Find("RightControllerAnchor").Find("ElectroGrabber").gameObject.SetActive(false);
+            leftHandAnchor.transform.Find("LeftControllerAnchor").Find("ElectroGrabber").gameObject.SetActive(false);
+
+            return;
+            
+          }
+        } else {
+          toggleLine(true);
+          // in this case it's a Go or Gear
+          // hide Quest hands
+          rightHandAnchor.transform.Find("HandRight").gameObject.SetActive(false);
+          leftHandAnchor.transform.Find("HandLeft").gameObject.SetActive(false);
+
+          OVRInput.Controller activeController = OVRInput.GetActiveController();
+          if (activeController == OVRInput.Controller.LTrackedRemote) {
             rightHandAnchor.SetActive(false);
             leftHandAnchor.SetActive(true);
             return;
           }
 
-          if (currentController == OVRInput.Controller.RTrackedRemote) {
+          if (activeController == OVRInput.Controller.RTrackedRemote) {
             leftHandAnchor.SetActive(false);
             rightHandAnchor.SetActive(true);
             return;
           }
-        } else {
-          return;
         }
 
         // in this case, no Oculus Go remote has been found
@@ -80,6 +92,7 @@ namespace Kosmos {
       }
 
       private void toggleLine(bool value) {
+        controllerRayCaster.RayCastEnabled = value;
         controllerRayCaster.EnableLineRenderer(value);
       }
 
@@ -88,7 +101,7 @@ namespace Kosmos {
         if (value == true) {
           errorMessage.SetActive(true);
 
-          playerController.WalkingAllowed = false;
+          playerController.HaltUpdateMovement = true;
           // position 2.5 meters in front of user and rotate towards user
           Vector3 newPosError = playerController.transform.position + playerController.transform.forward * 2f;
           newPosError.y = 1.6f;
@@ -103,7 +116,7 @@ namespace Kosmos {
 
         errorMessage.SetActive(false);
         // only set walking allowed if it was allowed in the first place
-        if (playerWalkingAllowedInitial) playerController.WalkingAllowed = true;
+        playerController.HaltUpdateMovement = haltUpdateMovementInitial;
         return;
       }
 
