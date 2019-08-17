@@ -63,7 +63,6 @@ namespace Kosmos {
             
           }
         } else {
-          toggleLine(true);
           // in this case it's a Go or Gear
           // hide Quest hands
           rightHandAnchor.transform.Find("HandRight").gameObject.SetActive(false);
@@ -86,7 +85,6 @@ namespace Kosmos {
         // in this case, no Oculus Go remote has been found
         // show error message
         controllerFound = false;
-        toggleLine(true);
         showErrorWindow(true);
         return;
       }

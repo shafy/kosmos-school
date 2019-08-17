@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using mixpanel;
 
 namespace Kosmos {
   // general controls for the game
@@ -23,6 +25,10 @@ namespace Kosmos {
        controllerRayCaster.RayCastEnabled = false;
        controllerRayCaster.EnableLineRenderer(false);
       }
+
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      Mixpanel.Track("Opened Scene", props);
     }
 
     void Update() {

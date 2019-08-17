@@ -51,6 +51,9 @@ namespace Kosmos
         setDestinationPS(true);
         return;
       }
+      
+      // stop execution here if Quest
+      if (UnityEngine.XR.XRDevice.model == "Oculus Quest") return;
 
       // if player is walking, always disable linerender
       if (lineRendererActive && playerController.IsWalking) {

@@ -7,6 +7,7 @@ namespace Kosmos {
   public class StartMenuController : MonoBehaviour {
     private float startY;
     private float scrollRange;
+    private float currentTouchPadY;
 
     [SerializeField] private GameObject iconSheet;
 
@@ -28,7 +29,7 @@ namespace Kosmos {
         currentTouchPadY = OVRInput.Get(OVRInput.Axis2D.PrimaryTouchpad).y;
       }      
 
-      float moveByY = currentTouchPadY * Time.deltaTime * 3f;
+      float moveByY = currentTouchPadY * Time.deltaTime * 3f * -1.0f;
       float newPosY = iconSheet.transform.position.y + moveByY;
 
       // set upper and lower bounds

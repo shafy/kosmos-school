@@ -990,6 +990,11 @@ PrefabInstance:
       propertyPath: InitialModule.startSpeed.scalar
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 249513650953674711, guid: 732f9eb33dcb7402e83c3d8772e831c8,
+        type: 3}
+      propertyPath: leftHandIndex
+      value: 
+      objectReference: {fileID: 1589414383}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 732f9eb33dcb7402e83c3d8772e831c8, type: 3}
 --- !u!114 &942504656 stripped
@@ -1487,7 +1492,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1361779702}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.4, z: 0}
+  m_LocalPosition: {x: 0, y: 0.252, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1860524404}
@@ -1598,6 +1603,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1526147506}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1589414383 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6332466650059775736, guid: 732f9eb33dcb7402e83c3d8772e831c8,
+    type: 3}
+  m_PrefabInstance: {fileID: 908192363}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1589602190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2363,7 +2374,7 @@ PrefabInstance:
     - target: {fileID: 6552854086978306176, guid: 27d5adef803b84a4cbd3b4fd713bcd2f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6552854086978306176, guid: 27d5adef803b84a4cbd3b4fd713bcd2f,
         type: 3}
@@ -2529,6 +2540,31 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 3770384813717163963, guid: 6488421b598b248dfaca6fa573d10310,
+        type: 3}
+      propertyPath: dataColor.r
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 3770384813717163963, guid: 6488421b598b248dfaca6fa573d10310,
+        type: 3}
+      propertyPath: dataColor.g
+      value: 0.84705883
+      objectReference: {fileID: 0}
+    - target: {fileID: 3770384813717163963, guid: 6488421b598b248dfaca6fa573d10310,
+        type: 3}
+      propertyPath: dataColor.b
+      value: 0.7372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 3770384813717163963, guid: 6488421b598b248dfaca6fa573d10310,
+        type: 3}
+      propertyPath: dataName
+      value: Brick (Flat)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3770384813717163963, guid: 6488421b598b248dfaca6fa573d10310,
+        type: 3}
+      propertyPath: platformController
+      value: 
+      objectReference: {fileID: 3357290297876052465}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6488421b598b248dfaca6fa573d10310, type: 3}
 --- !u!4 &1729904972466156999 stripped
@@ -2892,7 +2928,7 @@ PrefabInstance:
     - target: {fileID: 3724989781626230728, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.44
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3724989781626230728, guid: 72c52cbe4ec5e4e49a0bc2de48dcacdc,
         type: 3}
@@ -3562,6 +3598,26 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 9156627750985490185, guid: 714794d7cce8b4d9e80fd81960bde383,
+        type: 3}
+      propertyPath: dataColor.r
+      value: 0.972549
+      objectReference: {fileID: 0}
+    - target: {fileID: 9156627750985490185, guid: 714794d7cce8b4d9e80fd81960bde383,
+        type: 3}
+      propertyPath: dataColor.g
+      value: 0.49019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 9156627750985490185, guid: 714794d7cce8b4d9e80fd81960bde383,
+        type: 3}
+      propertyPath: dataColor.b
+      value: 0.49411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 9156627750985490185, guid: 714794d7cce8b4d9e80fd81960bde383,
+        type: 3}
+      propertyPath: platformController
+      value: 
+      objectReference: {fileID: 3357290297876052465}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 714794d7cce8b4d9e80fd81960bde383, type: 3}
 --- !u!1001 &6972410845928274656
@@ -4109,5 +4165,30 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 4277882361139398594, guid: 8f564266f87c5432ea347ebd95afb4ae,
+        type: 3}
+      propertyPath: dataColor.r
+      value: 0.46666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 4277882361139398594, guid: 8f564266f87c5432ea347ebd95afb4ae,
+        type: 3}
+      propertyPath: dataColor.g
+      value: 0.80784315
+      objectReference: {fileID: 0}
+    - target: {fileID: 4277882361139398594, guid: 8f564266f87c5432ea347ebd95afb4ae,
+        type: 3}
+      propertyPath: dataColor.b
+      value: 0.79607844
+      objectReference: {fileID: 0}
+    - target: {fileID: 4277882361139398594, guid: 8f564266f87c5432ea347ebd95afb4ae,
+        type: 3}
+      propertyPath: dataName
+      value: Brick (Large)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4277882361139398594, guid: 8f564266f87c5432ea347ebd95afb4ae,
+        type: 3}
+      propertyPath: platformController
+      value: 
+      objectReference: {fileID: 3357290297876052465}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f564266f87c5432ea347ebd95afb4ae, type: 3}

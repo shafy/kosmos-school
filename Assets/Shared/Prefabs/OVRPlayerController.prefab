@@ -5379,6 +5379,7 @@ MonoBehaviour:
   worldStartPoint: {x: 0, y: 0, z: 0}
   worldEndPoint: {x: 0, y: 0, z: 0}
   RayCastEnabled: 1
+  leftHandIndex: {fileID: 6332466650059775736}
 --- !u!1 &3450738900966603618
 GameObject:
   m_ObjectHideFlags: 0
@@ -6401,6 +6402,12 @@ PrefabInstance:
       objectReference: {fileID: 249513650953674711}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6ba3498ffa1e534b91a07264266e6b8, type: 3}
+--- !u!4 &6332466650059775736 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4235966333424294, guid: e6ba3498ffa1e534b91a07264266e6b8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6336138377796488286}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6336138377796114590 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 414912, guid: e6ba3498ffa1e534b91a07264266e6b8,

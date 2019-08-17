@@ -44,6 +44,8 @@ namespace Kosmos
         private Transform leftHand;
         public bool RayCastEnabled = false;
 
+        [SerializeField] private Transform leftHandIndex;
+
         // we added the following two methods to get the currently connected controller
         public bool ControllerIsConnected {
             get {
@@ -82,7 +84,9 @@ namespace Kosmos
         private void Start() {
             // ignore trigger colliders per default
             currentQuerryTriggerInteraction = QueryTriggerInteraction.Ignore;
-            leftHand = GameObject.FindWithTag("LeftHandAnchor").transform;
+            leftHand = GameObject.FindWithTag("LeftHandAnchor").transform.Find("HandLeft");
+
+            Debug.Log("leftHand " + leftHand);
         }
 
         private void Update()
@@ -125,15 +129,20 @@ namespace Kosmos
 
                 if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
                     // move a little to the right so that the line starts from inside the left hand
-                    localStartPoint = leftHand.localPosition - new Vector3(0.05f, 0f, 0f);
+                    //localStartPoint = leftHand.localPosition - new Vector3(0.05f, 0f, 0f);
+                    //localStartPoint = leftHand.localPosition;
+                    localStartPoint = leftHandIndex.position;
                 }
 
                 Vector3 localEndPoint = localStartPoint + ((orientation * Vector3.forward) * m_RayLength);
                 Vector3 localEndPointLineRenderer = localStartPoint + ((orientation * Vector3.forward) * 2.0f);
 
-                worldStartPoint = localToWorld.MultiplyPoint(localStartPoint);
-                worldEndPoint = localToWorld.MultiplyPoint(localEndPoint);
-                worldEndPontLineRenderer = localToWorld.MultiplyPoint(localEndPointLineRenderer);
+                //worldStartPoint = localToWorld.MultiplyPoint(localStartPoint);
+                worldStartPoint = localStartPoint;
+                //worldEndPoint = localToWorld.MultiplyPoint(localEndPoint);
+                worldEndPoint = localEndPoint;
+                //worldEndPontLineRenderer = localToWorld.MultiplyPoint(localEndPointLineRenderer);
+                worldEndPontLineRenderer = localEndPointLineRenderer;
 
                 // create new ray
                 ray = new Ray(worldStartPoint, worldEndPoint - worldStartPoint);
