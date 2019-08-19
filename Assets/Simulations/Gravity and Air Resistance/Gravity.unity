@@ -995,6 +995,11 @@ PrefabInstance:
       propertyPath: leftHandIndex
       value: 
       objectReference: {fileID: 1589414383}
+    - target: {fileID: 8447974424658517921, guid: 732f9eb33dcb7402e83c3d8772e831c8,
+        type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a932a3f9e092642c8837972160220f46, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 732f9eb33dcb7402e83c3d8772e831c8, type: 3}
 --- !u!114 &942504656 stripped
@@ -1684,23 +1689,16 @@ PrefabInstance:
     - target: {fileID: 7223476554864391458, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
       propertyPath: bodyText
-      value: 'Welcome to your first simulation. Let''s get you started!
+      value: 'Welcome to Gravity and Air Resistance!
 
 
-        Walk around the island by pressing on your Touchpad. Press and hold the upper
-        part to walk forward, left to walk left - you catch my drift.
+        Place objects from the table on the platform in front of you. Use the screen
+        to choose a height and drop them. After each drop, you''ll be able to analyze
+        data such as acceleration, speed and forces.
 
 
-        Point at objects and squeeze the Trigger to interact with them. Keep it squeezed
-        to move objects around. If you need a reminder, just press the Back button
-        on your controller to open the menu.
-
-
-        By the way, this is a Question Block. You''ll encounter many of these along
-        the way. Press them to read what they''re saying.
-
-
-        Now, press this Question Block to close it and have some fun!'
+        If you need help with the controls, you can always press the menu button on
+        your controller.'
       objectReference: {fileID: 0}
     - target: {fileID: 7223476554864391458, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
@@ -1752,36 +1750,6 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 4925622914442024951, guid: 2e75425bae46a4904b223ce3af9dbc1a,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4925622914442024951, guid: 2e75425bae46a4904b223ce3af9dbc1a,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4925622914442024951, guid: 2e75425bae46a4904b223ce3af9dbc1a,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2373572609158428673, guid: 2e75425bae46a4904b223ce3af9dbc1a,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2373572609158428673, guid: 2e75425bae46a4904b223ce3af9dbc1a,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2373572609158428673, guid: 2e75425bae46a4904b223ce3af9dbc1a,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 7223476555415774365, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
       propertyPath: m_LocalScale.z
@@ -1806,6 +1774,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 6037066845285801750, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 4925622914442024951, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4925622914442024951, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4925622914442024951, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2373572609158428673, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2373572609158428673, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2373572609158428673, guid: 2e75425bae46a4904b223ce3af9dbc1a,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e75425bae46a4904b223ce3af9dbc1a, type: 3}

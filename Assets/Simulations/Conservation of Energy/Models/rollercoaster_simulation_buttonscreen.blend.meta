@@ -1,81 +1,8 @@
 fileFormatVersion: 2
-guid: 9c70fd2cd38bd4f00b101b811816f65c
+guid: 53616f1d7e9fc4aa08838e7a6d4da156
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: bigger
-    100002: delete
-    100004: left
-    100006: play
-    100008: podest
-    100010: pole
-    100012: right
-    100014: //RootNode
-    100016: screen
-    100018: select
-    100020: smaller
-    100022: stop
-    100024: stop_v2
-    400000: bigger
-    400002: delete
-    400004: left
-    400006: play
-    400008: podest
-    400010: pole
-    400012: right
-    400014: //RootNode
-    400016: screen
-    400018: select
-    400020: smaller
-    400022: stop
-    400024: stop_v2
-    2100000: Material_004
-    2100002: Arrow_down_004
-    2100004: Arrow_down_001
-    2100006: delete
-    2100008: Material_006
-    2100010: Base_002
-    2100012: Chair
-    2100014: Chair__Monitor_ISS_png_000
-    2100016: Chair_002
-    2300000: bigger
-    2300002: delete
-    2300004: left
-    2300006: play
-    2300008: podest
-    2300010: pole
-    2300012: right
-    2300014: screen
-    2300016: select
-    2300018: smaller
-    2300020: stop
-    2300022: stop_v2
-    3300000: bigger
-    3300002: delete
-    3300004: left
-    3300006: play
-    3300008: podest
-    3300010: pole
-    3300012: right
-    3300014: screen
-    3300016: select
-    3300018: smaller
-    3300020: stop
-    3300022: stop_v2
-    4300000: stop_v2
-    4300002: stop
-    4300004: play
-    4300006: select
-    4300008: right
-    4300010: bigger
-    4300012: delete
-    4300014: smaller
-    4300016: screen
-    4300018: pole
-    4300020: left
-    4300022: podest
-    7400000: Default Take
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable: []
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -104,13 +31,14 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -118,18 +46,19 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 1
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -138,10 +67,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  importAnimation: 0
+  referencedClips: []
+  importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -151,12 +81,13 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

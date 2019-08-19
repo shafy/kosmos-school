@@ -9,7 +9,10 @@ namespace Kosmos {
     private RollerCoasterCart rollerCoasterCart;
 
     void OnTriggerEnter(Collider collider) {
-      // parent to cart
+
+    if (collider.tag != "OVRPlayerController") return;
+
+    // parent to cart
      rollerCoasterCart.SyncPlayerController(true);
 
       // start cart

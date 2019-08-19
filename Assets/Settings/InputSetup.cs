@@ -39,7 +39,6 @@ namespace Kosmos {
         // when coming back from being paused, re-do controller check
         if (!isPaused) {
           controllerFound = false;
-          //checkForController();
         }
       }
 
@@ -52,7 +51,6 @@ namespace Kosmos {
         showErrorWindow(false);
 
         if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
-
           // make sure both controllers are connected
           if (((currentController & OVRInput.Controller.LTouch) == OVRInput.Controller.LTouch) && ((currentController & OVRInput.Controller.RTouch) == OVRInput.Controller.RTouch)) {
             // deactivate both ElectroGrabbers

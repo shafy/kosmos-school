@@ -12,7 +12,7 @@ namespace Kosmos {
     }
 
     private IEnumerator LoadAsyncScene(string sceneName) {
-      AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+      AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
 
       while (!asyncLoad.isDone) {
         yield return null;

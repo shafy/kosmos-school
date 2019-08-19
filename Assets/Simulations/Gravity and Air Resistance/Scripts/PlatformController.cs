@@ -123,6 +123,7 @@ namespace Kosmos {
 
       // make sure it's kinematic
       collider.GetComponent<Rigidbody>().isKinematic = true;
+      collider.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     void OnTriggerExit(Collider collider) {
@@ -139,6 +140,11 @@ namespace Kosmos {
         heightValueTMP.gameObject.active = false;
         heightInstructionsTMP.gameObject.active = false;
         placeInstructionsTMP.gameObject.active = true;
+      }
+
+      // make sure it's not kinematic (for Quest only)
+      if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+        collider.GetComponent<Rigidbody>().isKinematic = true;
       }
     }
 

@@ -456,15 +456,21 @@ namespace Kosmos {
     public void SyncPlayerController(bool enable) {
       if (enable) {
         // parent camera to cart
+        playerControllerGO.GetComponent<CharacterCameraConstraint>().enabled = false;
         Transform userPosCart = transform.Find("User Position");
         ovrCameraPrevRot = ovrCameraRig.transform.rotation;
         ovrCameraRig.transform.parent = userPosCart;
         audioSourceCountdown.Play();
+
       } else {
         // parent camera to playercontroller
+        
         ovrCameraRig.transform.parent = playerControllerGO.transform;
         ovrCameraRig.transform.position = playerControllerGO.transform.position;
         ovrCameraRig.transform.rotation = ovrCameraPrevRot;
+        playerControllerGO.GetComponent<CharacterCameraConstraint>().enabled = true;
+        // move player a little back so he doesn't stand in the portal again
+        //playerControllerGO.transform.position += new Vector3(0, 0, -2f);
       }
 
       syncPlayerController = enable;

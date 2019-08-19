@@ -9,8 +9,8 @@ namespace Kosmos {
     private bool wasOver;
     private Renderer renderer;
 
-    [SerializeField] private Texture defaultTexture;
-    [SerializeField] private Texture hoverTexture;
+    [SerializeField] public Texture defaultTexture;
+    [SerializeField] public Texture hoverTexture;
 
     void Start() {
       base.Start();

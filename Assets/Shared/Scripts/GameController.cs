@@ -32,12 +32,21 @@ namespace Kosmos {
     }
 
     void Update() {
-      // Button.Back is for Go, Button.Start for Quest
-      if (OVRInput.GetDown(OVRInput.Button.Back) || OVRInput.GetDown(OVRInput.Button.Start)) {
-        ToggleIngameMenu();
-        
+      if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+        if (OVRInput.GetDown(OVRInput.Button.Start)) {
+          ToggleIngameMenu();
+        }
+      } else {
+        if (OVRInput.GetDown(OVRInput.Button.Back)) {
+          ToggleIngameMenu();
+        }
       }
     }
+
+    // void OnApplicationQuit() {
+    //   // track timed event end (started in WelcomeGameController)
+    //   Mixpanel.Track("App Session");
+    // }
 
     public void ToggleIngameMenu() {
       if (ingameMenu.activeSelf) {

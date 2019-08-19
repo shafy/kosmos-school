@@ -47,7 +47,7 @@ namespace Kosmos {
 
       // ** GO ONLY **
       // only move if touchpad is pressed and walking is not disabled
-      if (OVRInput.Get(OVRInput.Button.PrimaryTouchpad) && HaltUpdateMovement) {
+      if (OVRInput.Get(OVRInput.Button.PrimaryTouchpad) && !HaltUpdateMovement) {
         controllerRotation = KosmosStatics.ControllerOrientation();
 
         primayTouchpadPos = OVRInput.Get(OVRInput.Axis2D.PrimaryTouchpad);

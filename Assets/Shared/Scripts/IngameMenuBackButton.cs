@@ -7,7 +7,7 @@ namespace Kosmos {
   public class IngameMenuBackButton : TextureButton {
 
     [SerializeField] private GameController gameController;
-
+    
     public override void Press () {
       base.Press();
       gameController.ToggleIngameMenu();

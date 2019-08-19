@@ -9,6 +9,20 @@ namespace Kosmos {
 
     [SerializeField] private GameObject mainDisplay;
     [SerializeField] private GameObject controlsDisplay;
+   
+    [SerializeField] private Texture controlDescriptionQuest;
+    [SerializeField] private Texture controlDescriptionGo;
+
+    [SerializeField] private Renderer controlDescriptionRenderer;
+
+    void Awake() {
+      // put correct textures
+      if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
+        controlDescriptionRenderer.material.mainTexture = controlDescriptionQuest;
+      } else {
+        controlDescriptionRenderer.material.mainTexture = controlDescriptionGo;
+      }
+    }
 
     void OnEnable() {
       ShowMain();

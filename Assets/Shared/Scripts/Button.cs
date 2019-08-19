@@ -12,10 +12,11 @@ namespace Kosmos {
 
     [SerializeField] private AudioClip audioClip;
 
-    void Awake() {
+    public void Awake() {
       // we either use the AudioSource component on the button
       // or the AudioClip with the AudioSource Component from OVRPlayerController
       audioSource = GetComponent<AudioSource>();
+
       if (!audioSource && audioClip) {
         audioSource = GameObject.FindWithTag("UIAudioSource").GetComponent<AudioSource>();
       }
@@ -51,15 +52,13 @@ namespace Kosmos {
     // override this in child class
     // ** GO ONLY **
     public virtual void Press() {
-      if (audioClip) {
+      if (audioClip && audioSource) {
         audioSource.clip = audioClip;
       }
       
       if (audioSource) {
         audioSource.Play();
       }
-      
     }
-    
   }
 }

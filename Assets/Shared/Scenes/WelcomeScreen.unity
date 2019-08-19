@@ -854,6 +854,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1402375566981469098, guid: 732f9eb33dcb7402e83c3d8772e831c8,
+        type: 3}
+      propertyPath: HaltUpdateMovement
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8650571524348655436, guid: 732f9eb33dcb7402e83c3d8772e831c8,
         type: 3}
       propertyPath: m_Name
@@ -927,11 +932,6 @@ PrefabInstance:
     - target: {fileID: 3212654533351760805, guid: 732f9eb33dcb7402e83c3d8772e831c8,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402375566981469098, guid: 732f9eb33dcb7402e83c3d8772e831c8,
-        type: 3}
-      propertyPath: HaltUpdateMovement
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3450738900964949468, guid: 732f9eb33dcb7402e83c3d8772e831c8,
@@ -2216,7 +2216,6 @@ GameObject:
   - component: {fileID: 1719601851}
   - component: {fileID: 1719601852}
   - component: {fileID: 1719601853}
-  - component: {fileID: 1719601854}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -2385,23 +2384,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   errorMessage: {fileID: 899543599}
   DoEntitlementCheck: 0
---- !u!114 &1719601854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719601847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 882752fe4382f41c593a64591e77ee24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  token: 621f3f072fed028e2f14495206cdcea1
-  debugToken: 621f3f072fed028e2f14495206cdcea1
-  trackInEditor: 0
-  minLogLevel: 3
-  flushInterval: 60
 --- !u!1001 &1783534249
 PrefabInstance:
   m_ObjectHideFlags: 0
