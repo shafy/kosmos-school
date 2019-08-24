@@ -28,6 +28,8 @@ namespace Kosmos {
       var props = new Value();
       props["Scene Name"] = SceneManager.GetActiveScene().name;
       Mixpanel.Track("Opened Scene", props);
+
+      Mixpanel.StartTimedEvent("App Session");
     }
 
     // void OnApplicationQuit() {

@@ -40,7 +40,7 @@ namespace Kosmos
       // save default lifetime from particle system so we can go back to it later
       psInitialStartSize = pMain.startSize;
 
-      //lineRendererActive = lineRenderer.gameObject.activeInHierarchy;
+      lineRendererActive = true;
 
       setDestinationPS(false);
     }
@@ -56,11 +56,11 @@ namespace Kosmos
       if (UnityEngine.XR.XRDevice.model == "Oculus Quest") return;
 
       // if player is walking, always disable linerender
-      if (lineRendererActive && playerController.IsWalking) {
-        enableLineRenderer(false);
-      } else if (!lineRendererActive && !playerController.IsWalking) {
-        enableLineRenderer(true);
-      }
+      // if (lineRendererActive && playerController.IsWalking) {
+      //   enabledRayCaster(false);
+      // } else if (!lineRendererActive && !playerController.IsWalking) {
+      //   enabledRayCaster(true);
+      // }
      
 
       if (!playerController.IsWalking && controllerRayCaster.CurrentInteractible) {
@@ -210,9 +210,10 @@ namespace Kosmos
       pMain.startSize = psInitialStartSize;
     }
 
-    private void enableLineRenderer(bool enabled) {
+    private void enabledRayCaster(bool enabled) {
+      controllerRayCaster.RayCastEnabled = enabled;
+      controllerRayCaster.EnableLineRenderer(enabled); 
       lineRendererActive = enabled;
-      lineRenderer.enabled = enabled;
     }
 
     private void setDestinationPS(bool value) {

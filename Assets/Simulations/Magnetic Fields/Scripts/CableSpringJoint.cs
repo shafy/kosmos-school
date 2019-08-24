@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.MagneticFields {
   // creates a cable based on a series of objects strung together by spring joints
   public class CableSpringJoint : MonoBehaviour {
 
@@ -19,7 +19,7 @@ namespace Kosmos {
     void Start() {
       lineRenderer = GetComponent<LineRenderer>();
 
-      cableWidth = 0.1f;
+      cableWidth = 0.006f;
       allSections = new List<Transform>();
 
       // add all sections to allSections list

@@ -43,8 +43,10 @@ namespace mixpanel
         }
 
         private void OnApplicationQuit()
-        {
+        {   
+            Mixpanel.Track("App Session");
             Mixpanel.Save();
+            Mixpanel.Flush();
         }
 
         private void DoFlush()

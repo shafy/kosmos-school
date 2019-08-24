@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using mixpanel;
 
 namespace Kosmos
 {
@@ -29,6 +30,8 @@ namespace Kosmos
         OVRManifestPreprocessor.RemoveAndroidManifest();
         setKeystore(false);
         setEntitlementCheck(false);
+        MixpanelSettings.Instance.RuntimeToken = EnvKeys.MIXPANEL_TOKEN_DEV;
+        MixpanelSettings.Instance.DebugToken = EnvKeys.MIXPANEL_TOKEN_DEV;
         currentMode = "dev";
         return;
       }
@@ -42,6 +45,8 @@ namespace Kosmos
         OVRManifestPreprocessor.GenerateManifestForSubmission();
         setKeystore(true);
         setEntitlementCheck(true);
+        MixpanelSettings.Instance.RuntimeToken = EnvKeys.MIXPANEL_TOKEN_PROD;
+        MixpanelSettings.Instance.DebugToken = EnvKeys.MIXPANEL_TOKEN_DEV;
         currentMode = "prod";
         return;
       }
@@ -49,6 +54,7 @@ namespace Kosmos
 
     static void setKeystore(bool isEnabled) {
       if (isEnabled) {
+        PlayerSettings.Android.useCustomKeystore = true;
         PlayerSettings.Android.keystoreName = EnvKeys.KEYSTORE_NAME;
         PlayerSettings.Android.keyaliasName = EnvKeys.KEYALIAS_NAME;
         PlayerSettings.Android.keyaliasPass = EnvKeys.KEYALIAS_PASS;
@@ -59,6 +65,7 @@ namespace Kosmos
       PlayerSettings.Android.keyaliasName = "";
       PlayerSettings.Android.keyaliasPass = "";
       PlayerSettings.Android.keystorePass = "";
+      PlayerSettings.Android.useCustomKeystore = false;
     }
 
     static void setEntitlementCheck(bool isEnabled) {

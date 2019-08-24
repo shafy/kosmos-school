@@ -32,8 +32,6 @@ namespace Kosmos {
     
     // override OVRPlayerController's Update
     void Update () {
-      //Debug.Log("UnityEngine.XR.XRDevice.model " + UnityEngine.XR.XRDevice.model);
-
       // check if player is currently walking
       if (!isWalking && Controller.velocity != Vector3.zero) {
         isWalking = true;
@@ -61,7 +59,6 @@ namespace Kosmos {
 
     private void playWalkingSound(bool enable) {
       if (!audioSource) return;
-
       if (enable) {
          audioSource.Play();
       } else {

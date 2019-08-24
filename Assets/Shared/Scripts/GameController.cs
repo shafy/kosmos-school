@@ -94,8 +94,6 @@ namespace Kosmos {
           audioSource.clip = openMenuClip;
           audioSource.Play();
         }
-        
-
       }
     }
   }
