@@ -6,26 +6,25 @@ namespace Kosmos.MagneticFields {
   // handles logic for a conductor with a magnetic field
   public class ConductorMF : MonoBehaviour {
 
-    private float lineWidth;
-    private float horizRadius;
-    private float vertRadius;
-    private int nSegments;
-
-    [SerializeField] private Transform MFLines;
-    [SerializeField] private Material lineMaterial;
-
+    private float maxMFMagnitude;
+    private float initialRadius;
     private int current;
 
+    [SerializeField] private Color strongColor;
+    [SerializeField] private Color weakColor;
+    [SerializeField] private int nLines = 7;
+    [SerializeField] private int nSegments = 30;
+    [SerializeField] private int maxCurrent = 10;
+    [SerializeField] private float lineWidth = 0.004f;
+    [SerializeField] private Material lineMat;
+    [SerializeField] private Transform MFLines;
+
     void Start() {
-      lineWidth = 0.004f;
-      nSegments = 30;
-      current = 5;
+      current = 1;
+      initialRadius = 0.05f;
+      maxMFMagnitude = getMagnitudeMF(initialRadius, maxCurrent);
 
       displayMF();
-    }
-
-    void Update() {
-      //displayMF();
     }
 
     // calculates positions for linepoints
@@ -53,47 +52,59 @@ namespace Kosmos.MagneticFields {
 
     // displays magnetic field lines around conductor
     private void displayMF() {
-
-      // we define min and max radii
-      // depending on the ampere, there are more or less field lines
-      // denser lines == stronger magnetic field
-
-      float minHorizRadius = 0.015f;
-      float minVertRadius = 0.015f;
-
-      float maxHorizRadius = 0.25f;
-      float maxVertRadius = 0.25f; 
-
-      // so that we have at least 3 lines
-      //int nLines = current + 2;
-      int nLines = 7;
-
-      float initialRadius = 0.035f;
-
-      // we get the initial radius, because the radius grows squared
-      //float initialRadius = (maxHorizRadius - minHorizRadius) / Mathf.Pow(nLines, 2);
-
       for (int i = 1; i <= nLines; i++) {
         GameObject currentGO = new GameObject();
         currentGO.transform.parent = MFLines;
         currentGO.transform.position = MFLines.position;
-        LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth);
-        //drawPoints(currentLineRenderer, 0f, Mathf.Pow(1.5f, i) * initialRadius, Mathf.Pow(1.5f, i) * initialRadius);
-        drawPoints(currentLineRenderer, 0f, i * initialRadius, i * initialRadius);
+
+        // calculate MF magnitude
+        float currentRadius = i * initialRadius;
+        float currentMagnitudeMF = getMagnitudeMF(currentRadius, current);
+
+        // normalize between 0 and 1 (to be used for color lerp)
+        float normalizedMagnitude = currentMagnitudeMF / maxMFMagnitude;
+
+        // get color
+        Color currentColor = Color.Lerp(weakColor, strongColor, normalizedMagnitude);
+
+        // create linerenderer and draw points
+        LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
+        drawPoints(currentLineRenderer, 0f, currentRadius, currentRadius);
       }      
     }
 
     // adds a LineRenderer component to a given GameObject and returns the LineRenderer
-    private LineRenderer createLineRenderer(GameObject currentGO, float lineWidth) {
+    private LineRenderer createLineRenderer(GameObject currentGO, float lineWidth, Color currentColor) {
       LineRenderer lineRenderer = currentGO.AddComponent<LineRenderer>() as LineRenderer;
       lineRenderer.useWorldSpace = false;
       lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
       lineRenderer.receiveShadows = false;
       lineRenderer.startWidth = lineWidth;
       lineRenderer.endWidth = lineWidth;
-      lineRenderer.material = lineMaterial;
+      // create material
+      // Material newMat = new Material(Shader.Find("Standard"));
+      // // set rendering mode to Fade Mode
+      // newMat.SetFloat("_Mode", 2);
+      // newMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+      // newMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+      // newMat.SetInt("_ZWrite", 0);
+      // newMat.DisableKeyword("_ALPHATEST_ON");
+      // newMat.EnableKeyword("_ALPHABLEND_ON");
+      // newMat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+      // newMat.renderQueue = 3000;
+      // set its color
+      //newMat.color = currentColor;
+      lineMat.color = currentColor;
+      lineRenderer.material = lineMat;
 
       return lineRenderer;
+    }
+
+    // calculates magnitude of magnetic field at given distance with given current
+    private float getMagnitudeMF(float _distance, float _current) {
+      float permeabilityOfFreeSpace = 4 * Mathf.PI * Mathf.Pow(10, -7);
+
+      return (permeabilityOfFreeSpace * _current) / (2 * Mathf.PI * _distance);
     }
   }
 }
