@@ -20,9 +20,8 @@ namespace Kosmos.Shared {
     public enum MovementAxis {X, Y, Z};
     [SerializeField] private MovementAxis movementAxis;
 
-
-    void Start() {
-
+    public float SliderValue {
+      get { return sliderValue; }
     }
 
     void Update() {
@@ -36,17 +35,7 @@ namespace Kosmos.Shared {
       // only do something if not in range
       if (movementAxisPosValue() >= 0f && movementAxisPosValue() <= movementRange) return;
 
-      switch (movementAxis) {
-        case MovementAxis.X:
-           transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, 0, movementRange), transform.localPosition.y, transform.localPosition.z);
-           break;
-        case MovementAxis.Y:
-           transform.localPosition = new Vector3(transform.localPosition.x, Mathf.Clamp(transform.localPosition.y, 0, movementRange), transform.localPosition.z);
-           break;
-        case MovementAxis.Z:
-           transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, 0, movementRange));
-           break;
-      }
+      transform.localPosition = Constrain();
     }
 
     private float movementAxisPosValue() {
@@ -60,6 +49,24 @@ namespace Kosmos.Shared {
         default:
           return transform.localPosition.x;
       }
+    }
+
+    public Vector3 Constrain() {
+      Vector3 newLocalPos = Vector3.zero;
+
+      switch (movementAxis) {
+        case MovementAxis.X:
+           newLocalPos = new Vector3(Mathf.Clamp(transform.localPosition.x, 0, movementRange), transform.localPosition.y, transform.localPosition.z);
+           break;
+        case MovementAxis.Y:
+           newLocalPos = new Vector3(transform.localPosition.x, Mathf.Clamp(transform.localPosition.y, 0, movementRange), transform.localPosition.z);
+           break;
+        case MovementAxis.Z:
+           newLocalPos = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, 0, movementRange));
+           break;
+      }
+
+      return newLocalPos;
     }
   }
 }

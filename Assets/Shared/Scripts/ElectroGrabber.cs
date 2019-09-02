@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Kosmos.Shared;
 
 namespace Kosmos
 {
@@ -9,6 +10,7 @@ namespace Kosmos
 
     private bool isGrabbing;
     private bool lineRendererActive;
+    private ConstrainPosition constrainPosition;
     private Grabbable currentGrabbable;
     private float DistanceToObj;
     private float currentTouchPadY;
@@ -17,6 +19,7 @@ namespace Kosmos
     private Quaternion controllerOrientation;
     private ParticleSystem.MainModule pMain;
     private ParticleSystem.MinMaxCurve psInitialStartSize;
+    private SliderControl sliderControl;
     private Transform trackingSpace;
     private Rigidbody currentGrabbableRb;
 
@@ -120,7 +123,7 @@ namespace Kosmos
       currentGrabbable = currentInteractible.gameObject.GetComponent<Grabbable>();
       if (currentGrabbable == null) return;
 
-      // don'tgrab it if it has IsGrabbable = false;
+      // don't grab it if it has IsGrabbable = false;
       if (!currentGrabbable.IsGrabbable) return;
 
       // make kinematic
@@ -138,6 +141,12 @@ namespace Kosmos
       isGrabbing = true;
 
       currentGrabbable.Grabbed();
+
+      // check if it has a ConstrainPosition component
+      constrainPosition = currentInteractible.gameObject.GetComponent<ConstrainPosition>();
+
+      // check if it has a SliderControl component
+      sliderControl = currentInteractible.gameObject.GetComponent<SliderControl>();
     }
 
     private void ungrabItem() {
@@ -148,6 +157,9 @@ namespace Kosmos
 
       resetLaser();
       currentGrabbable.Ungrabbed();
+
+      constrainPosition = null;
+      sliderControl = null;
     }
 
     private void moveItem() {
@@ -170,6 +182,16 @@ namespace Kosmos
         currentGrabbable.PhantomPosition = newPos;
       } else {
         currentGrabbable.transform.position = newPos;
+      }
+
+      // if it is being constrained, get position from the ConstrainPosition component
+      if (constrainPosition) {
+        currentGrabbable.transform.localPosition = constrainPosition.Constrain();
+      }
+
+      // if it has a slidercontrol, make sure to add additional constraints
+      if (sliderControl) {
+        currentGrabbable.transform.localPosition = sliderControl.Constrain();
       }
       
     }

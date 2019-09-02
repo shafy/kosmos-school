@@ -14,6 +14,7 @@ namespace Kosmos.Shared {
     private float initialRotX;
     private float initialRotY;
     private float initialRotZ;
+    private Vector3 newLocalPos;
 
     [Header("Position Constraints")]
     [SerializeField] private bool posX;
@@ -38,31 +39,37 @@ namespace Kosmos.Shared {
     }
 
     void Update() {
-      // constrain positions
-      if (posX) {
-        transform.localPosition = new Vector3(initialPosX, transform.localPosition.y, transform.localPosition.z);
-      }
+      transform.localPosition = Constrain();
 
-      if (posY) {
-        transform.localPosition = new Vector3(transform.localPosition.x, initialPosY, transform.localPosition.z);
-      }
-
-      if (posZ) {
-        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, initialPosZ);
-      }
-
-      if (posX && posZ) {
-        transform.localPosition = new Vector3(initialPosX, transform.localPosition.y, initialPosZ);
-      }
-
-      if (posX && posY && posZ) {
-        transform.localPosition = new Vector3(initialPosX, initialPosY, initialPosZ);
-      }
-      
       // constrain rotations
       if (rotX && rotY && rotZ) {
         transform.rotation = Quaternion.Euler(initialRotX, initialRotY, initialRotZ);
       }
+    }
+
+    public Vector3 Constrain() {
+      // constrain positions
+      if (posX) {
+        newLocalPos = new Vector3(initialPosX, transform.localPosition.y, transform.localPosition.z);
+      }
+
+      if (posY) {
+        newLocalPos = new Vector3(transform.localPosition.x, initialPosY, transform.localPosition.z);
+      }
+
+      if (posZ) {
+        newLocalPos = new Vector3(transform.localPosition.x, transform.localPosition.y, initialPosZ);
+      }
+
+      if (posX && posZ) {
+        newLocalPos = new Vector3(initialPosX, transform.localPosition.y, initialPosZ);
+      }
+
+      if (posX && posY && posZ) {
+        newLocalPos = new Vector3(initialPosX, initialPosY, initialPosZ);
+      }
+
+      return newLocalPos;
     }
   }
 }

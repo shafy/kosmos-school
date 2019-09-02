@@ -8,7 +8,7 @@ namespace Kosmos.MagneticFields {
 
     private float maxMFMagnitude;
     private float initialRadius;
-    private int current;
+    private float current;
 
     [SerializeField] private Color strongColor;
     [SerializeField] private Color weakColor;
@@ -20,7 +20,7 @@ namespace Kosmos.MagneticFields {
     [SerializeField] private Transform MFLines;
 
     void Start() {
-      current = 1;
+      current = 1f;
       initialRadius = 0.05f;
       maxMFMagnitude = getMagnitudeMF(initialRadius, maxCurrent);
 
@@ -105,6 +105,14 @@ namespace Kosmos.MagneticFields {
       float permeabilityOfFreeSpace = 4 * Mathf.PI * Mathf.Pow(10, -7);
 
       return (permeabilityOfFreeSpace * _current) / (2 * Mathf.PI * _distance);
+    }
+
+    public void SetCurrent(float _current) {
+      if (current == _current) return;
+
+      // if current has changed, update magnetic field
+      current = _current;
+      displayMF();
     }
   }
 }
