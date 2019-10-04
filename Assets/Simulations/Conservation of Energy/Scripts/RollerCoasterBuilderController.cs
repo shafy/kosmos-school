@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
+using mixpanel;
 
 namespace Kosmos {
   // handles logic for the roller coaster builder
@@ -11,6 +13,7 @@ namespace Kosmos {
     private bool operationInProgress;
     private bool cartHasBeenAdded;
     private bool trackIsComplete;
+    private GameController gameController;
     private int currentItemIndex;
     private List<GameObject> previewItemsList;
     private List <RollerCoasterItem.RCItemType> rcItemList;
@@ -89,7 +92,10 @@ namespace Kosmos {
       bankedCurveSizes.Add(itemTypeBankedCurve20);
 
       // set start instructions
-      additionalText.text = startText;;
+      additionalText.text = startText;
+
+      // get gamecontroller
+      gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
     }
 
     private void displayItem(int nextIndex, string direction) {
@@ -285,7 +291,16 @@ namespace Kosmos {
       RollerCoasterBuilderPreviewItem currentPreviewItem = previewItemsList[currentItemIndex].GetComponent<RollerCoasterBuilderPreviewItem>();
       RollerCoasterItem currentFullItem = currentPreviewItem.GetCurrentFullSize().GetComponent<RollerCoasterItem>();
 
-      if (!isItemAddable(currentFullItem.ItemType)) return;
+      if (!isItemAddable(currentFullItem.ItemType)) {
+
+        var propsFail = new Value();
+        propsFail["Scene Name"] = SceneManager.GetActiveScene().name;
+        propsFail["Item Type"] = currentFullItem.ItemType.ToString();
+        propsFail["Success"] = false;
+        Mixpanel.Track("Placed Item", propsFail);
+
+        return;
+      }
 
       // special case: if it's the first item, make sure to add a start hill
       if (rcItemList.Count == 0) {
@@ -310,6 +325,12 @@ namespace Kosmos {
       updateAddableList();
 
       updateItemAdditionalText(currentFullItem.ItemType);
+
+      var propsSuccess = new Value();
+      propsSuccess["Scene Name"] = SceneManager.GetActiveScene().name;
+      propsSuccess["Item Type"] = currentFullItem.ItemType.ToString();
+      propsSuccess["Success"] = true;
+      Mixpanel.Track("Placed Item", propsSuccess);
     }
 
     public void AddElementToRC(Transform element, bool isStartHill = false) {
@@ -370,6 +391,15 @@ namespace Kosmos {
         operationInProgress = false;
 
         previewItemsList[currentItemIndex].SetActive(true);
+
+        // show feedback
+        if (gameController) gameController.ShowFeedbackPopup(10);
+
+        // track
+        var props = new Value();
+        props["Scene Name"] = SceneManager.GetActiveScene().name;
+        Mixpanel.Track("Ran Simulation", props);
+
       } else {
         modelPlayButton.SetActive(false);
         modelStopButton.SetActive(true);

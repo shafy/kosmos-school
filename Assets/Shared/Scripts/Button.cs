@@ -29,7 +29,7 @@ namespace Kosmos {
       yield return new WaitForSeconds(0.25f);
       OVRInput.SetControllerVibration (0f, 0f, controller);
       isVibrating = false;
-     } 
+    } 
 
     // ** QUEST ONLY **
     public virtual void OnTriggerEnter(Collider collider) {

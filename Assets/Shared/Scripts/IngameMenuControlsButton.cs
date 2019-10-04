@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.Shared {
   // show controls in ingame menu
   public class IngameMenuControlsButton : TextureButton {
 

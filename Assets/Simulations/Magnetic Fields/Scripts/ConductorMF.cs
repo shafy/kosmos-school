@@ -14,11 +14,11 @@ namespace Kosmos.MagneticFields {
     private GameObject[] arrowsArray;
     private Vector3 initialPos;
 
-    private enum CurrentDirection {forward, backward};
-    private CurrentDirection direction;
+    public enum CurrentDirection {forward, backward};
+    public CurrentDirection direction;
 
-    private enum CurrentType {ac, dc};
-    private CurrentType type;
+    public enum CurrentType {ac, dc};
+    public CurrentType type;
 
     [SerializeField] private Color strongColor;
     [SerializeField] private Color weakColor;
@@ -29,9 +29,17 @@ namespace Kosmos.MagneticFields {
     [SerializeField] private Material lineMat;
     [SerializeField] private Transform MFLines;
     [SerializeField] private GameObject directionArrowPrefab;
+    [SerializeField] private GameObject otherCondcutor;
+
+    public float Current {
+      get { return current; }
+    }
+
+    void Awake() {
+      setCurrentDirection();
+    }
 
     void Start() {
-      current = 1f;
       deltaDistance = 0.0008f;
       //initialRadius = 0.05f;
       initialPos = new Vector3(0, 0, 0.05f);
@@ -42,6 +50,14 @@ namespace Kosmos.MagneticFields {
       arrowsArray = new GameObject[nLines];
 
       displayInitialMF();
+    }
+
+    private void setCurrentDirection() {
+      if (direction == CurrentDirection.forward) {
+        current = 1f;
+      } else {
+        current = -1f;
+      }
     }
 
     // calculates positions for linepoints
@@ -101,35 +117,25 @@ namespace Kosmos.MagneticFields {
     // }
 
     private void displayInitialMF() {
-      for (int i = 1; i <= nLines; i++) {
+      for (int i = 0; i < nLines; i++) {
         GameObject currentGO = new GameObject();
         currentGO.transform.parent = MFLines;
         currentGO.transform.position = MFLines.position;
 
+        Vector3 startPos = initialPos + (i * new Vector3(0, 0, 0.05f));
+
         // calculate mf vector for initial point
-        Vector3 initialMF = calculateMagneticFieldVector(current, initialPos);
+        Vector3 initialMF = calculateMagneticFieldVector(current, startPos);
 
-
-        //Vector3[] linePoints = new Vector3[nSegments];
         List<Vector3> linePoints = new List<Vector3>();
 
-        Vector3 prevPoint = initialPos;
+        Vector3 prevPoint = startPos;
         linePoints.Add(prevPoint);
-
-        // for (int y = 1; y < nSegments; y++) {
-
-        //     // get next point with RK4
-        //     Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
-
-        //     // add to array
-        //     linePoints[y] = nextPoint;
-        //     prevPoint = nextPoint;
-        // }
 
         bool reachedStartPos = false;
         int counter = 1;
 
-        while (!reachedStartPos && counter < 600) {
+        while (!reachedStartPos && counter < 600 * (i + 1)) {
           // get next point with RK4
           Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
 
@@ -141,14 +147,12 @@ namespace Kosmos.MagneticFields {
           prevPoint = nextPoint;
 
           // check if close to start position
-          if (counter > 100 && Vector3.Distance(initialPos, nextPoint) < 0.004f) {
+          if (counter > 100 && Vector3.Distance(startPos, nextPoint) < 0.004f) {
             reachedStartPos = true;
           }
 
           counter += 1;
-
         }
-
 
         Color currentColor = calculateColor(initialMF.magnitude);
 
@@ -156,16 +160,13 @@ namespace Kosmos.MagneticFields {
         LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
 
         // add to array
-        linesArray[i - 1] = currentLineRenderer;
+        linesArray[i] = currentLineRenderer;
         drawPoints(currentLineRenderer, linePoints);
 
         // add direction arrows
         // GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
         // arrowsArray[i - 1] = currentArrow;
       }    
-
-     
-
     }
 
     private Vector3 calculateMagneticFieldVector(float _current, Vector3 _distanceVec) {
@@ -173,19 +174,27 @@ namespace Kosmos.MagneticFields {
 
       // current vector goes along the cable
       Vector3 currentVector = new Vector3(_current, 0, 0);
+      float otherCurrent = otherCondcutor.GetComponent<ConductorMF>().Current;
+      Debug.Log("otherCurrent " + otherCurrent);
+      Vector3 currentVectorOther = new Vector3(otherCurrent, 0, 0);
 
       // distance/radius defined on y/z plane
       // return in micro tesla
-      //return 1000000 * ((permeabilityOfFreeSpace * currentVector) / (2 * Mathf.PI * _distanceVec.magnitude));
-      return 1000000 * ((permeabilityOfFreeSpace / 4 * Mathf.PI) * (Vector3.Cross(currentVector, _distanceVec) / Mathf.Pow(currentVector.magnitude, 2)));
+
+      Vector3 MFVectorThisConductor = 1000000 * (permeabilityOfFreeSpace * Vector3.Cross(currentVector, _distanceVec.normalized) / (4 * Mathf.PI * Mathf.Pow(_distanceVec.magnitude, 2)));
+
+      // calculate MF of other conductor
+      Vector3 distanceVecOther = _distanceVec + (transform.position - otherCondcutor.transform.position);
+      
+      Vector3 MFVectorOtherConductor = 1000000 * (permeabilityOfFreeSpace * Vector3.Cross(currentVectorOther, distanceVecOther.normalized) / (4 * Mathf.PI * Mathf.Pow(distanceVecOther.magnitude, 2)));
+
+      return MFVectorThisConductor + MFVectorOtherConductor;
     }
 
     // returns the next point of the magnetic field line that has the same magnitude
     // algorithm based on Runge-Kutta 4 (https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods)
     private Vector3 getNextMFPointRK4(float _current, Vector3 distanceVec, float _deltaDistance) {
       // _deltaDistance is the step size
-
-     
 
       // we normalize the vectors because RK4 shouldn't be dependent on strenght of magnetic field
       Vector3 k1Vector = _deltaDistance * calculateMagneticFieldVector(_current, distanceVec).normalized;
@@ -263,7 +272,6 @@ namespace Kosmos.MagneticFields {
       Material newMat = new Material(Shader.Find("Standard"));
       newMat.CopyPropertiesFromMaterial(lineMat);
       newMat.color = currentColor;
-      Debug.Log("_directionArrow.transform.GetChild(0).GetComponent<Renderer>() " + _directionArrow.transform.GetChild(0).GetComponent<Renderer>());
       _directionArrow.transform.GetChild(0).GetComponent<Renderer>().material = newMat;
 
       return _directionArrow;

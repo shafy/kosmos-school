@@ -5,7 +5,7 @@ using Kosmos;
 
 namespace Kosmos.Shared {
   // when user clicks on a Popup Feedback Button
-  public class FeedbackButton : TextureButton {
+  public class FeedbackButton : MaterialButton {
 
     [SerializeField] private string buttonValue;
     [SerializeField] private FeedbackPopupController feedbackPopupController;

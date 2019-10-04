@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.Shared {
   // selects simulatin to start from start menu (welcome scren)
   public class StartMenuSelectButton : TextureButton {
 

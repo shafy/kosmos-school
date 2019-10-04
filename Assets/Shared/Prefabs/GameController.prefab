@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5176648558474352925}
   m_Layer: 0
   m_Name: GameController
-  m_TagString: Untagged
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,9 +48,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openMenuClip: {fileID: 8300000, guid: 067e817366bb94281b4032c8f39d9399, type: 3}
   closeMenuClip: {fileID: 8300000, guid: 25e740e7003db40868574fda2765d9a8, type: 3}
+  showFeedbackPopupClip: {fileID: 8300000, guid: f37f8977858ea40589a8a23b461fb167,
+    type: 3}
   controllerRayCaster: {fileID: 0}
   ingameMenu: {fileID: 0}
   playerController: {fileID: 0}
+  feedbackPopupPrefab: {fileID: 6867780240704158003, guid: f47b27a5943f54f38966f057b3b84d43,
+    type: 3}
 --- !u!114 &5176648558474352923
 MonoBehaviour:
   m_ObjectHideFlags: 0

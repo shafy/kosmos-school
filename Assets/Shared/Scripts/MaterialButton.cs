@@ -4,20 +4,20 @@ using UnityEngine;
 using Kosmos;
 
 namespace Kosmos.Shared {
-  // general button swith changing texture on hover
-  public class TextureButton : Button {
+  // general button with changing material on hover
+  public class MaterialButton : Button {
 
     private bool wasOver;
     private Renderer renderer;
 
-    [SerializeField] public Texture defaultTexture;
-    [SerializeField] public Texture hoverTexture;
+    private Material defaultMat;
+    [SerializeField] public Material hoverMat;
 
     void Start() {
       base.Start();
 
       renderer = GetComponent<Renderer>();
-      renderer.material.mainTexture = defaultTexture;
+      defaultMat = renderer.material;
 
       wasOver = false;
     }
@@ -26,7 +26,7 @@ namespace Kosmos.Shared {
 
       // change to hover texture
       if (isOver && !wasOver) {
-        renderer.material.mainTexture = hoverTexture;
+        renderer.material = hoverMat;
         wasOver = true;
 
         TouchHaptics.Instance.VibrateFor(0.1f, 0.2f, 0.1f, OVRInput.Controller.LTouch);
@@ -35,7 +35,7 @@ namespace Kosmos.Shared {
 
       // change back to default texture
       if (!isOver && wasOver) {
-        renderer.material.mainTexture = defaultTexture;
+        renderer.material = defaultMat;
         wasOver = false;
       }
     }

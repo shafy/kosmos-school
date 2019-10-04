@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.Shared {
   // leaves from simulation back to start menu
   public class IngameMenuLeaveButton : TextureButton {
 

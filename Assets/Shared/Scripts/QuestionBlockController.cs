@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
+using mixpanel;
 
 namespace Kosmos {
   // Main controls of Question Block logic
@@ -98,6 +100,11 @@ namespace Kosmos {
           audioSource.clip = openClip;
           audioSource.Play();
         }
+
+        var props = new Value();
+        props["Scene Name"] = SceneManager.GetActiveScene().name;
+        props["Title"] = textTitle.text;
+        Mixpanel.Track("Clicked Question Block", props);
       } else {
         showWindow(false);
         isShowing = false;

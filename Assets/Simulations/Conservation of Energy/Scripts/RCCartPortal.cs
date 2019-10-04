@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using mixpanel;
 
 namespace Kosmos {
   // transports user to cart
@@ -13,10 +15,15 @@ namespace Kosmos {
     if (collider.tag != "OVRPlayerController") return;
 
     // parent to cart
-     rollerCoasterCart.SyncPlayerController(true);
+    rollerCoasterCart.SyncPlayerController(true);
 
-      // start cart
-      StartCoroutine(StartCartCoroutine());
+    // track
+    var props = new Value();
+    props["Scene Name"] = SceneManager.GetActiveScene().name;
+    Mixpanel.Track("Rode Rollercoaster", props);
+
+    // start cart
+    StartCoroutine(StartCartCoroutine());
     }
 
     private IEnumerator StartCartCoroutine() {

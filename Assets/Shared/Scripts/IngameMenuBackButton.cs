@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.Shared {
   // closes ingame menu
   public class IngameMenuBackButton : TextureButton {
 

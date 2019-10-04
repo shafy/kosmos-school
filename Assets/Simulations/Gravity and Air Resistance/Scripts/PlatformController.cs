@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
+using mixpanel;
 
 namespace Kosmos {
   // Makes sure are moved to right place on platform if dropped on it
@@ -13,6 +15,7 @@ namespace Kosmos {
     private float lerpValue;
     private float movementTime;
     private float placeHeight;
+    private GameController gameController;
     private int dropCompleteCounter;
     private List<Transform> objectsList;
     private Transform currentObjectTransform;
@@ -71,6 +74,8 @@ namespace Kosmos {
       placeInstructionsTMP.gameObject.active = true;
 
       createEmptyGraphs();
+
+      gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
     }
 
 
@@ -124,6 +129,11 @@ namespace Kosmos {
       // make sure it's kinematic
       collider.GetComponent<Rigidbody>().isKinematic = true;
       collider.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      props["Object Name"] = collider.name;
+      Mixpanel.Track("Added Object", props);
     }
 
     void OnTriggerExit(Collider collider) {
@@ -238,7 +248,17 @@ namespace Kosmos {
       if (dropCompleteCounter == objectsList.Count) {
         graphCreator.CreateGraph();
         dropCompleteCounter = 0;
+
+        // show feedback
+        if (gameController) gameController.ShowFeedbackPopup(10);
+
+        // track
+        var props = new Value();
+        props["Scene Name"] = SceneManager.GetActiveScene().name;
+        Mixpanel.Track("Ran Simulation", props);
       }
+
+
     }
   }
 }

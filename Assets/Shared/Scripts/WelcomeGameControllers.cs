@@ -5,12 +5,14 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using mixpanel;
+using Kosmos.Shared;
 
 namespace Kosmos {
   // controls for the welcome scene
   public class WelcomeGameControllers : MonoBehaviour {
 
     [SerializeField] private ControllerRayCaster controllerRayCaster;
+    [SerializeField] private GameObject feedbackPopup;
 
     void Start() {
       if (UnityEngine.XR.XRDevice.model == "Oculus Quest") {
@@ -29,12 +31,21 @@ namespace Kosmos {
       props["Scene Name"] = SceneManager.GetActiveScene().name;
       Mixpanel.Track("Opened Scene", props);
 
-      Mixpanel.StartTimedEvent("App Session");
+      //Mixpanel.StartTimedEvent("App Session");
+
+      if (PlayerPrefs.GetInt("hasEnteredWelcomeEmail") == 1) {
+        feedbackPopup.SetActive(false);
+      } else {
+        feedbackPopup.SetActive(true);
+      }
+
+      TouchHaptics.Instance.VibrateFor(0.25f, 0.2f, 0.2f, OVRInput.Controller.Touch);
     }
 
     // void OnApplicationQuit() {
     //   // track timed event end
     //   Mixpanel.Track("App Session");
+    //   Mixpanel.Flush();
     // }
 
     void Update() {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.Shared {
   // goes back to main display of ingame menu
   public class IngameMenuControlsBackButton : TextureButton {
 
