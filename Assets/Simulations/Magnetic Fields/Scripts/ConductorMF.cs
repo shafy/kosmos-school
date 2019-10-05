@@ -8,6 +8,7 @@ namespace Kosmos.MagneticFields {
 
     private bool isCalculating;
     private bool addNewLineNext;
+    private Color currentColor;
     private float maxMFMagnitude;
     private float initialRadius;
     private float otherCurrent;
@@ -126,6 +127,7 @@ namespace Kosmos.MagneticFields {
       // }      
     // }
 
+    // calculates the next point on the magnetic field line
     private void getNextPoint() {
       // in this case we have to add a new LineRenderer
       if (addNewLineNext) {
@@ -142,10 +144,8 @@ namespace Kosmos.MagneticFields {
 
         // calculate mf vector for initial point
         Vector3 initialMF = calculateMagneticFieldVector(current, otherCurrent, nextPointRight);
-        Color currentColor = calculateColor(initialMF.magnitude);
+        currentColor = calculateColor(initialMF.magnitude);
 
-        //List<Vector3> linePoints = new List<Vector3>();
-        //linePoints.Add(prevPoint);
         activeLineRendererRight = createLineRenderer(lineGameObjectRight, lineWidth, currentColor);
         activeLineRendererLeft = createLineRenderer(lineGameObjectLeft, lineWidth, currentColor);
 
@@ -160,14 +160,13 @@ namespace Kosmos.MagneticFields {
       
       bool reachedStartPos = false;
 
-
       // get 20 next points, then add it to the linePoints array (we draw this one)
       for (int i = 0; i < 20; i++) {
         nextPointRight = getNextMFPointRK4(nextPointRight, deltaDistance);
         nextPointLeft = getNextMFPointRK4(nextPointLeft, -deltaDistance);
 
         // if close to start point, stop executing
-        if (linePointCounter > 10 && Vector3.Distance(nextPointRight, nextPointLeft) < 0.004f) {
+        if (linePointCounter > 3 && Vector3.Distance(nextPointRight, nextPointLeft) < 0.004f) {
           reachedStartPos = true;
           break;
         }
@@ -183,6 +182,20 @@ namespace Kosmos.MagneticFields {
 
       // after x calculated points, increase lineCounter and reset linePointCounter
       if (linePointCounter == 300 || reachedStartPos ) {
+        // add direction arrow
+        int arrowPosIndex = (activeLineRendererRight.positionCount - 1) / 2;
+
+        Vector3 arrowPosRight = activeLineRendererRight.GetPosition(arrowPosIndex);
+        Vector3 arrowPosRightNext = activeLineRendererRight.GetPosition(arrowPosIndex + 1);
+        Vector3 arrowPosLeft = activeLineRendererLeft.GetPosition(arrowPosIndex);
+        Vector3 arrowPosLeftNext = activeLineRendererLeft.GetPosition(arrowPosIndex - 1);
+       
+        GameObject currentArrowRight = createDirectionArrows(arrowPosRight, arrowPosRightNext, "right");
+        GameObject currentArrowLeft = createDirectionArrows(arrowPosLeft, arrowPosLeftNext, "left");
+        setArrowAttributes(currentArrowRight, currentColor);
+        setArrowAttributes(currentArrowLeft, currentColor);
+
+        // reset values
         addNewLineNext = true;
         lineCounter++;
         linePointCounter = 1;
@@ -192,62 +205,8 @@ namespace Kosmos.MagneticFields {
     }
 
     private void displayInitialMF() {
-      //isCalculating = true;
-
       lineCounter = 0;
-      linePointCounter = 1;
-
-
-      // for (int i = 0; i < nLines; i++) {
-      //   GameObject currentGO = new GameObject();
-      //   currentGO.transform.parent = MFLines;
-      //   currentGO.transform.position = MFLines.position;
-
-      //   Vector3 startPos = initialPos + (i * new Vector3(0, 0, 0.05f));
-
-      //   // calculate mf vector for initial point
-      //   Vector3 initialMF = calculateMagneticFieldVector(current, startPos);
-
-      //   List<Vector3> linePoints = new List<Vector3>();
-
-      //   Vector3 prevPoint = startPos;
-      //   linePoints.Add(prevPoint);
-
-      //   bool reachedStartPos = false;
-      //   int counter = 1;
-
-      //   while (!reachedStartPos && counter < 300 * (i + 1)) {
-      //     // get next point with RK4
-      //     Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
-
-      //     // add to array
-      //     if (counter % 20 == 0) {
-      //       linePoints.Add(nextPoint);
-      //     }
-
-      //     prevPoint = nextPoint;
-
-      //     // check if close to start position
-      //     if (counter > 100 && Vector3.Distance(startPos, nextPoint) < 0.004f) {
-      //       reachedStartPos = true;
-      //     }
-
-      //     counter += 1;
-      //   }
-
-      //   Color currentColor = calculateColor(initialMF.magnitude);
-
-      //   // create linerenderer and draw points
-      //   LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
-
-      //   // add to array
-      //   linesArray[i] = currentLineRenderer;
-      //   drawPoints(currentLineRenderer, linePoints);
-
-      //   // add direction arrows
-      //   // GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
-      //   // arrowsArray[i - 1] = currentArrow;
-      // }    
+      linePointCounter = 1;   
     }
 
     // private void displayInitialMF() {
@@ -364,27 +323,25 @@ namespace Kosmos.MagneticFields {
       return currentColor;
     }
 
-    private GameObject createDirectionArrows(float horizRadius, float vertRadius, Color _color) {
+    private GameObject createDirectionArrows(Vector3 randomPos, Vector3 randomPosNext, string _direction) {
       GameObject directionArrow = (GameObject)Instantiate(directionArrowPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 
       directionArrow.transform.parent = transform;
 
-      // define position
-      // random position ellipse/circle
-      float x = 0f;
-      float randomAngle = Random.Range(0, 360);
-      float y = Mathf.Sin(Mathf.Deg2Rad * randomAngle) * horizRadius;
-      float z = Mathf.Cos(Mathf.Deg2Rad * randomAngle) * vertRadius;
+      float newAngle = Vector3.Angle(randomPos, randomPosNext);
 
-      directionArrow.transform.localPosition = new Vector3(x, y, z);
-      directionArrow.transform.Rotate(-randomAngle, 0, 0);
+      directionArrow.transform.localPosition = randomPos;
+      directionArrow.transform.rotation = Quaternion.Euler(newAngle, 0, 0);
 
-      // rotate by another 180 degrees if the current direction is backward
-      if (current < 0) {
+      // rotate by another 180 degrees if the current direction is forward
+      if (current > 0 && _direction == "right") {
         directionArrow.transform.Rotate(180, 0, 0);
       }
 
-      directionArrow = setArrowAttributes(directionArrow, _color);
+      // rotate another 180 if direction is left
+      // if (_direction == "left") {
+      //   directionArrow.transform.Rotate(180, 0, 0);
+      // }
 
       return directionArrow;
     }
