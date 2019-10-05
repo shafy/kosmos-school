@@ -6,16 +6,21 @@ namespace Kosmos.MagneticFields {
   // handles logic for a conductor with a magnetic field
   public class ConductorMF : MonoBehaviour {
 
+    private bool isCalculating;
+    private bool addNewLineNext;
     private float maxMFMagnitude;
     private float initialRadius;
-    private float current;
+    private float otherCurrent;
     private float deltaDistance;
+    private int lineCounter;
+    private int linePointCounter;
     private LineRenderer[] linesArray;
+    private LineRenderer activeLineRendererRight;
+    private LineRenderer activeLineRendererLeft;
     private GameObject[] arrowsArray;
     private Vector3 initialPos;
-
-    public enum CurrentDirection {forward, backward};
-    public CurrentDirection direction;
+    private Vector3 nextPointRight;
+    private Vector3 nextPointLeft;
 
     public enum CurrentType {ac, dc};
     public CurrentType type;
@@ -25,41 +30,46 @@ namespace Kosmos.MagneticFields {
     [SerializeField] private int nLines = 7;
     [SerializeField] private int nSegments = 30;
     [SerializeField] private int maxCurrent = 10;
-    [SerializeField] private float lineWidth = 0.004f;
+    [SerializeField] private float lineWidth = 0.01f;
+    [SerializeField] private float current = 1f;
     [SerializeField] private Material lineMat;
     [SerializeField] private Transform MFLines;
     [SerializeField] private GameObject directionArrowPrefab;
-    [SerializeField] private GameObject otherCondcutor;
+    [SerializeField] private GameObject otherConductor;
 
     public float Current {
       get { return current; }
     }
 
-    void Awake() {
-      setCurrentDirection();
-    }
 
     void Start() {
-      deltaDistance = 0.0008f;
-      //initialRadius = 0.05f;
-      initialPos = new Vector3(0, 0, 0.05f);
-      //maxMFMagnitude = getMagnitudeMF(initialRadius, maxCurrent);
-      maxMFMagnitude = calculateMagneticFieldVector(maxCurrent, initialPos).magnitude;
+      if (otherConductor) {
+        otherCurrent = otherConductor.GetComponent<ConductorMF>().Current;
+      } else  {
+        otherCurrent = 0;
+      }
 
-      linesArray = new LineRenderer[nLines];
+      addNewLineNext = true;
+      deltaDistance = 0.003f;
+      //initialRadius = 0.05f;
+      initialPos = new Vector3(0, 0, 0.1f);
+      //maxMFMagnitude = getMagnitudeMF(initialRadius, maxCurrent);
+      maxMFMagnitude = calculateMagneticFieldVector(maxCurrent, 0, initialPos).magnitude;
+
+      //linesArray = new LineRenderer[nLines];
       arrowsArray = new GameObject[nLines];
 
       displayInitialMF();
     }
 
-    private void setCurrentDirection() {
-      if (direction == CurrentDirection.forward) {
-        current = 1f;
-      } else {
-        current = -1f;
+    void Update() {
+
+      if (lineCounter < nLines) {
+        getNextPoint();
       }
     }
 
+    
     // calculates positions for linepoints
     // private void drawPoints(LineRenderer currentLineRenderer, float offset, float horizRadius, float vertRadius) {
     //   float x = 0f;
@@ -116,91 +126,217 @@ namespace Kosmos.MagneticFields {
       // }      
     // }
 
-    private void displayInitialMF() {
-      for (int i = 0; i < nLines; i++) {
-        GameObject currentGO = new GameObject();
-        currentGO.transform.parent = MFLines;
-        currentGO.transform.position = MFLines.position;
+    private void getNextPoint() {
+      // in this case we have to add a new LineRenderer
+      if (addNewLineNext) {
+        GameObject lineGameObjectRight = new GameObject();
+        lineGameObjectRight.transform.parent = MFLines;
+        lineGameObjectRight.transform.position = MFLines.position;
 
-        Vector3 startPos = initialPos + (i * new Vector3(0, 0, 0.05f));
+        GameObject lineGameObjectLeft = new GameObject();
+        lineGameObjectLeft.transform.parent = MFLines;
+        lineGameObjectLeft.transform.position = MFLines.position;
+
+        nextPointRight = initialPos + (lineCounter * new Vector3(0, 0, 0.1f));
+        nextPointLeft = nextPointRight; 
 
         // calculate mf vector for initial point
-        Vector3 initialMF = calculateMagneticFieldVector(current, startPos);
-
-        List<Vector3> linePoints = new List<Vector3>();
-
-        Vector3 prevPoint = startPos;
-        linePoints.Add(prevPoint);
-
-        bool reachedStartPos = false;
-        int counter = 1;
-
-        while (!reachedStartPos && counter < 600 * (i + 1)) {
-          // get next point with RK4
-          Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
-
-          // add to array
-          if (counter % 20 == 0) {
-            linePoints.Add(nextPoint);
-          }
-
-          prevPoint = nextPoint;
-
-          // check if close to start position
-          if (counter > 100 && Vector3.Distance(startPos, nextPoint) < 0.004f) {
-            reachedStartPos = true;
-          }
-
-          counter += 1;
-        }
-
+        Vector3 initialMF = calculateMagneticFieldVector(current, otherCurrent, nextPointRight);
         Color currentColor = calculateColor(initialMF.magnitude);
 
-        // create linerenderer and draw points
-        LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
+        //List<Vector3> linePoints = new List<Vector3>();
+        //linePoints.Add(prevPoint);
+        activeLineRendererRight = createLineRenderer(lineGameObjectRight, lineWidth, currentColor);
+        activeLineRendererLeft = createLineRenderer(lineGameObjectLeft, lineWidth, currentColor);
 
-        // add to array
-        linesArray[i] = currentLineRenderer;
-        drawPoints(currentLineRenderer, linePoints);
+        // add first points to make sure they are at the same spot
+        activeLineRendererRight.positionCount = 1;
+        activeLineRendererLeft.positionCount = 1;
+        activeLineRendererRight.SetPosition(0, nextPointRight);
+        activeLineRendererLeft.SetPosition(0, nextPointLeft);
 
-        // add direction arrows
-        // GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
-        // arrowsArray[i - 1] = currentArrow;
-      }    
+        addNewLineNext = false;
+      }
+      
+      bool reachedStartPos = false;
+
+
+      // get 20 next points, then add it to the linePoints array (we draw this one)
+      for (int i = 0; i < 20; i++) {
+        nextPointRight = getNextMFPointRK4(nextPointRight, deltaDistance);
+        nextPointLeft = getNextMFPointRK4(nextPointLeft, -deltaDistance);
+
+        // if close to start point, stop executing
+        if (linePointCounter > 10 && Vector3.Distance(nextPointRight, nextPointLeft) < 0.004f) {
+          reachedStartPos = true;
+          break;
+        }
+      }
+
+      activeLineRendererRight.positionCount = linePointCounter + 1;
+      activeLineRendererLeft.positionCount = linePointCounter + 1;
+      activeLineRendererRight.SetPosition(linePointCounter, nextPointRight);
+      activeLineRendererLeft.SetPosition(linePointCounter, nextPointLeft);
+      //linePoints.Add(prevPoint);
+
+      linePointCounter++;
+
+      // after x calculated points, increase lineCounter and reset linePointCounter
+      if (linePointCounter == 300 || reachedStartPos ) {
+        addNewLineNext = true;
+        lineCounter++;
+        linePointCounter = 1;
+        return;
+      }
+
     }
 
-    private Vector3 calculateMagneticFieldVector(float _current, Vector3 _distanceVec) {
+    private void displayInitialMF() {
+      //isCalculating = true;
+
+      lineCounter = 0;
+      linePointCounter = 1;
+
+
+      // for (int i = 0; i < nLines; i++) {
+      //   GameObject currentGO = new GameObject();
+      //   currentGO.transform.parent = MFLines;
+      //   currentGO.transform.position = MFLines.position;
+
+      //   Vector3 startPos = initialPos + (i * new Vector3(0, 0, 0.05f));
+
+      //   // calculate mf vector for initial point
+      //   Vector3 initialMF = calculateMagneticFieldVector(current, startPos);
+
+      //   List<Vector3> linePoints = new List<Vector3>();
+
+      //   Vector3 prevPoint = startPos;
+      //   linePoints.Add(prevPoint);
+
+      //   bool reachedStartPos = false;
+      //   int counter = 1;
+
+      //   while (!reachedStartPos && counter < 300 * (i + 1)) {
+      //     // get next point with RK4
+      //     Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
+
+      //     // add to array
+      //     if (counter % 20 == 0) {
+      //       linePoints.Add(nextPoint);
+      //     }
+
+      //     prevPoint = nextPoint;
+
+      //     // check if close to start position
+      //     if (counter > 100 && Vector3.Distance(startPos, nextPoint) < 0.004f) {
+      //       reachedStartPos = true;
+      //     }
+
+      //     counter += 1;
+      //   }
+
+      //   Color currentColor = calculateColor(initialMF.magnitude);
+
+      //   // create linerenderer and draw points
+      //   LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
+
+      //   // add to array
+      //   linesArray[i] = currentLineRenderer;
+      //   drawPoints(currentLineRenderer, linePoints);
+
+      //   // add direction arrows
+      //   // GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
+      //   // arrowsArray[i - 1] = currentArrow;
+      // }    
+    }
+
+    // private void displayInitialMF() {
+    //   for (int i = 0; i < nLines; i++) {
+    //     GameObject currentGO = new GameObject();
+    //     currentGO.transform.parent = MFLines;
+    //     currentGO.transform.position = MFLines.position;
+
+    //     Vector3 startPos = initialPos + (i * new Vector3(0, 0, 0.05f));
+
+    //     // calculate mf vector for initial point
+    //     Vector3 initialMF = calculateMagneticFieldVector(current, startPos);
+
+    //     List<Vector3> linePoints = new List<Vector3>();
+
+    //     Vector3 prevPoint = startPos;
+    //     linePoints.Add(prevPoint);
+
+    //     bool reachedStartPos = false;
+    //     int counter = 1;
+
+    //     while (!reachedStartPos && counter < 300 * (i + 1)) {
+    //       // get next point with RK4
+    //       Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
+
+    //       // add to array
+    //       if (counter % 20 == 0) {
+    //         linePoints.Add(nextPoint);
+    //       }
+
+    //       prevPoint = nextPoint;
+
+    //       // check if close to start position
+    //       if (counter > 100 && Vector3.Distance(startPos, nextPoint) < 0.004f) {
+    //         reachedStartPos = true;
+    //       }
+
+    //       counter += 1;
+    //     }
+
+    //     Color currentColor = calculateColor(initialMF.magnitude);
+
+    //     // create linerenderer and draw points
+    //     LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
+
+    //     // add to array
+    //     linesArray[i] = currentLineRenderer;
+    //     drawPoints(currentLineRenderer, linePoints);
+
+    //     // add direction arrows
+    //     // GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
+    //     // arrowsArray[i - 1] = currentArrow;
+    //   }    
+    // }
+
+    private Vector3 calculateMagneticFieldVector(float _current, float _otherCurrent, Vector3 _distanceVec) {
       float permeabilityOfFreeSpace = 4 * Mathf.PI * Mathf.Pow(10, -7);
 
       // current vector goes along the cable
       Vector3 currentVector = new Vector3(_current, 0, 0);
-      float otherCurrent = otherCondcutor.GetComponent<ConductorMF>().Current;
-      Debug.Log("otherCurrent " + otherCurrent);
-      Vector3 currentVectorOther = new Vector3(otherCurrent, 0, 0);
-
+      Vector3 currentVectorOther = new Vector3(_otherCurrent, 0, 0);
+      
       // distance/radius defined on y/z plane
       // return in micro tesla
 
       Vector3 MFVectorThisConductor = 1000000 * (permeabilityOfFreeSpace * Vector3.Cross(currentVector, _distanceVec.normalized) / (4 * Mathf.PI * Mathf.Pow(_distanceVec.magnitude, 2)));
 
       // calculate MF of other conductor
-      Vector3 distanceVecOther = _distanceVec + (transform.position - otherCondcutor.transform.position);
-      
-      Vector3 MFVectorOtherConductor = 1000000 * (permeabilityOfFreeSpace * Vector3.Cross(currentVectorOther, distanceVecOther.normalized) / (4 * Mathf.PI * Mathf.Pow(distanceVecOther.magnitude, 2)));
+      Vector3 distanceVecOther;
+      Vector3 MFVectorOtherConductor = new Vector3(0, 0, 0);
 
+      if (otherConductor) {
+        distanceVecOther = _distanceVec + (transform.position - otherConductor.transform.position);
+        MFVectorOtherConductor = 1000000 * (permeabilityOfFreeSpace * Vector3.Cross(currentVectorOther, distanceVecOther.normalized) / (4 * Mathf.PI * Mathf.Pow(distanceVecOther.magnitude, 2)));
+      }
+     
       return MFVectorThisConductor + MFVectorOtherConductor;
     }
 
     // returns the next point of the magnetic field line that has the same magnitude
     // algorithm based on Runge-Kutta 4 (https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods)
-    private Vector3 getNextMFPointRK4(float _current, Vector3 distanceVec, float _deltaDistance) {
+    private Vector3 getNextMFPointRK4(Vector3 distanceVec, float _deltaDistance) {
       // _deltaDistance is the step size
 
       // we normalize the vectors because RK4 shouldn't be dependent on strenght of magnetic field
-      Vector3 k1Vector = _deltaDistance * calculateMagneticFieldVector(_current, distanceVec).normalized;
-      Vector3 k2Vector = _deltaDistance * calculateMagneticFieldVector(_current, distanceVec + (k1Vector * (_deltaDistance / 2))).normalized;
-      Vector3 k3Vector = _deltaDistance * calculateMagneticFieldVector(_current, distanceVec + (k2Vector * (_deltaDistance / 2))).normalized;
-      Vector3 k4Vector = _deltaDistance * calculateMagneticFieldVector(_current, distanceVec + (k3Vector * _deltaDistance)).normalized;
+      Vector3 k1Vector = _deltaDistance * calculateMagneticFieldVector(current, otherCurrent, distanceVec).normalized;
+      Vector3 k2Vector = _deltaDistance * calculateMagneticFieldVector(current, otherCurrent, distanceVec + (k1Vector * (_deltaDistance / 2))).normalized;
+      Vector3 k3Vector = _deltaDistance * calculateMagneticFieldVector(current, otherCurrent, distanceVec + (k2Vector * (_deltaDistance / 2))).normalized;
+      Vector3 k4Vector = _deltaDistance * calculateMagneticFieldVector(current, otherCurrent, distanceVec + (k3Vector * _deltaDistance)).normalized;
 
       // return next point
       return distanceVec + (k1Vector + 2 * k2Vector + 2 * k3Vector + k4Vector) / 6;
@@ -244,7 +380,7 @@ namespace Kosmos.MagneticFields {
       directionArrow.transform.Rotate(-randomAngle, 0, 0);
 
       // rotate by another 180 degrees if the current direction is backward
-      if (direction == CurrentDirection.backward) {
+      if (current < 0) {
         directionArrow.transform.Rotate(180, 0, 0);
       }
 
@@ -283,7 +419,7 @@ namespace Kosmos.MagneticFields {
       lineRenderer.useWorldSpace = false;
       lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
       lineRenderer.receiveShadows = false;
-      lineRenderer.loop = true; // connect end and start point together
+      lineRenderer.loop = false; // connect end and start point together
       lineRenderer = setLineAttribtues(lineRenderer, lineWidth, currentColor);
 
       return lineRenderer;
