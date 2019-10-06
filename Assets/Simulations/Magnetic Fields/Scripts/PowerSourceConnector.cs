@@ -30,7 +30,7 @@ namespace Kosmos.MagneticFields {
 
       // add reference to MFController
       ConductorMF currentConductorMF = conductorCableHandle.GetConductorMF();
-      mFController.AddConductor(currentConductorMF, connectorLabel);
+      mFController.AddConductor(currentConductorMF, connectorLabel, conductorCableHandle.CurrentHandleSide);
 
       occupyingConductorMF = currentConductorMF;
    }

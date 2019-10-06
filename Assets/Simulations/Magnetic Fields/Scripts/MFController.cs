@@ -7,13 +7,13 @@ namespace Kosmos.MagneticFields {
   // takes care of magnetic fields controls
   public class MFController : MonoBehaviour {
 
-    private Dictionary<ConnectorLabel, ConductorMF> connectorDict;
+    private Dictionary<ConnectorLabel, ConductorInfo> connectorDict;
     private float prevSliderValue;
 
     [SerializeField] private SliderControl sliderControl;
     //[SerializeField] private ConductorMF conductorMF;
 
-    public enum ConnectorLabel {DC_A1, DC_A2, DC_B1, DC_B2, AC_A1, AC_A2, AC_B1, AC_B2};
+    public enum ConnectorLabel {DC_A_POS, DC_A_NEG, DC_B_POS, DC_B_NEG, AC_A1, AC_A2, AC_B1, AC_B2};
     private ConnectorLabel connectorLabel;
 
     void Start() {
@@ -27,17 +27,46 @@ namespace Kosmos.MagneticFields {
       prevSliderValue = sliderControl.SliderValue;
     }
 
-    public void AddConductor(ConductorMF _conductorMF, ConnectorLabel _connectorLabel) {
+    // sets currents for currently connected cables
+    private void setCurrents() {
+      // check if something connected to both connectors of each A and B
+      // also check if the same cable is connected
+      if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS) && connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) {
+        if (connectorDict[ConnectorLabel.DC_A_POS].conductorMF == connectorDict[ConnectorLabel.DC_A_NEG].conductorMF) {
+
+          float current = sliderControl.SliderValue;
+          // define in which direction current is flowing
+          if (connectorDict[ConnectorLabel.DC_A_POS].handleSide == ConductorCableHandle.HandleSide.right) {
+            current = -current;
+          }
+
+          // set current
+          connectorDict[ConnectorLabel.DC_A_POS].conductorMF.SetCurrent(current);
+        }
+      }
+    }
+
+    public void AddConductor(ConductorMF _conductorMF, ConnectorLabel _connectorLabel, ConductorCableHandle.HandleSide _handleSide) {
 
       // check if it exists
       if (connectorDict.ContainsKey(_connectorLabel)) return;
 
-      connectorDict.Add(_connectorLabel, _conductorMF);
+      connectorDict.Add(_connectorLabel, new ConductorInfo(_conductorMF, _handleSide));
     }
 
     public void PowerButtonPress() {
-
+      setCurrents();
     }
   
+  }
+
+  public struct ConductorInfo {
+    public ConductorMF conductorMF;
+    public ConductorCableHandle.HandleSide handleSide;
+
+    public ConductorInfo(ConductorMF _conductorMF, ConductorCableHandle.HandleSide _handleSide) {
+      conductorMF = _conductorMF;
+      handleSide = _handleSide;
+    }
   }
 }
