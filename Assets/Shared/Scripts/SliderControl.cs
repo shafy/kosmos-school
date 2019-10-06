@@ -12,6 +12,7 @@ namespace Kosmos.Shared {
 
     [SerializeField] private float minValue;
     [SerializeField] private float maxValue;
+    [SerializeField] private float initialValue;
 
     [Tooltip("How many meters it can move physically")]
     [SerializeField] private float movementRange;
@@ -22,6 +23,10 @@ namespace Kosmos.Shared {
 
     public float SliderValue {
       get { return sliderValue; }
+    }
+
+    void Start() {
+      sliderValue = initialValue;
     }
 
     void Update() {
