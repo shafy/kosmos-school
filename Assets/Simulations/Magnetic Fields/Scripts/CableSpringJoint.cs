@@ -29,38 +29,38 @@ namespace Kosmos.MagneticFields {
         allSections.Add(section);
       }
 
-      currentGrabbable = handle.GetComponent<Grabbable>();
+      //currentGrabbable = handle.GetComponent<Grabbable>();
 
       cableLength = 2f;
     }
 
     void Update() {
-      positionHandle();
+      //positionHandle();
       displayCable();
     }
 
     // positions handle of cable (which the user grabs to move the end of the cable)
     // depending on if it's being grabbed and maximum length allowed 
-    private void positionHandle() {
-      handleDistance = Vector3.Distance(fixPoint.transform.position, handle.transform.position);
+    // private void positionHandle() {
+    //   handleDistance = Vector3.Distance(fixPoint.transform.position, handle.transform.position);
 
-      if (!currentGrabbable.IsPhantom && currentGrabbable.IsGrabbed && handleDistance >= cableLength) {
-        currentGrabbable.IsPhantom = true;
-      }
+    //   if (!currentGrabbable.IsPhantom && currentGrabbable.IsGrabbed && handleDistance >= cableLength) {
+    //     currentGrabbable.IsPhantom = true;
+    //   }
 
-      if (currentGrabbable.IsPhantom) {
-        Vector3 cableVectorNormal = (currentGrabbable.PhantomPosition - fixPoint.transform.position).normalized;
-        Vector3 realPos = fixPoint.transform.position + cableVectorNormal * cableLength;
+    //   if (currentGrabbable.IsPhantom) {
+    //     Vector3 cableVectorNormal = (currentGrabbable.PhantomPosition - fixPoint.transform.position).normalized;
+    //     Vector3 realPos = fixPoint.transform.position + cableVectorNormal * cableLength;
         
-        float phantomDist = (currentGrabbable.PhantomPosition - fixPoint.transform.position).magnitude;
+    //     float phantomDist = (currentGrabbable.PhantomPosition - fixPoint.transform.position).magnitude;
 
-        if (phantomDist < cableLength) {
-          currentGrabbable.IsPhantom = false;
-        } else {
-          handle.transform.position = fixPoint.transform.position + cableVectorNormal * cableLength;
-        }
-      }
-    }
+    //     if (phantomDist < cableLength) {
+    //       currentGrabbable.IsPhantom = false;
+    //     } else {
+    //       handle.transform.position = fixPoint.transform.position + cableVectorNormal * cableLength;
+    //     }
+    //   }
+    // }
 
     private void displayCable() {
       lineRenderer.startWidth = cableWidth;

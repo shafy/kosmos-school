@@ -65,6 +65,14 @@ namespace Kosmos.Shared {
         newLocalPos = new Vector3(initialPosX, transform.localPosition.y, initialPosZ);
       }
 
+      if (posX && posY) {
+        newLocalPos = new Vector3(initialPosX, initialPosY, transform.localPosition.z);
+      }
+
+      if (posY && posZ) {
+        newLocalPos = new Vector3(transform.localPosition.x, initialPosY, initialPosZ);
+      }
+
       if (posX && posY && posZ) {
         newLocalPos = new Vector3(initialPosX, initialPosY, initialPosZ);
       }

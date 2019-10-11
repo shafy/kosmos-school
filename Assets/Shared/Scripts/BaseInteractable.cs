@@ -17,8 +17,12 @@ namespace Kosmos
 
     public void Start() {
       m_InteractiveItem = GetComponent<InteractiveItem>();
-      m_InteractiveItem.OnOver += HandleOver;
-      m_InteractiveItem.OnOut += HandleOut;
+
+      if (m_InteractiveItem) {
+        m_InteractiveItem.OnOver += HandleOver;
+        m_InteractiveItem.OnOut += HandleOut;
+      }
+     
 
       isOver = false;
     }

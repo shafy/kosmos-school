@@ -8,11 +8,13 @@ namespace Kosmos.MagneticFields {
 
     private bool isCalculating;
     private bool addNewLineNext;
+    private bool createMF;
     private Color currentColor;
     private float maxMFMagnitude;
     private float initialRadius;
     private float otherCurrent;
     private float deltaDistance;
+    private float current;
     private int lineCounter;
     private int linePointCounter;
     private LineRenderer[] linesArray;
@@ -32,7 +34,7 @@ namespace Kosmos.MagneticFields {
     [SerializeField] private int nSegments = 30;
     [SerializeField] private int maxCurrent = 10;
     [SerializeField] private float lineWidth = 0.01f;
-    [SerializeField] private float current = 1f;
+    //[SerializeField] private float current = 1f;
     [SerializeField] private Material lineMat;
     [SerializeField] private Transform MFLines;
     [SerializeField] private GameObject directionArrowPrefab;
@@ -44,6 +46,7 @@ namespace Kosmos.MagneticFields {
 
 
     void Start() {
+      current = 0;
       if (otherConductor) {
         otherCurrent = otherConductor.GetComponent<ConductorMF>().Current;
       } else  {
@@ -60,72 +63,27 @@ namespace Kosmos.MagneticFields {
       //linesArray = new LineRenderer[nLines];
       arrowsArray = new GameObject[nLines];
 
-      displayInitialMF();
+      createMF = false;
+
     }
 
     void Update() {
 
+      if (!createMF) return;
+
       if (lineCounter < nLines) {
         getNextPoint();
+      } else {
+        // stop drawing magnetic field
+        createMF = false;
       }
     }
 
-    
-    // calculates positions for linepoints
-    // private void drawPoints(LineRenderer currentLineRenderer, float offset, float horizRadius, float vertRadius) {
-    //   float x = 0f;
-    //   float y;
-    //   float z;
-
-    //   float angle = 0f;
-
-    //   Vector3[] linePoints = new Vector3[nSegments + 1];
-
-    //   for (int i = 0; i < nSegments + 1; i++) {
-    //     y = Mathf.Sin(Mathf.Deg2Rad * angle) * horizRadius;
-    //     z = Mathf.Cos(Mathf.Deg2Rad * angle) * vertRadius;
-
-    //     linePoints[i] = new Vector3(x, y, z);
-
-    //     angle += (360f / nSegments);
-    //   }
-
-    //   currentLineRenderer.positionCount = linePoints.Length;
-    //   currentLineRenderer.SetPositions(linePoints);
-    // }
-
-     private void drawPoints(LineRenderer currentLineRenderer, List<Vector3> _linePoints) {
+    private void drawPoints(LineRenderer currentLineRenderer, List<Vector3> _linePoints) {
      
       currentLineRenderer.positionCount = _linePoints.Count;
       currentLineRenderer.SetPositions(_linePoints.ToArray());
     }
-
-
-    // *initially* displays magnetic field lines around conductor
-    // private void displayInitialMF() {
-      // for (int i = 1; i <= nLines; i++) {
-      //   GameObject currentGO = new GameObject();
-      //   currentGO.transform.parent = MFLines;
-      //   currentGO.transform.position = MFLines.position;
-
-      //   // calculate MF magnitude
-      //   float currentRadius = i * initialRadius;
-      //   float currentMagnitudeMF = getMagnitudeMF(currentRadius, current);
-
-      //   Color currentColor = calculateColor(currentMagnitudeMF);
-
-      //   // create linerenderer and draw points
-      //   LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
-
-      //   // add to array
-      //   linesArray[i - 1] = currentLineRenderer;
-      //   drawPoints(currentLineRenderer, 0f, currentRadius, currentRadius);
-
-      //   // add direction arrows
-      //   GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
-      //   arrowsArray[i - 1] = currentArrow;
-      // }      
-    // }
 
     // calculates the next point on the magnetic field line
     private void getNextPoint() {
@@ -204,63 +162,20 @@ namespace Kosmos.MagneticFields {
 
     }
 
-    private void displayInitialMF() {
+    private void displayMF() {
+      destroyMF();
+
+      createMF = true;
       lineCounter = 0;
       linePointCounter = 1;   
     }
 
-    // private void displayInitialMF() {
-    //   for (int i = 0; i < nLines; i++) {
-    //     GameObject currentGO = new GameObject();
-    //     currentGO.transform.parent = MFLines;
-    //     currentGO.transform.position = MFLines.position;
-
-    //     Vector3 startPos = initialPos + (i * new Vector3(0, 0, 0.05f));
-
-    //     // calculate mf vector for initial point
-    //     Vector3 initialMF = calculateMagneticFieldVector(current, startPos);
-
-    //     List<Vector3> linePoints = new List<Vector3>();
-
-    //     Vector3 prevPoint = startPos;
-    //     linePoints.Add(prevPoint);
-
-    //     bool reachedStartPos = false;
-    //     int counter = 1;
-
-    //     while (!reachedStartPos && counter < 300 * (i + 1)) {
-    //       // get next point with RK4
-    //       Vector3 nextPoint = getNextMFPointRK4(current, prevPoint, deltaDistance);
-
-    //       // add to array
-    //       if (counter % 20 == 0) {
-    //         linePoints.Add(nextPoint);
-    //       }
-
-    //       prevPoint = nextPoint;
-
-    //       // check if close to start position
-    //       if (counter > 100 && Vector3.Distance(startPos, nextPoint) < 0.004f) {
-    //         reachedStartPos = true;
-    //       }
-
-    //       counter += 1;
-    //     }
-
-    //     Color currentColor = calculateColor(initialMF.magnitude);
-
-    //     // create linerenderer and draw points
-    //     LineRenderer currentLineRenderer = createLineRenderer(currentGO, lineWidth, currentColor);
-
-    //     // add to array
-    //     linesArray[i] = currentLineRenderer;
-    //     drawPoints(currentLineRenderer, linePoints);
-
-    //     // add direction arrows
-    //     // GameObject currentArrow = createDirectionArrows(currentRadius, currentRadius, currentColor);
-    //     // arrowsArray[i - 1] = currentArrow;
-    //   }    
-    // }
+    // destroys magnetic field if it exists
+    private void destroyMF() {
+      foreach (Transform child in MFLines) {
+        Destroy(child.gameObject);
+      }
+    }
 
     private Vector3 calculateMagneticFieldVector(float _current, float _otherCurrent, Vector3 _distanceVec) {
       float permeabilityOfFreeSpace = 4 * Mathf.PI * Mathf.Pow(10, -7);
@@ -301,19 +216,6 @@ namespace Kosmos.MagneticFields {
       return distanceVec + (k1Vector + 2 * k2Vector + 2 * k3Vector + k4Vector) / 6;
     }
 
-    // "*updates* magnetic field lines with new magnetic field strength
-    // private void updateMF() {
-    //   for (int i = 0; i < nLines; i++) {
-    //     // calculate MF magnitude
-    //     float currentRadius = (i + 1) * initialRadius;
-    //     float currentMagnitudeMF = getMagnitudeMF(currentRadius, current);
-
-    //     Color currentColor = calculateColor(currentMagnitudeMF);
-    //     setLineAttribtues(linesArray[i], lineWidth, currentColor);
-    //     setArrowAttributes(arrowsArray[i], currentColor);
-    //   }
-    // }
-
     private Color calculateColor(float _currentMagnitudeMF) {
       // normalize between 0 and 1 (to be used for color lerp)
       float normalizedMagnitude = _currentMagnitudeMF / maxMFMagnitude;
@@ -326,7 +228,7 @@ namespace Kosmos.MagneticFields {
     private GameObject createDirectionArrows(Vector3 randomPos, Vector3 randomPosNext, string _direction) {
       GameObject directionArrow = (GameObject)Instantiate(directionArrowPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 
-      directionArrow.transform.parent = transform;
+      directionArrow.transform.parent = MFLines.transform;
 
       float newAngle = Vector3.Angle(randomPos, randomPosNext);
 
@@ -382,19 +284,13 @@ namespace Kosmos.MagneticFields {
       return lineRenderer;
     }
 
-    // calculates magnitude of magnetic field at given distance with given current
-    // private float getMagnitudeMF(float _distance, float _current) {
-    //   float permeabilityOfFreeSpace = 4 * Mathf.PI * Mathf.Pow(10, -7);
-
-    //   return (permeabilityOfFreeSpace * _current) / (2 * Mathf.PI * _distance);
-    // }
-
     public void SetCurrent(float _current) {
       if (current == _current) return;
 
       // if current has changed, update magnetic field
       current = _current;
-      //updateMF();
+
+      displayMF();
     }
   }
 }

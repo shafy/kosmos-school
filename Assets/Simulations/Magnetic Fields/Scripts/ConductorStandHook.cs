@@ -15,7 +15,7 @@ namespace Kosmos {
       get { return conductorSpotPosition; }
     }
 
-    void Start() {
+    void Awake() {
       conductorSpotPosition = conductorSpotTransform.position;
     }
 

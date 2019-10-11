@@ -9,38 +9,31 @@ namespace Kosmos.MagneticFields {
 
     private bool isOccupied;
     private ConductorMF occupyingConductorMF;
+    private Quaternion powerSourceRotation;
 
     [SerializeField] private MFController.ConnectorLabel connectorLabel;
     [SerializeField] private MFController mFController;
 
-    void Start() {
-      isOccupied = false;
+    public bool IsOccupied {
+      get { return isOccupied; }
+      set { isOccupied = value; }
     }
 
-    void OnTriggerEnter(Collider collider) {
+    public Quaternion PowerSourceRotation {
+      get { return powerSourceRotation; }
+    }
 
-      if (occupyingConductorMF) return;
+    void Start() {
+      isOccupied = false;
+      powerSourceRotation = mFController.transform.rotation;
+    }
 
-      ConductorCableHandle conductorCableHandle = collider.gameObject.GetComponent<ConductorCableHandle>(); 
-      if (!conductorCableHandle) return;
+    public void AddConductor(ConductorMF currentConductorMF, ConductorCableHandle.HandleSide currentHandleSide) {
+      mFController.AddConductor(currentConductorMF, connectorLabel, currentHandleSide);
+    }
 
-      // position handle
-      Transform colliderTrasform = collider.transform;
-      colliderTrasform.position = transform.position;
+    public void RemoveConductor() {
 
-      // add reference to MFController
-      ConductorMF currentConductorMF = conductorCableHandle.GetConductorMF();
-      mFController.AddConductor(currentConductorMF, connectorLabel, conductorCableHandle.CurrentHandleSide);
-
-      occupyingConductorMF = currentConductorMF;
-   }
-
-   void OnTriggerExit(Collider collider) {
-      ConductorCableHandle conductorCableHandle = collider.gameObject.GetComponent<ConductorCableHandle>(); 
-      if (!conductorCableHandle) return;
-
-      occupyingConductorMF = null;
-   }
-  
+    }
   }
 }

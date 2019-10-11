@@ -9,6 +9,8 @@ namespace Kosmos.Shared {
   public class SliderControl : MonoBehaviour {
 
     private float sliderValue;
+    private float prevSliderValue;
+    private GrabbableHands grabbableHands;
 
     [SerializeField] private float minValue;
     [SerializeField] private float maxValue;
@@ -25,22 +27,59 @@ namespace Kosmos.Shared {
       get { return sliderValue; }
     }
 
+    public bool IsGrabbed {
+      get { return grabbableHands.isGrabbed; }
+    }
+
     void Start() {
+      grabbableHands = GetComponent<GrabbableHands>();
+
       sliderValue = initialValue;
+      prevSliderValue = initialValue;
+
+      if (initialValue != 0) {
+        float initialPos = (initialValue / movementRange) * (maxValue - minValue);
+        setInitialPosition(initialPos);
+      }
     }
 
     void Update() {
+      sliderValue = (movementAxisPosValue() / movementRange) * (maxValue - minValue);
+
+      if (sliderValue == prevSliderValue) return;
+
       // make sure can't move outside of the defined range
       constrainMovementPos();
 
-      sliderValue = (movementAxisPosValue() / movementRange) * (maxValue - minValue);      
+      prevSliderValue = sliderValue;   
     }
 
     private void constrainMovementPos() {
       // only do something if not in range
-      if (movementAxisPosValue() >= 0f && movementAxisPosValue() <= movementRange) return;
+      if (movementRange > 0 && movementAxisPosValue() >= 0f && movementAxisPosValue() <= movementRange) return;
+
+      if (movementRange < 0 && movementAxisPosValue() <= 0f && movementAxisPosValue() >= movementRange) return;
 
       transform.localPosition = Constrain();
+    }
+
+    private void setInitialPosition(float initialPos) {
+      Vector3 newPos;
+      switch (movementAxis) {
+        case MovementAxis.X:
+          newPos = new Vector3(initialPos, transform.localPosition.y, transform.localPosition.z);
+          break;
+        case MovementAxis.Y:
+          newPos = new Vector3(transform.localPosition.x, initialPos, transform.localPosition.z);
+          break;
+        case MovementAxis.Z:
+          newPos = new Vector3(transform.localPosition.x, transform.localPosition.y, initialPos);
+          break;
+        default:
+          newPos = new Vector3(initialPos, transform.localPosition.y, transform.localPosition.z);
+          break;
+      }
+      transform.localPosition = newPos;
     }
 
     private float movementAxisPosValue() {
@@ -61,14 +100,27 @@ namespace Kosmos.Shared {
 
       switch (movementAxis) {
         case MovementAxis.X:
-           newLocalPos = new Vector3(Mathf.Clamp(transform.localPosition.x, 0, movementRange), transform.localPosition.y, transform.localPosition.z);
-           break;
+          if (movementRange > 0) {
+            newLocalPos = new Vector3(Mathf.Clamp(transform.localPosition.x, 0, movementRange), transform.localPosition.y, transform.localPosition.z);
+          } else {
+            newLocalPos = new Vector3(Mathf.Clamp(transform.localPosition.x, movementRange, 0), transform.localPosition.y, transform.localPosition.z);
+          }
+          break;
         case MovementAxis.Y:
-           newLocalPos = new Vector3(transform.localPosition.x, Mathf.Clamp(transform.localPosition.y, 0, movementRange), transform.localPosition.z);
+          if (movementRange > 0) {
+            newLocalPos = new Vector3(transform.localPosition.x, Mathf.Clamp(transform.localPosition.y, 0, movementRange), transform.localPosition.z);
+          } else {
+            newLocalPos = new Vector3(transform.localPosition.x, Mathf.Clamp(transform.localPosition.y, movementRange, 0), transform.localPosition.z);
+          }
+          
            break;
         case MovementAxis.Z:
-           newLocalPos = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, 0, movementRange));
-           break;
+          if (movementRange > 0) {
+            newLocalPos = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, 0, movementRange));
+          } else {
+            newLocalPos = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, movementRange, 0));
+          }
+          break;
       }
 
       return newLocalPos;
