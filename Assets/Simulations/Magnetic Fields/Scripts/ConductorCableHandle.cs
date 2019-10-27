@@ -14,6 +14,7 @@ namespace Kosmos.MagneticFields {
     private Quaternion latestSnapRotation;
 
     [SerializeField] private ConductorMF currentConductorMF;
+    [SerializeField] private PowerSourceConnector initialPowerConnector;
 
     public enum HandleSide {right, left};
     [SerializeField] private HandleSide currentHandleSide;
@@ -28,15 +29,29 @@ namespace Kosmos.MagneticFields {
 
       grabbableHands = GetComponent<GrabbableHands>();
       rb = GetComponent<Rigidbody>();
+
+      // place at initial position if there's one referenced
+      if (initialPowerConnector) {
+        latestSnapPositionConnector = initialPowerConnector;
+        latestSnapRotation = latestSnapPositionConnector.PowerSourceRotation;
+        toSnap = true;
+      }
     }
 
     void Update() {
 
+
+      // don't change position and rotation if it's snapped
+      if (isSnapped && !grabbableHands.isGrabbed) {
+        transform.position = latestSnapPositionConnector.transform.position;
+        transform.rotation = latestSnapPositionConnector.PowerSourceRotation * Quaternion.Euler(0, 90, 0);
+      }
+
       // snap to last position
       if (!isSnapped && toSnap && !grabbableHands.isGrabbed) {
-        transform.position = latestSnapPositionConnector.transform.position;
+        //transform.position = latestSnapPositionConnector.transform.position;
         // make sure it has correct rotation
-        transform.rotation = latestSnapRotation * Quaternion.Euler(0, 90, 0);
+        //transform.rotation = latestSnapRotation * Quaternion.Euler(0, 90, 0);
 
         latestSnapPositionConnector.IsOccupied = true;
         latestSnapPositionConnector.AddConductor(currentConductorMF, currentHandleSide);
@@ -47,11 +62,13 @@ namespace Kosmos.MagneticFields {
         toSnap = false;
       }
 
-      // this happens when it's snapped, the player grabs it but doesn't move it enough
-      // to exit the trigger collider. so it snaps right back to the last spot when let go.
+      // this happens when player removes a handle
       if (isSnapped && grabbableHands.isGrabbed) {
         isSnapped = false;
         toSnap = true;
+
+        latestSnapPositionConnector.RemoveConductor();
+        latestSnapPositionConnector.IsOccupied = false;
       }
     }
 
@@ -71,9 +88,13 @@ namespace Kosmos.MagneticFields {
       PowerSourceConnector powerSourceConnector = collider.gameObject.GetComponent<PowerSourceConnector>();
       if (!powerSourceConnector) return;
 
+      // only keep executing if the exit is from the same collider as the most recent entry
+      // otherwise, overlapping enters and exits can have undesirable behavior
+      if (latestSnapPositionConnector.gameObject.name != collider.name) return;
+
       // reset
       toSnap = false;
-      latestSnapPositionConnector.IsOccupied = false;
+      
     }
   
     public ConductorMF GetConductorMF() {

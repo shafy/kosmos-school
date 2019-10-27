@@ -127,7 +127,7 @@ namespace Kosmos {
           m_grabbedCollider = grabPoint;
           gameObject.GetComponent<Rigidbody>().isKinematic = true;
 
-          Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), true);
+          //Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), true);
       }
 
     /// <summary>
@@ -142,7 +142,7 @@ namespace Kosmos {
           m_grabbedBy = null;
           m_grabbedCollider = null;
 
-          Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), false);
+          //Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), false);
       }
 
       void Awake()

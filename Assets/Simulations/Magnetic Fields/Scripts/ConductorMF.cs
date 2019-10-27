@@ -20,6 +20,7 @@ namespace Kosmos.MagneticFields {
     private LineRenderer[] linesArray;
     private LineRenderer activeLineRendererRight;
     private LineRenderer activeLineRendererLeft;
+    private List<float> mfQueue;
     private GameObject[] arrowsArray;
     private Vector3 initialPos;
     private Vector3 nextPointRight;
@@ -44,6 +45,10 @@ namespace Kosmos.MagneticFields {
       get { return current; }
     }
 
+    public bool InProgress {
+      get { return createMF; }
+    }
+
 
     void Start() {
       current = 0;
@@ -65,11 +70,17 @@ namespace Kosmos.MagneticFields {
 
       createMF = false;
 
+      mfQueue = new List<float>();
     }
 
     void Update() {
 
-      if (!createMF) return;
+      if (!createMF) {
+        // check queue
+        if (mfQueue.Count == 0) return;
+        startNextInQueue();
+        return;
+      }
 
       if (lineCounter < nLines) {
         getNextPoint();
@@ -77,6 +88,13 @@ namespace Kosmos.MagneticFields {
         // stop drawing magnetic field
         createMF = false;
       }
+    }
+
+    // starts next MF in queue
+    private void startNextInQueue() {
+      current = mfQueue[0];
+      mfQueue.RemoveAt(0);
+      displayMF();
     }
 
     private void drawPoints(LineRenderer currentLineRenderer, List<Vector3> _linePoints) {
@@ -159,11 +177,20 @@ namespace Kosmos.MagneticFields {
         linePointCounter = 1;
         return;
       }
-
     }
 
     private void displayMF() {
+
+      // if already creation in progress add to queue
+      if (createMF) {
+        mfQueue.Add(current);
+        return;
+      }
+
       destroyMF();
+
+      // don't draw a new one if current is 0
+      if (current == 0) return;
 
       createMF = true;
       lineCounter = 0;
@@ -236,12 +263,17 @@ namespace Kosmos.MagneticFields {
       directionArrow.transform.rotation = Quaternion.Euler(newAngle, 0, 0);
 
       // rotate by another 180 degrees if the current direction is forward
-      if (current > 0 && _direction == "right") {
+      // if (current < 0 && _direction == "right") {
+      //   Debug.Log("ROTATING YOLO");
+      //   directionArrow.transform.Rotate(180, 0, 0);
+      // }
+
+      if (_direction == "right") {
         directionArrow.transform.Rotate(180, 0, 0);
       }
 
       // rotate another 180 if direction is left
-      // if (_direction == "left") {
+      // if (current > 0 && _direction == "left") {
       //   directionArrow.transform.Rotate(180, 0, 0);
       // }
 
@@ -290,7 +322,18 @@ namespace Kosmos.MagneticFields {
       // if current has changed, update magnetic field
       current = _current;
 
+      Debug.Log("otherCurrent " + otherCurrent);
+      Debug.Log("otherConductor " + otherConductor);
+
       displayMF();
+    }
+
+    public void SetOtherCurrent(float _otherCurrent) {
+      otherCurrent = _otherCurrent;
+    }
+
+    public void SetOtherConductor(GameObject _otherConductor) {
+      otherConductor = _otherConductor;
     }
   }
 }

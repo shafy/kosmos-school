@@ -10,7 +10,7 @@ namespace Kosmos {
     private bool toSnap;
     private GrabbableHands grabbableHands;
     private Rigidbody rb;
-    private Vector3 latestSnapPosition;
+    private ConductorStandHook latestSnapStandHook;
 
     [SerializeField] private ConductorStandHook initialHook; 
 
@@ -23,7 +23,7 @@ namespace Kosmos {
 
       // place at initial position if there's one referenced
       if (initialHook) {
-        latestSnapPosition = initialHook.ConductorSpotPosition;
+        latestSnapStandHook = initialHook;
         toSnap = true;
       }
     }
@@ -31,7 +31,7 @@ namespace Kosmos {
     void Update() {
 
       if (!isSnapped && toSnap && !grabbableHands.isGrabbed) {
-        transform.position = latestSnapPosition;
+        transform.position = latestSnapStandHook.ConductorSpotPosition;
         transform.rotation = Quaternion.identity;
         
         rb.isKinematic = true;
@@ -52,7 +52,7 @@ namespace Kosmos {
       ConductorStandHook conductorStandHook = collider.gameObject.GetComponent<ConductorStandHook>();
       if (!conductorStandHook) return;
 
-      latestSnapPosition = conductorStandHook.ConductorSpotPosition;
+      latestSnapStandHook = conductorStandHook;
       toSnap = true;
     }
 
@@ -61,8 +61,9 @@ namespace Kosmos {
       ConductorStandHook conductorStandHook = collider.gameObject.GetComponent<ConductorStandHook>();
       if (!conductorStandHook) return;
 
+      if (latestSnapStandHook.gameObject.name != collider.name) return;
+
       // reset
-      //latestSnapPosition = Vector3.zero;
       toSnap = false;
     }
   }

@@ -181,6 +181,8 @@ namespace Kosmos {
         GrabbableHands grabbable = otherCollider.GetComponent<GrabbableHands>() ?? otherCollider.GetComponentInParent<GrabbableHands>();
             if (grabbable == null) return;
 
+            if (m_grabCandidates.ContainsKey(grabbable)) return;
+
             // Add the grabbable
             int refCount = 0;
             m_grabCandidates.TryGetValue(grabbable, out refCount);
@@ -195,6 +197,8 @@ namespace Kosmos {
             // Remove the grabbable
             int refCount = 0;
             bool found = m_grabCandidates.TryGetValue(grabbable, out refCount);
+
+
             if (!found)
             {
                 return;

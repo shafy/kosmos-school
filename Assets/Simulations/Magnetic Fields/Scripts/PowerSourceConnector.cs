@@ -33,7 +33,7 @@ namespace Kosmos.MagneticFields {
     }
 
     public void RemoveConductor() {
-
+      mFController.RemoveConductor(connectorLabel);
     }
   }
 }
