@@ -9,33 +9,43 @@ namespace Kosmos.MagneticFields {
     private bool isCalculating;
     private bool addNewLineNext;
     private bool createMF;
-    private Color currentColor;
     private float maxMFMagnitude;
     private float initialRadius;
     private float otherCurrent;
     private float deltaDistance;
     private float current;
+    private float acCycleTime;
+    private float prevIntervaltime;
+    private float prevPrevIntervaltime;
     private int lineCounter;
     private int linePointCounter;
     private LineRenderer[] linesArray;
     private LineRenderer activeLineRendererRight;
     private LineRenderer activeLineRendererLeft;
     private List<float> mfQueue;
-    private GameObject[] arrowsArray;
+    private List<GameObject> linesListRight;
+    private List<GameObject> linesListLeft;
+    private List<Color> initialColors;
+    private List<float> initialLineWidths;
+    private List<GameObject> arrowsListRight;
+    private List<GameObject> arrowsListLeft;
     private Vector3 initialPos;
+    private Vector3 initialMF;
     private Vector3 nextPointRight;
     private Vector3 nextPointLeft;
 
     public enum CurrentType {ac, dc};
-    public CurrentType type;
+    public CurrentType currentType;
 
     [SerializeField] private Color strongColor;
     [SerializeField] private Color weakColor;
+    [SerializeField] private Color strongArrowColor;
+    [SerializeField] private Color weakArrowColor;
     [SerializeField] private int nLines = 7;
     [SerializeField] private int nSegments = 30;
     [SerializeField] private int maxCurrent = 10;
-    [SerializeField] private float lineWidth = 0.01f;
-    //[SerializeField] private float current = 1f;
+    [SerializeField] private float maxLineWidth = 0.03f;
+    [SerializeField] private float minLineWidth = 0.005f;
     [SerializeField] private Material lineMat;
     [SerializeField] private Transform MFLines;
     [SerializeField] private GameObject directionArrowPrefab;
@@ -60,20 +70,26 @@ namespace Kosmos.MagneticFields {
 
       addNewLineNext = true;
       deltaDistance = 0.003f;
-      //initialRadius = 0.05f;
       initialPos = new Vector3(0, 0, 0.1f);
-      //maxMFMagnitude = getMagnitudeMF(initialRadius, maxCurrent);
       maxMFMagnitude = calculateMagneticFieldVector(maxCurrent, 0, initialPos).magnitude;
-
-      //linesArray = new LineRenderer[nLines];
-      arrowsArray = new GameObject[nLines];
 
       createMF = false;
 
       mfQueue = new List<float>();
+
+      // test
+      currentType = CurrentType.ac;
+
+      // one AC cycle takes x seconds
+      acCycleTime = 0.5f;
     }
 
     void Update() {
+
+      // keep changing colors to indicate AC
+      if (currentType == CurrentType.ac && !createMF && Mathf.Abs(current) > 0) {
+        lerpLineColorsAndWidth();
+      }
 
       if (!createMF) {
         // check queue
@@ -88,6 +104,41 @@ namespace Kosmos.MagneticFields {
         // stop drawing magnetic field
         createMF = false;
       }
+
+    }
+
+    // lerps through range of colors for the line (used for AC)
+    private void lerpLineColorsAndWidth() {
+      float intervalTime = Mathf.PingPong(Time.time / acCycleTime, 1);
+
+      for (int i = 0; i < linesListRight.Count; i++) {
+
+        // get color
+        Color newColor = Color.Lerp(weakColor, initialColors[i], intervalTime);
+
+        // get width
+        float newLineWidth = Mathf.Lerp(minLineWidth, initialLineWidths[i], intervalTime);
+
+        LineRenderer currentRendererRight = linesListRight[i].GetComponent<LineRenderer>();
+        LineRenderer currentRendererLeft = linesListLeft[i].GetComponent<LineRenderer>();
+    
+        currentRendererRight.material.color = newColor;
+        currentRendererLeft.material.color = newColor;
+
+        currentRendererRight.startWidth = newLineWidth;
+        currentRendererRight.endWidth = newLineWidth;
+        currentRendererLeft.startWidth = newLineWidth;
+        currentRendererLeft.endWidth = newLineWidth;
+
+        // flip arrows
+        if ((intervalTime > prevIntervaltime && prevIntervaltime < prevPrevIntervaltime) || (intervalTime < prevIntervaltime && prevIntervaltime > prevPrevIntervaltime)) {
+          arrowsListRight[i].transform.Rotate(180, 0, 0);
+          arrowsListLeft[i].transform.Rotate(180, 0, 0);
+        }
+      }
+
+      prevPrevIntervaltime = prevIntervaltime;
+      prevIntervaltime = intervalTime;
     }
 
     // starts next MF in queue
@@ -95,12 +146,6 @@ namespace Kosmos.MagneticFields {
       current = mfQueue[0];
       mfQueue.RemoveAt(0);
       displayMF();
-    }
-
-    private void drawPoints(LineRenderer currentLineRenderer, List<Vector3> _linePoints) {
-     
-      currentLineRenderer.positionCount = _linePoints.Count;
-      currentLineRenderer.SetPositions(_linePoints.ToArray());
     }
 
     // calculates the next point on the magnetic field line
@@ -119,17 +164,24 @@ namespace Kosmos.MagneticFields {
         nextPointLeft = nextPointRight; 
 
         // calculate mf vector for initial point
-        Vector3 initialMF = calculateMagneticFieldVector(current, otherCurrent, nextPointRight);
-        currentColor = calculateColor(initialMF.magnitude);
+        initialMF = calculateMagneticFieldVector(current, otherCurrent, nextPointRight);
+        Color currentColor = calculateColor(initialMF.magnitude, weakColor, strongColor);
+        float currentLineWidth = calculateWidth(initialMF.magnitude);
 
-        activeLineRendererRight = createLineRenderer(lineGameObjectRight, lineWidth, currentColor);
-        activeLineRendererLeft = createLineRenderer(lineGameObjectLeft, lineWidth, currentColor);
+        activeLineRendererRight = createLineRenderer(lineGameObjectRight, currentLineWidth, currentColor);
+        activeLineRendererLeft = createLineRenderer(lineGameObjectLeft, currentLineWidth, currentColor);
 
         // add first points to make sure they are at the same spot
         activeLineRendererRight.positionCount = 1;
         activeLineRendererLeft.positionCount = 1;
         activeLineRendererRight.SetPosition(0, nextPointRight);
         activeLineRendererLeft.SetPosition(0, nextPointLeft);
+
+        // add to list of lines and initial colors
+        linesListRight.Add(lineGameObjectRight);
+        linesListLeft.Add(lineGameObjectLeft);
+        initialColors.Add(currentColor);
+        initialLineWidths.Add(currentLineWidth);
 
         addNewLineNext = false;
       }
@@ -168,8 +220,14 @@ namespace Kosmos.MagneticFields {
        
         GameObject currentArrowRight = createDirectionArrows(arrowPosRight, arrowPosRightNext, "right");
         GameObject currentArrowLeft = createDirectionArrows(arrowPosLeft, arrowPosLeftNext, "left");
-        setArrowAttributes(currentArrowRight, currentColor);
-        setArrowAttributes(currentArrowLeft, currentColor);
+
+        Color currentArrowColor = calculateColor(initialMF.magnitude, weakArrowColor, strongArrowColor);
+        setArrowAttributes(currentArrowRight, currentArrowColor);
+        setArrowAttributes(currentArrowLeft, currentArrowColor);
+
+        // add arrows to list
+        arrowsListRight.Add(currentArrowRight);
+        arrowsListLeft.Add(currentArrowLeft);
 
         // reset values
         addNewLineNext = true;
@@ -194,7 +252,13 @@ namespace Kosmos.MagneticFields {
 
       createMF = true;
       lineCounter = 0;
-      linePointCounter = 1;   
+      linePointCounter = 1;
+      linesListRight = new List<GameObject>();
+      linesListLeft = new List<GameObject>();
+      initialColors = new List<Color>();
+      initialLineWidths = new List<float>();
+      arrowsListRight = new List<GameObject>();
+      arrowsListLeft = new List<GameObject>();
     }
 
     // destroys magnetic field if it exists
@@ -243,13 +307,21 @@ namespace Kosmos.MagneticFields {
       return distanceVec + (k1Vector + 2 * k2Vector + 2 * k3Vector + k4Vector) / 6;
     }
 
-    private Color calculateColor(float _currentMagnitudeMF) {
+    private Color calculateColor(float _currentMagnitudeMF, Color _weakColor, Color _strongColor) {
       // normalize between 0 and 1 (to be used for color lerp)
       float normalizedMagnitude = _currentMagnitudeMF / maxMFMagnitude;
       // get color
-      Color currentColor = Color.Lerp(weakColor, strongColor, normalizedMagnitude);
+      Color currentColor = Color.Lerp(_weakColor, _strongColor, normalizedMagnitude);
 
       return currentColor;
+    }
+
+    private float calculateWidth(float _currentMagnitudeMF) {
+       // normalize between 0 and 1 (to be used for color lerp)
+      float normalizedMagnitude = _currentMagnitudeMF / maxMFMagnitude;
+      float newLineWidth = Mathf.Lerp(minLineWidth, maxLineWidth, normalizedMagnitude);
+
+      return newLineWidth;
     }
 
     private GameObject createDirectionArrows(Vector3 randomPos, Vector3 randomPosNext, string _direction) {
@@ -262,20 +334,9 @@ namespace Kosmos.MagneticFields {
       directionArrow.transform.localPosition = randomPos;
       directionArrow.transform.rotation = Quaternion.Euler(newAngle, 0, 0);
 
-      // rotate by another 180 degrees if the current direction is forward
-      // if (current < 0 && _direction == "right") {
-      //   Debug.Log("ROTATING YOLO");
-      //   directionArrow.transform.Rotate(180, 0, 0);
-      // }
-
       if (_direction == "right") {
         directionArrow.transform.Rotate(180, 0, 0);
       }
-
-      // rotate another 180 if direction is left
-      // if (current > 0 && _direction == "left") {
-      //   directionArrow.transform.Rotate(180, 0, 0);
-      // }
 
       return directionArrow;
     }
@@ -321,9 +382,6 @@ namespace Kosmos.MagneticFields {
 
       // if current has changed, update magnetic field
       current = _current;
-
-      Debug.Log("otherCurrent " + otherCurrent);
-      Debug.Log("otherConductor " + otherConductor);
 
       displayMF();
     }

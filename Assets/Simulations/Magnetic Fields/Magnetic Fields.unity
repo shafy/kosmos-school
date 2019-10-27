@@ -201,6 +201,51 @@ PrefabInstance:
       propertyPath: m_Name
       value: Conductor (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: maxLineWidth
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: strongArrowColor.r
+      value: 0.32845318
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: strongArrowColor.g
+      value: 0.5578275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: strongArrowColor.b
+      value: 0.5754717
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: strongArrowColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: weakArrowColor.r
+      value: 0.32941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: weakArrowColor.g
+      value: 0.56078434
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: weakArrowColor.b
+      value: 0.5764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664913305202938686, guid: a99a3b304814e465ea46e53d8ffcb928,
+        type: 3}
+      propertyPath: weakArrowColor.a
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 5664913305202938561, guid: a99a3b304814e465ea46e53d8ffcb928,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -645,13 +690,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077ab6bd836824e1684c755cf9594ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
+  currentType: 0
   strongColor: {r: 0.5647059, g: 0.9882353, b: 1, a: 1}
   weakColor: {r: 0.5647059, g: 0.9882353, b: 1, a: 0.2}
+  strongArrowColor: {r: 0.32845318, g: 0.5578275, b: 0.5754717, a: 1}
+  weakArrowColor: {r: 0.32941177, g: 0.56078434, b: 0.5764706, a: 0.2}
   nLines: 7
   nSegments: 220
   maxCurrent: 5
-  lineWidth: 0.01
+  maxLineWidth: 0.03
+  minLineWidth: 0.005
   lineMat: {fileID: 2100000, guid: 7112813f4bbdd460f9a145b60ec2f577, type: 2}
   MFLines: {fileID: 751079735}
   directionArrowPrefab: {fileID: 4028553356158341333, guid: 6ad12af3366794f58af06703fa6f2461,
