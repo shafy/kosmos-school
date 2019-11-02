@@ -59,7 +59,6 @@ namespace Kosmos.MagneticFields {
       get { return createMF; }
     }
 
-
     void Start() {
       current = 0;
       if (otherConductor) {
@@ -76,9 +75,6 @@ namespace Kosmos.MagneticFields {
       createMF = false;
 
       mfQueue = new List<float>();
-
-      // test
-      currentType = CurrentType.ac;
 
       // one AC cycle takes x seconds
       acCycleTime = 0.5f;
@@ -392,6 +388,10 @@ namespace Kosmos.MagneticFields {
 
     public void SetOtherConductor(GameObject _otherConductor) {
       otherConductor = _otherConductor;
+    }
+
+    public void SetCurrentType(CurrentType _currentType) {
+      currentType = _currentType;
     }
   }
 }

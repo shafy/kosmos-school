@@ -35,5 +35,12 @@ namespace Kosmos.MagneticFields {
     public void RemoveConductor() {
       mFController.RemoveConductor(connectorLabel);
     }
+
+    // checks if this ConductorMF is addable
+    public bool IsAddable(ConductorMF _conductorMF, ConductorCableHandle.HandleSide currentHandleSide) {
+      if (isOccupied) return false;
+
+      return mFController.IsAddable(_conductorMF, connectorLabel, currentHandleSide);
+    }
   }
 }

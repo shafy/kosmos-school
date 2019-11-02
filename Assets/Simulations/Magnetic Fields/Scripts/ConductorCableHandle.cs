@@ -76,7 +76,8 @@ namespace Kosmos.MagneticFields {
       PowerSourceConnector powerSourceConnector = collider.gameObject.GetComponent<PowerSourceConnector>();
       if (!powerSourceConnector) return;
 
-      if (powerSourceConnector.IsOccupied) return;
+      //if (powerSourceConnector.IsOccupied) return;
+      if (!powerSourceConnector.IsAddable(currentConductorMF, currentHandleSide)) return;
 
       latestSnapPositionConnector = powerSourceConnector;
       latestSnapRotation = powerSourceConnector.PowerSourceRotation;

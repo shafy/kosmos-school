@@ -99,7 +99,7 @@ namespace Kosmos.MagneticFields {
     public void AddConductor(ConductorMF _conductorMF, ConnectorLabel _connectorLabel, ConductorCableHandle.HandleSide _handleSide) {
 
       // check if it exists
-      if (connectorDict.ContainsKey(_connectorLabel)) return;
+      //if (connectorDict.ContainsKey(_connectorLabel)) return;
 
       connectorDict.Add(_connectorLabel, new ConductorInfo(_conductorMF, _handleSide));
     }
@@ -121,6 +121,77 @@ namespace Kosmos.MagneticFields {
         powerText.text = "Power Off";
         setCurrents(0);
       }
+    }
+
+    // checks if this ConductorMF is addable
+    public bool IsAddable(ConductorMF _conductorMF, ConnectorLabel _connectorLabel, ConductorCableHandle.HandleSide _handleSide) {
+
+      // check if key exists
+      if (connectorDict.ContainsKey(_connectorLabel)) return false;
+
+      // if other handleside is already attached, see if it's on the same connector pair
+      switch (_connectorLabel) {
+        case ConnectorLabel.DC_A_POS:
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) {
+            if (connectorDict[ConnectorLabel.DC_A_NEG].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.DC_A_NEG:
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS)) {
+            if (connectorDict[ConnectorLabel.DC_A_POS].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.DC_B_POS:
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_NEG)) {
+            if (connectorDict[ConnectorLabel.DC_B_NEG].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.DC_B_NEG:
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS)) {
+            if (connectorDict[ConnectorLabel.DC_B_POS].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.AC_A1:
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_A2)) {
+            if (connectorDict[ConnectorLabel.AC_A2].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.AC_A2:
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_A1)) {
+            if (connectorDict[ConnectorLabel.AC_A1].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.AC_B1:
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_B2)) {
+            if (connectorDict[ConnectorLabel.AC_B2].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+        case ConnectorLabel.AC_B2:
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_B1)) {
+            if (connectorDict[ConnectorLabel.AC_B1].conductorMF != _conductorMF) {
+              return false;
+            }
+          }
+          break;
+      }
+
+      // if another conductor is connected, make sure to only connect same current type
+
+      return true;
     }
   }
 
