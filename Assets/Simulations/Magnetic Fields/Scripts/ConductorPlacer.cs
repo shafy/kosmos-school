@@ -7,6 +7,7 @@ namespace Kosmos.MagneticFields {
   public class ConductorPlacer : MonoBehaviour {
 
     private AudioSource audioSource;
+    private AudioClip audioPlacement;
     private bool isSnapped;
     private bool toSnap;
     private GrabbableHands grabbableHands;
@@ -50,7 +51,10 @@ namespace Kosmos.MagneticFields {
         conductorMF.IsPlaced = true;
         mfController.ReDraw();
 
-        if (audioSource) audioSource.Play();
+        if (audioSource) {
+          audioSource.clip = audioPlacement;
+          audioSource.Play();
+        }
 
       }
 

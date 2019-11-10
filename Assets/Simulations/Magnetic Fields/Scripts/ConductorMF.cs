@@ -21,6 +21,7 @@ namespace Kosmos.MagneticFields {
     private float prevPrevIntervaltime;
     private int lineCounter;
     private int linePointCounter;
+    private int nLines;
     private LineRenderer[] linesArray;
     private LineRenderer activeLineRendererRight;
     private LineRenderer activeLineRendererLeft;
@@ -45,7 +46,6 @@ namespace Kosmos.MagneticFields {
     [SerializeField] private Color weakColor;
     [SerializeField] private Color strongArrowColor;
     [SerializeField] private Color weakArrowColor;
-    [SerializeField] private int nLines = 7;
     [SerializeField] private int nSegments = 30;
     [SerializeField] private int maxCurrent = 10;
     [SerializeField] private float maxLineWidth = 0.03f;
@@ -149,9 +149,9 @@ namespace Kosmos.MagneticFields {
 
     // starts next MF in queue
     private void startNextInQueue() {
-      current = mfQueue[0];
+      float newCurrent = mfQueue[0];
       mfQueue.RemoveAt(0);
-      displayMF();
+      displayMF(newCurrent);
     }
 
     // calculates the next point on the magnetic field line
@@ -249,18 +249,29 @@ namespace Kosmos.MagneticFields {
       }
     }
 
-    private void displayMF() {
+    private void displayMF(float _current) {
 
       // if already creation in progress add to queue
       if (createMF) {
-        mfQueue.Add(current);
+        mfQueue.Add(_current);
         return;
       }
 
       destroyMF();
 
+      current = _current;
+
       // don't draw a new one if current is 0
+
       if (current == 0) return;
+
+      // make one less MF line if current in different directions
+      // needs more calculations and not worth it
+      if (current * otherCurrent < 0) {
+        nLines = 6;
+      } else {
+        nLines = 7;
+      }
 
       deltaDistance = 0.003f;
       createMF = true;
@@ -404,9 +415,9 @@ namespace Kosmos.MagneticFields {
       //if (current == _current) return;
 
       // if current has changed, update magnetic field
-      current = _current;
+      //current = _current;
 
-      displayMF();
+      displayMF(_current);
     }
 
     public void SetOtherCurrent(float _otherCurrent) {

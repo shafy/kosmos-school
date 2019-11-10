@@ -65,7 +65,7 @@ namespace Kosmos.Shared {
       }
 
       // vibrate while moving
-      GrabbableHands grabbableHands = collider.GetComponent<GrabbableHands>();
+      GrabbableHands grabbableHands = GetComponent<Collider>().GetComponent<GrabbableHands>();
 
       OVRInput.Controller currentController;
 
@@ -76,7 +76,6 @@ namespace Kosmos.Shared {
         } else {
           currentController = OVRInput.Controller.RTouch;
         }
-        
       } else {
         currentController = OVRInput.Controller.Touch;
       }
