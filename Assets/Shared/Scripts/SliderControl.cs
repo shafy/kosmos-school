@@ -8,7 +8,9 @@ namespace Kosmos.Shared {
   [RequireComponent(typeof(Kosmos.Shared.ConstrainPosition))]
   public class SliderControl : MonoBehaviour {
 
+    private AudioSource audioSource;
     private float sliderValue;
+    private float externalSliderValue;
     private float prevSliderValue;
     private GrabbableHands grabbableHands;
 
@@ -24,7 +26,7 @@ namespace Kosmos.Shared {
     [SerializeField] private MovementAxis movementAxis;
 
     public float SliderValue {
-      get { return sliderValue; }
+      get { return externalSliderValue; }
     }
 
     public bool IsGrabbed {
@@ -41,6 +43,8 @@ namespace Kosmos.Shared {
         float initialPos = (initialValue / movementRange) * (maxValue - minValue);
         setInitialPosition(initialPos);
       }
+
+      audioSource = GetComponent<AudioSource>();
     }
 
     void Update() {
@@ -51,7 +55,33 @@ namespace Kosmos.Shared {
       // make sure can't move outside of the defined range
       constrainMovementPos();
 
-      prevSliderValue = sliderValue;   
+      externalSliderValue = Mathf.Clamp(sliderValue, minValue, maxValue);
+
+      prevSliderValue = sliderValue;
+
+      // play audio if it's not playing
+      if (audioSource && !audioSource.isPlaying) {
+        audioSource.Play();
+      }
+
+      // vibrate while moving
+      GrabbableHands grabbableHands = collider.GetComponent<GrabbableHands>();
+
+      OVRInput.Controller currentController;
+
+      // decide which controller to vibrate
+      if (grabbableHands) {
+        if (grabbableHands.grabbedBy.gameObject.name == "HandLeft") {
+          currentController = OVRInput.Controller.LTouch;
+        } else {
+          currentController = OVRInput.Controller.RTouch;
+        }
+        
+      } else {
+        currentController = OVRInput.Controller.Touch;
+      }
+
+      TouchHaptics.Instance.VibrateFor(0.5f, 0.2f, 0.2f, currentController);
     }
 
     private void constrainMovementPos() {

@@ -21,6 +21,7 @@ permissions and limitations under the License.
 
 using System;
 using UnityEngine;
+using Kosmos.Shared;
 
 /// <summary>
 /// An object that can be grabbed and thrown by GrabberHands.
@@ -30,6 +31,7 @@ namespace Kosmos {
   public class GrabbableHands : MonoBehaviour
   { 
       private Collider playerCollider;
+      private PlacerTrigger placerTrigger;
 
       [SerializeField]
       protected bool m_allowOffhandGrab = true;
@@ -128,6 +130,8 @@ namespace Kosmos {
           gameObject.GetComponent<Rigidbody>().isKinematic = true;
 
           //Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), true);
+
+          if (placerTrigger) placerTrigger.ShowIndicators(true);
       }
 
     /// <summary>
@@ -143,6 +147,8 @@ namespace Kosmos {
           m_grabbedCollider = null;
 
           //Physics.IgnoreCollision(playerCollider, GetComponent<Collider>(), false);
+
+          if (placerTrigger) placerTrigger.ShowIndicators(false);
       }
 
       void Awake()
@@ -161,6 +167,8 @@ namespace Kosmos {
           }
 
           playerCollider = GameObject.FindWithTag("OVRPlayerController").GetComponent<Collider>();
+
+          placerTrigger = GetComponent<PlacerTrigger>();
       }
 
       protected virtual void Start()

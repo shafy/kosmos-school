@@ -48,22 +48,30 @@ namespace Kosmos.MagneticFields {
     }
 
     // sets currents for currently connected cables
-    private void setCurrents(float current) {
+    private void setCurrents(float _current) {
       float dcACurrent = 0;
       float dcBCurrent = 0;
+      float acACurrent = 0;
+      float acBCurrent = 0;
+
+      float currentCurrent = _current;
+
+      // ** DC **
 
       // check if something connected to both connectors of each A DC connector
       if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS) && connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) {
         // also check if the same cable is connected
         if (connectorDict[ConnectorLabel.DC_A_POS].conductorMF == connectorDict[ConnectorLabel.DC_A_NEG].conductorMF) {
-          // define in which direction current is flowing
-          if (connectorDict[ConnectorLabel.DC_A_POS].handleSide == ConductorCableHandle.HandleSide.right) {
-            current = -current;
+          // check if it's placed on the stand
+          if (connectorDict[ConnectorLabel.DC_A_POS].conductorMF.IsPlaced) {
+            // define in which direction current is flowing
+            if (connectorDict[ConnectorLabel.DC_A_POS].handleSide == ConductorCableHandle.HandleSide.right) {
+              dcACurrent = -currentCurrent;
+            } else {
+              dcACurrent = currentCurrent;
+            }  
           }
-
-          // set current
-          dcACurrent = current;
-          
+                  
         }
       }
 
@@ -71,13 +79,15 @@ namespace Kosmos.MagneticFields {
       if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS) && connectorDict.ContainsKey(ConnectorLabel.DC_B_NEG)) {
         // also check if the same cable is connected
         if (connectorDict[ConnectorLabel.DC_B_POS].conductorMF == connectorDict[ConnectorLabel.DC_B_NEG].conductorMF) {
-          // define in which direction current is flowing
-          if (connectorDict[ConnectorLabel.DC_B_POS].handleSide == ConductorCableHandle.HandleSide.right) {
-            current = -current;
+          // check if it's placed on the stand
+          if (connectorDict[ConnectorLabel.DC_B_POS].conductorMF.IsPlaced) {
+            // define in which direction current is flowing
+            if (connectorDict[ConnectorLabel.DC_B_POS].handleSide == ConductorCableHandle.HandleSide.right) {
+              dcBCurrent = -currentCurrent;
+            } else {
+              dcBCurrent = currentCurrent;
+            }
           }
-
-          // set current
-          dcBCurrent = current;
         }
       }
 
@@ -88,12 +98,92 @@ namespace Kosmos.MagneticFields {
 
         connectorDict[ConnectorLabel.DC_A_POS].conductorMF.SetOtherConductor(connectorDict[ConnectorLabel.DC_B_POS].conductorMF.gameObject);
         connectorDict[ConnectorLabel.DC_B_POS].conductorMF.SetOtherConductor(connectorDict[ConnectorLabel.DC_A_POS].conductorMF.gameObject);
-
       }
 
-      // set currents
-      connectorDict[ConnectorLabel.DC_A_POS].conductorMF.SetCurrent(dcACurrent);
-      connectorDict[ConnectorLabel.DC_B_POS].conductorMF.SetCurrent(dcBCurrent);
+      // remove other conductor (just to be sure if user ran it with two conductors before)
+      if (Mathf.Abs(dcACurrent) > 0 && dcBCurrent == 0) {
+        connectorDict[ConnectorLabel.DC_A_POS].conductorMF.RemoveOtherConductor();
+        connectorDict[ConnectorLabel.DC_A_POS].conductorMF.SetOtherCurrent(0);
+      }
+
+      if (Mathf.Abs(dcBCurrent) > 0 && dcACurrent == 0) {
+        connectorDict[ConnectorLabel.DC_B_POS].conductorMF.RemoveOtherConductor();
+        connectorDict[ConnectorLabel.DC_B_POS].conductorMF.SetOtherCurrent(0);
+      }
+
+      // set currents for DC
+      if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS)) {
+        connectorDict[ConnectorLabel.DC_A_POS].conductorMF.SetCurrentType(ConductorMF.CurrentType.dc);
+        connectorDict[ConnectorLabel.DC_A_POS].conductorMF.SetCurrent(dcACurrent);
+      }
+
+      if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS)) {
+        connectorDict[ConnectorLabel.DC_B_POS].conductorMF.SetCurrentType(ConductorMF.CurrentType.dc);
+        connectorDict[ConnectorLabel.DC_B_POS].conductorMF.SetCurrent(dcBCurrent);
+      }
+
+
+      // ** AC **
+
+      // check if something connected to both connectors of each A AC connector
+      if (connectorDict.ContainsKey(ConnectorLabel.AC_A1) && connectorDict.ContainsKey(ConnectorLabel.AC_A2)) {
+        // also check if the same cable is connected
+        if (connectorDict[ConnectorLabel.AC_A1].conductorMF == connectorDict[ConnectorLabel.AC_A2].conductorMF) {
+          // check if it's placed on the stand
+          if (connectorDict[ConnectorLabel.AC_A1].conductorMF.IsPlaced) {
+            // set current
+            // for ac it doesn't matter if current is positive or negative
+            acACurrent = currentCurrent;
+          }
+         
+        }
+      }
+
+      // check if something connected to both connectors of each B AC connector
+      if (connectorDict.ContainsKey(ConnectorLabel.AC_B1) && connectorDict.ContainsKey(ConnectorLabel.AC_B2)) {
+        // also check if the same cable is connected
+        if (connectorDict[ConnectorLabel.AC_B1].conductorMF == connectorDict[ConnectorLabel.AC_B2].conductorMF) {
+          // check if it's placed on the stand
+          if (connectorDict[ConnectorLabel.AC_B1].conductorMF.IsPlaced) {
+            // set current
+            // for ac it doesn't matter if current is positive or negative
+            acBCurrent = currentCurrent;
+          }
+          
+        }
+      }
+
+      // make sure conductors know about each other
+      if (Mathf.Abs(acACurrent) > 0 && Mathf.Abs(acBCurrent) > 0) {
+        connectorDict[ConnectorLabel.AC_A1].conductorMF.SetOtherCurrent(acBCurrent);
+        connectorDict[ConnectorLabel.AC_B1].conductorMF.SetOtherCurrent(acACurrent);
+
+        connectorDict[ConnectorLabel.AC_A1].conductorMF.SetOtherConductor(connectorDict[ConnectorLabel.AC_B1].conductorMF.gameObject);
+        connectorDict[ConnectorLabel.AC_B1].conductorMF.SetOtherConductor(connectorDict[ConnectorLabel.AC_A1].conductorMF.gameObject);
+      }
+
+      // remove other conductor (just to be sure if user ran it with two conductors before)
+      if (Mathf.Abs(acACurrent) > 0 && acBCurrent == 0) {
+        connectorDict[ConnectorLabel.AC_A1].conductorMF.RemoveOtherConductor();
+        connectorDict[ConnectorLabel.AC_A1].conductorMF.SetOtherCurrent(0);
+      }
+
+      if (Mathf.Abs(acBCurrent) > 0 && acACurrent == 0) {
+        connectorDict[ConnectorLabel.AC_B1].conductorMF.RemoveOtherConductor();
+        connectorDict[ConnectorLabel.AC_B1].conductorMF.SetOtherCurrent(0);
+      }
+
+      // set currents for AC
+      if (connectorDict.ContainsKey(ConnectorLabel.AC_A1)) {
+        connectorDict[ConnectorLabel.AC_A1].conductorMF.SetCurrentType(ConductorMF.CurrentType.ac);
+        connectorDict[ConnectorLabel.AC_A1].conductorMF.SetCurrent(acACurrent);
+      }
+
+      if (connectorDict.ContainsKey(ConnectorLabel.AC_B1)) {
+        connectorDict[ConnectorLabel.AC_B1].conductorMF.SetCurrentType(ConductorMF.CurrentType.ac);
+        connectorDict[ConnectorLabel.AC_B1].conductorMF.SetCurrent(acBCurrent);
+      }
+      
     }
 
     public void AddConductor(ConductorMF _conductorMF, ConnectorLabel _connectorLabel, ConductorCableHandle.HandleSide _handleSide) {
@@ -102,9 +192,11 @@ namespace Kosmos.MagneticFields {
       //if (connectorDict.ContainsKey(_connectorLabel)) return;
 
       connectorDict.Add(_connectorLabel, new ConductorInfo(_conductorMF, _handleSide));
+
     }
 
     public void RemoveConductor(ConnectorLabel _connectorLabel) {
+
       // stop if it doesn't exist
       if (!connectorDict.ContainsKey(_connectorLabel)) return;
 
@@ -121,6 +213,13 @@ namespace Kosmos.MagneticFields {
         powerText.text = "Power Off";
         setCurrents(0);
       }
+    }
+
+    // re-draws magnetic fields
+    public void ReDraw() {
+      if (!powerOn) return;
+
+      setCurrents(sliderControl.SliderValue);
     }
 
     // checks if this ConductorMF is addable
@@ -190,6 +289,26 @@ namespace Kosmos.MagneticFields {
       }
 
       // if another conductor is connected, make sure to only connect same current type
+      switch (_connectorLabel) {
+        case ConnectorLabel.DC_A_POS:
+        case ConnectorLabel.DC_A_NEG:
+        case ConnectorLabel.DC_B_POS:
+        case ConnectorLabel.DC_B_NEG:
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_A1)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_A2)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_B1)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_B2)) return false;
+          break;
+        case ConnectorLabel.AC_A1:
+        case ConnectorLabel.AC_A2:
+        case ConnectorLabel.AC_B1:
+        case ConnectorLabel.AC_B2:
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_NEG)) return false;
+          break;
+      }
 
       return true;
     }

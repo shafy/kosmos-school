@@ -6,9 +6,11 @@ namespace Kosmos.MagneticFields {
   // handles logic for a conductor with a magnetic field
   public class ConductorMF : MonoBehaviour {
 
+    private AudioSource audioSource;
     private bool isCalculating;
     private bool addNewLineNext;
     private bool createMF;
+    private bool isPlaced;
     private float maxMFMagnitude;
     private float initialRadius;
     private float otherCurrent;
@@ -37,6 +39,8 @@ namespace Kosmos.MagneticFields {
     public enum CurrentType {ac, dc};
     public CurrentType currentType;
 
+    [SerializeField] private AudioClip audioBuild;
+    [SerializeField] private AudioClip audioDestroy;
     [SerializeField] private Color strongColor;
     [SerializeField] private Color weakColor;
     [SerializeField] private Color strongArrowColor;
@@ -59,6 +63,11 @@ namespace Kosmos.MagneticFields {
       get { return createMF; }
     }
 
+    public bool IsPlaced {
+      get { return isPlaced; }
+      set { isPlaced = value; }
+    }
+
     void Start() {
       current = 0;
       if (otherConductor) {
@@ -68,7 +77,6 @@ namespace Kosmos.MagneticFields {
       }
 
       addNewLineNext = true;
-      deltaDistance = 0.003f;
       initialPos = new Vector3(0, 0, 0.1f);
       maxMFMagnitude = calculateMagneticFieldVector(maxCurrent, 0, initialPos).magnitude;
 
@@ -78,6 +86,8 @@ namespace Kosmos.MagneticFields {
 
       // one AC cycle takes x seconds
       acCycleTime = 0.5f;
+
+      audioSource = GetComponent<AudioSource>();
     }
 
     void Update() {
@@ -209,11 +219,12 @@ namespace Kosmos.MagneticFields {
         // add direction arrow
         int arrowPosIndex = (activeLineRendererRight.positionCount - 1) / 2;
 
-        Vector3 arrowPosRight = activeLineRendererRight.GetPosition(arrowPosIndex);
-        Vector3 arrowPosRightNext = activeLineRendererRight.GetPosition(arrowPosIndex + 1);
-        Vector3 arrowPosLeft = activeLineRendererLeft.GetPosition(arrowPosIndex);
-        Vector3 arrowPosLeftNext = activeLineRendererLeft.GetPosition(arrowPosIndex - 1);
-       
+        // add this transform pos to make sure it's world pos
+        Vector3 arrowPosRight = transform.position + activeLineRendererRight.GetPosition(arrowPosIndex);
+        Vector3 arrowPosRightNext = transform.position + activeLineRendererRight.GetPosition(arrowPosIndex - 1);
+        Vector3 arrowPosLeft = transform.position + activeLineRendererLeft.GetPosition(arrowPosIndex);
+        Vector3 arrowPosLeftNext = transform.position + activeLineRendererLeft.GetPosition(arrowPosIndex - 1);
+      
         GameObject currentArrowRight = createDirectionArrows(arrowPosRight, arrowPosRightNext, "right");
         GameObject currentArrowLeft = createDirectionArrows(arrowPosLeft, arrowPosLeftNext, "left");
 
@@ -229,6 +240,11 @@ namespace Kosmos.MagneticFields {
         addNewLineNext = true;
         lineCounter++;
         linePointCounter = 1;
+
+        // if currents are in different directions, decrease delta distance with each bigger line to still get accurate lines
+        if (current * otherCurrent < 0) {
+          deltaDistance *= 0.65f;
+        }
         return;
       }
     }
@@ -246,6 +262,7 @@ namespace Kosmos.MagneticFields {
       // don't draw a new one if current is 0
       if (current == 0) return;
 
+      deltaDistance = 0.003f;
       createMF = true;
       lineCounter = 0;
       linePointCounter = 1;
@@ -255,6 +272,10 @@ namespace Kosmos.MagneticFields {
       initialLineWidths = new List<float>();
       arrowsListRight = new List<GameObject>();
       arrowsListLeft = new List<GameObject>();
+
+      // play sound
+      audioSource.clip = audioBuild;
+      audioSource.Play();
     }
 
     // destroys magnetic field if it exists
@@ -262,6 +283,10 @@ namespace Kosmos.MagneticFields {
       foreach (Transform child in MFLines) {
         Destroy(child.gameObject);
       }
+
+      // play sound
+      audioSource.clip = audioDestroy;
+      audioSource.Play();
     }
 
     private Vector3 calculateMagneticFieldVector(float _current, float _otherCurrent, Vector3 _distanceVec) {
@@ -325,10 +350,12 @@ namespace Kosmos.MagneticFields {
 
       directionArrow.transform.parent = MFLines.transform;
 
-      float newAngle = Vector3.Angle(randomPos, randomPosNext);
+      //float newAngle = Vector3.Angle(randomPos, randomPosNext);
 
-      directionArrow.transform.localPosition = randomPos;
-      directionArrow.transform.rotation = Quaternion.Euler(newAngle, 0, 0);
+      directionArrow.transform.position = randomPos;
+      //directionArrow.transform.rotation = Quaternion.Euler(newAngle, 0, 0);
+
+      directionArrow.transform.LookAt(randomPosNext);
 
       if (_direction == "right") {
         directionArrow.transform.Rotate(180, 0, 0);
@@ -374,7 +401,7 @@ namespace Kosmos.MagneticFields {
     }
 
     public void SetCurrent(float _current) {
-      if (current == _current) return;
+      //if (current == _current) return;
 
       // if current has changed, update magnetic field
       current = _current;
@@ -388,6 +415,10 @@ namespace Kosmos.MagneticFields {
 
     public void SetOtherConductor(GameObject _otherConductor) {
       otherConductor = _otherConductor;
+    }
+
+    public void RemoveOtherConductor() {
+      otherConductor = null;
     }
 
     public void SetCurrentType(CurrentType _currentType) {

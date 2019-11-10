@@ -19,7 +19,7 @@ namespace Kosmos.MagneticFields {
     void Start() {
       lineRenderer = GetComponent<LineRenderer>();
 
-      cableWidth = 0.006f;
+      cableWidth = 0.01f;
       allSections = new List<Transform>();
 
       // add all sections to allSections list

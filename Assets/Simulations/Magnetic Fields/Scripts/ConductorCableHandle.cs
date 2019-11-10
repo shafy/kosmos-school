@@ -6,6 +6,7 @@ namespace Kosmos.MagneticFields {
   // logic for the conductor cable's handle
   public class ConductorCableHandle : MonoBehaviour {
 
+    private AudioSource audioSource;
     private bool isSnapped;
     private bool toSnap;
     private GrabbableHands grabbableHands;
@@ -15,6 +16,7 @@ namespace Kosmos.MagneticFields {
 
     [SerializeField] private ConductorMF currentConductorMF;
     [SerializeField] private PowerSourceConnector initialPowerConnector;
+    [SerializeField] private Transform cableHolderTransform;
 
     public enum HandleSide {right, left};
     [SerializeField] private HandleSide currentHandleSide;
@@ -36,6 +38,8 @@ namespace Kosmos.MagneticFields {
         latestSnapRotation = latestSnapPositionConnector.PowerSourceRotation;
         toSnap = true;
       }
+
+      audioSource = GetComponent<AudioSource>();
     }
 
     void Update() {
@@ -49,9 +53,6 @@ namespace Kosmos.MagneticFields {
 
       // snap to last position
       if (!isSnapped && toSnap && !grabbableHands.isGrabbed) {
-        //transform.position = latestSnapPositionConnector.transform.position;
-        // make sure it has correct rotation
-        //transform.rotation = latestSnapRotation * Quaternion.Euler(0, 90, 0);
 
         latestSnapPositionConnector.IsOccupied = true;
         latestSnapPositionConnector.AddConductor(currentConductorMF, currentHandleSide);
@@ -60,6 +61,8 @@ namespace Kosmos.MagneticFields {
 
         isSnapped = true;
         toSnap = false;
+
+        if (audioSource) audioSource.Play();
       }
 
       // this happens when player removes a handle
@@ -95,7 +98,15 @@ namespace Kosmos.MagneticFields {
 
       // reset
       toSnap = false;
-      
+    }
+
+    void OnCollisionEnter(Collision collision) {
+      if (!collision.gameObject.CompareTag("TerrainFloor") || grabbableHands.isGrabbed) return;
+
+      // if collided with terrain, return to cable holder floating pos
+      transform.position = cableHolderTransform.position;
+      transform.rotation = Quaternion.identity;
+      rb.isKinematic = true;
     }
   
     public ConductorMF GetConductorMF() {

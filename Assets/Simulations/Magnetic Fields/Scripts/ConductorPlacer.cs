@@ -2,19 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Kosmos {
+namespace Kosmos.MagneticFields {
   // makes sure players can place the conductor on these hooks
   public class ConductorPlacer : MonoBehaviour {
 
+    private AudioSource audioSource;
     private bool isSnapped;
     private bool toSnap;
     private GrabbableHands grabbableHands;
     private Rigidbody rb;
     private ConductorStandHook latestSnapStandHook;
+    private ConductorMF conductorMF;
 
-    [SerializeField] private ConductorStandHook initialHook; 
+    [SerializeField] private ConductorStandHook initialHook;
+    [SerializeField] private MFController mfController;
 
     void Start() {
+      conductorMF = GetComponent<ConductorMF>();
+
       isSnapped = false;
       toSnap = false;
 
@@ -26,11 +31,14 @@ namespace Kosmos {
         latestSnapStandHook = initialHook;
         toSnap = true;
       }
+
+      audioSource = GetComponent<AudioSource>();
     }
 
     void Update() {
 
       if (!isSnapped && toSnap && !grabbableHands.isGrabbed) {
+        // when user places it
         transform.position = latestSnapStandHook.ConductorSpotPosition;
         transform.rotation = Quaternion.identity;
         
@@ -38,13 +46,21 @@ namespace Kosmos {
 
         isSnapped = true;
         toSnap = false;
+
+        conductorMF.IsPlaced = true;
+        mfController.ReDraw();
+
+        if (audioSource) audioSource.Play();
+
       }
 
-      // this happens when it's snapped, the player grabs it but doesn't move it enough
-      // to exit the trigger collider. so it snaps right back to the last spot when let go.
+      // when user removes it
       if (isSnapped && grabbableHands.isGrabbed) {
         isSnapped = false;
         toSnap = true;
+
+        conductorMF.IsPlaced = false;
+        mfController.ReDraw();
       }
     }
 

@@ -102,9 +102,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2930196500350805593}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -307,9 +307,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3669337674351544943}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -554,9 +554,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3669337674629290108}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -760,7 +760,7 @@ GameObject:
   - component: {fileID: 3669337675389645811}
   - component: {fileID: 3669337675389645810}
   - component: {fileID: 3669337675389645809}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Fixpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -849,8 +849,8 @@ Rigidbody:
   m_GameObject: {fileID: 3669337675389645775}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
@@ -1196,9 +1196,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3669337676079670145}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -1401,9 +1401,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3669337676484224818}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -1606,9 +1606,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4383676510335051985}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -1811,9 +1811,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4900445156189560062}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -2016,9 +2016,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5732067356575523861}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -2221,9 +2221,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5986198287768360277}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -2504,9 +2504,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7991187414279606726}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 4
-  m_AngularDrag: 0
+  m_Mass: 1
+  m_Drag: 10
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
