@@ -16,7 +16,7 @@ namespace Kosmos.MagneticFields {
 
     [SerializeField] private ConductorMF currentConductorMF;
     [SerializeField] private PowerSourceConnector initialPowerConnector;
-    [SerializeField] private Transform cableHolderTransform;
+    [SerializeField] private CableHolder cableHolder;
 
     public enum HandleSide {right, left};
     [SerializeField] private HandleSide currentHandleSide;
@@ -104,8 +104,7 @@ namespace Kosmos.MagneticFields {
       if (!collision.gameObject.CompareTag("TerrainFloor") || grabbableHands.isGrabbed) return;
 
       // if collided with terrain, return to cable holder floating pos
-      transform.position = cableHolderTransform.position;
-      transform.rotation = Quaternion.identity;
+      cableHolder.AddCable(transform);
       rb.isKinematic = true;
     }
   

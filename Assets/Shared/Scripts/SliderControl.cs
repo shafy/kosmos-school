@@ -65,12 +65,10 @@ namespace Kosmos.Shared {
       }
 
       // vibrate while moving
-      GrabbableHands grabbableHands = GetComponent<Collider>().GetComponent<GrabbableHands>();
-
       OVRInput.Controller currentController;
 
       // decide which controller to vibrate
-      if (grabbableHands) {
+      if (grabbableHands && grabbableHands.grabbedBy) {
         if (grabbableHands.grabbedBy.gameObject.name == "HandLeft") {
           currentController = OVRInput.Controller.LTouch;
         } else {

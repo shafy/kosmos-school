@@ -97,18 +97,26 @@ namespace Kosmos.MagneticFields {
         lerpLineColorsAndWidth();
       }
 
-      if (!createMF) {
-        // check queue
-        if (mfQueue.Count == 0) return;
-        startNextInQueue();
-        return;
-      }
+      // if (!createMF) {
+      //   // check queue
+      //   if (mfQueue.Count == 0) return;
 
+      //   // wait with staring until other conductor finishes
+      //   //if (otherConductor && otherConductor.GetComponent<ConductorMF>().InProgress) return;
+
+      //   startNextInQueue();
+      //   return;
+      // }
+
+      if (!createMF) return;
+
+      // continue creating
       if (lineCounter < nLines) {
         getNextPoint();
       } else {
         // stop drawing magnetic field
         createMF = false;
+        //resetValues();
       }
 
     }
@@ -149,9 +157,33 @@ namespace Kosmos.MagneticFields {
 
     // starts next MF in queue
     private void startNextInQueue() {
-      float newCurrent = mfQueue[0];
+      //displayMF(newCurrent);
+
+      // destroy old one
+      destroyMF();
+
+      current = mfQueue[0];
       mfQueue.RemoveAt(0);
-      displayMF(newCurrent);
+
+      // don't draw a new one if current is 0
+      if (current == 0) return;
+
+      // make one less MF line if current in different directions
+      // needs more calculations and not worth it
+      if (current * otherCurrent < 0) {
+        nLines = 6;
+      } else {
+        nLines = 7;
+      }
+
+      resetValues();
+
+      // play sound
+      audioSource.clip = audioBuild;
+      audioSource.Play();
+
+      
+
     }
 
     // calculates the next point on the magnetic field line
@@ -249,30 +281,7 @@ namespace Kosmos.MagneticFields {
       }
     }
 
-    private void displayMF(float _current) {
-
-      // if already creation in progress add to queue
-      if (createMF) {
-        mfQueue.Add(_current);
-        return;
-      }
-
-      destroyMF();
-
-      current = _current;
-
-      // don't draw a new one if current is 0
-
-      if (current == 0) return;
-
-      // make one less MF line if current in different directions
-      // needs more calculations and not worth it
-      if (current * otherCurrent < 0) {
-        nLines = 6;
-      } else {
-        nLines = 7;
-      }
-
+    private void resetValues() {
       deltaDistance = 0.003f;
       createMF = true;
       lineCounter = 0;
@@ -283,10 +292,36 @@ namespace Kosmos.MagneticFields {
       initialLineWidths = new List<float>();
       arrowsListRight = new List<GameObject>();
       arrowsListLeft = new List<GameObject>();
+    }
 
-      // play sound
-      audioSource.clip = audioBuild;
-      audioSource.Play();
+    private void displayMF(float _current) {
+
+      // if already creation in progress add to queue
+      // if (createMF) {
+      //   mfQueue.Add(_current);
+      //   return;
+      // }
+
+      //destroyMF();
+
+      // current = _current;
+
+      // // don't draw a new one if current is 0
+      // if (current == 0) return;
+
+      // // make one less MF line if current in different directions
+      // // needs more calculations and not worth it
+      // if (current * otherCurrent < 0) {
+      //   nLines = 6;
+      // } else {
+      //   nLines = 7;
+      // }
+
+      // resetValues()
+
+      // // play sound
+      // audioSource.clip = audioBuild;
+      // audioSource.Play();
     }
 
     // destroys magnetic field if it exists
@@ -417,7 +452,30 @@ namespace Kosmos.MagneticFields {
       // if current has changed, update magnetic field
       //current = _current;
 
-      displayMF(_current);
+      //displayMF(_current);
+      //mfQueue.Add(_current);
+
+      destroyMF();
+
+      current = _current;
+
+      // don't draw if current is 0
+      if (current == 0) return;
+
+      createMF = true;
+      resetValues();
+
+      // make one less MF line if current in different directions
+      // needs more calculations and not worth it
+      if (current * otherCurrent < 0) {
+        nLines = 6;
+      } else {
+        nLines = 7;
+      }
+
+      // play sound
+      audioSource.clip = audioBuild;
+      audioSource.Play();
     }
 
     public void SetOtherCurrent(float _otherCurrent) {

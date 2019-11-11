@@ -10,18 +10,22 @@ namespace Kosmos.MagneticFields {
 
     private Dictionary<ConnectorLabel, ConductorInfo> connectorDict;
     private float prevSliderValue;
+    private List<float> currentQueue;
     private bool powerOn;
     private bool valueChanged;
 
     [SerializeField] private SliderControl sliderControl;
     [SerializeField] private TextMeshPro displayText;
     [SerializeField] private TextMeshPro powerText;
+    [SerializeField] private ConductorMF conductorOne;
+    [SerializeField] private ConductorMF conductorTwo;
 
     public enum ConnectorLabel {DC_A_POS, DC_A_NEG, DC_B_POS, DC_B_NEG, AC_A1, AC_A2, AC_B1, AC_B2};
     private ConnectorLabel connectorLabel;
 
     void Start() {
       connectorDict = new Dictionary<ConnectorLabel, ConductorInfo>();
+      currentQueue = new List<float>();
       prevSliderValue = sliderControl.SliderValue;
       powerOn = false;
       valueChanged = false;
@@ -32,19 +36,42 @@ namespace Kosmos.MagneticFields {
       if (valueChanged && !sliderControl.IsGrabbed) {
         if (powerOn) {
           // if new slider value and player let go of slider, set new currents
-          setCurrents(sliderControl.SliderValue);
+          //setCurrents(sliderControl.SliderValue);
+          currentQueue.Add(sliderControl.SliderValue);
         }
 
         valueChanged = false;
       }
 
-      if (Mathf.Abs(prevSliderValue - sliderControl.SliderValue) < 0.1) return;
+      // if (Mathf.Abs(prevSliderValue - sliderControl.SliderValue) < 0.1) return;
+
+      if (Mathf.Abs(prevSliderValue - sliderControl.SliderValue) > 0.1) {
+        displayText.SetText("{0:1}", sliderControl.SliderValue);
+
+        prevSliderValue = sliderControl.SliderValue;
+        valueChanged = true;
+      }
 
       // update text on display
-      displayText.SetText("{0:1}", sliderControl.SliderValue);
+      // displayText.SetText("{0:1}", sliderControl.SliderValue);
 
-      prevSliderValue = sliderControl.SliderValue;
-      valueChanged = true;
+      // prevSliderValue = sliderControl.SliderValue;
+      // valueChanged = true;
+
+      if (inProgress() == false) {
+        startNextInQueue();
+      }
+    }
+
+    private void startNextInQueue() {
+      if (currentQueue.Count == 0) return;
+
+      setCurrents(currentQueue[0]);
+      currentQueue.RemoveAt(0);
+    }
+
+    private bool inProgress() {
+      return conductorOne.InProgress || conductorTwo.InProgress;
     }
 
     // sets currents for currently connected cables
@@ -207,11 +234,13 @@ namespace Kosmos.MagneticFields {
       if (!powerOn) {
         powerOn = true;
         powerText.text = "Power On";
-        setCurrents(sliderControl.SliderValue);
+        //setCurrents(sliderControl.SliderValue);
+        currentQueue.Add(sliderControl.SliderValue);
       } else {
         powerOn = false;
         powerText.text = "Power Off";
-        setCurrents(0);
+        //setCurrents(0);
+        currentQueue.Add(0);
       }
     }
 
@@ -219,70 +248,71 @@ namespace Kosmos.MagneticFields {
     public void ReDraw() {
       if (!powerOn) return;
 
-      setCurrents(sliderControl.SliderValue);
+      //setCurrents(sliderControl.SliderValue);
+      currentQueue.Add(sliderControl.SliderValue);
     }
 
     // checks if this ConductorMF is addable
-    public bool IsAddable(ConductorMF _conductorMF, ConnectorLabel _connectorLabel, ConductorCableHandle.HandleSide _handleSide) {
+    public string IsAddable(ConductorMF _conductorMF, ConnectorLabel _connectorLabel, ConductorCableHandle.HandleSide _handleSide) {
 
       // check if key exists
-      if (connectorDict.ContainsKey(_connectorLabel)) return false;
+      if (connectorDict.ContainsKey(_connectorLabel)) return "error";
 
       // if other handleside is already attached, see if it's on the same connector pair
       switch (_connectorLabel) {
         case ConnectorLabel.DC_A_POS:
           if (connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) {
             if (connectorDict[ConnectorLabel.DC_A_NEG].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.DC_A_NEG:
           if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS)) {
             if (connectorDict[ConnectorLabel.DC_A_POS].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.DC_B_POS:
           if (connectorDict.ContainsKey(ConnectorLabel.DC_B_NEG)) {
             if (connectorDict[ConnectorLabel.DC_B_NEG].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.DC_B_NEG:
           if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS)) {
             if (connectorDict[ConnectorLabel.DC_B_POS].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.AC_A1:
           if (connectorDict.ContainsKey(ConnectorLabel.AC_A2)) {
             if (connectorDict[ConnectorLabel.AC_A2].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.AC_A2:
           if (connectorDict.ContainsKey(ConnectorLabel.AC_A1)) {
             if (connectorDict[ConnectorLabel.AC_A1].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.AC_B1:
           if (connectorDict.ContainsKey(ConnectorLabel.AC_B2)) {
             if (connectorDict[ConnectorLabel.AC_B2].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
         case ConnectorLabel.AC_B2:
           if (connectorDict.ContainsKey(ConnectorLabel.AC_B1)) {
             if (connectorDict[ConnectorLabel.AC_B1].conductorMF != _conductorMF) {
-              return false;
+              return "errorWrongPair";
             }
           }
           break;
@@ -294,23 +324,23 @@ namespace Kosmos.MagneticFields {
         case ConnectorLabel.DC_A_NEG:
         case ConnectorLabel.DC_B_POS:
         case ConnectorLabel.DC_B_NEG:
-          if (connectorDict.ContainsKey(ConnectorLabel.AC_A1)) return false;
-          if (connectorDict.ContainsKey(ConnectorLabel.AC_A2)) return false;
-          if (connectorDict.ContainsKey(ConnectorLabel.AC_B1)) return false;
-          if (connectorDict.ContainsKey(ConnectorLabel.AC_B2)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_A1)) return "errorOnlyDC";
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_A2)) return "errorOnlyDC";
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_B1)) return "errorOnlyDC";
+          if (connectorDict.ContainsKey(ConnectorLabel.AC_B2)) return "errorOnlyDC";
           break;
         case ConnectorLabel.AC_A1:
         case ConnectorLabel.AC_A2:
         case ConnectorLabel.AC_B1:
         case ConnectorLabel.AC_B2:
-          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS)) return false;
-          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) return false;
-          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS)) return false;
-          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_NEG)) return false;
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_POS)) return "errorOnlyAC";
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_A_NEG)) return "errorOnlyAC";
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_POS)) return "errorOnlyAC";
+          if (connectorDict.ContainsKey(ConnectorLabel.DC_B_NEG)) return "errorOnlyAC";
           break;
       }
 
-      return true;
+      return "success";
     }
   }
 

@@ -15,6 +15,7 @@ TagManager:
   - LeftHandPointerCollider
   - TerrainFloor
   - PlacerSystem
+  - TooltipSystem
   layers:
   - Default
   - TransparentFX
