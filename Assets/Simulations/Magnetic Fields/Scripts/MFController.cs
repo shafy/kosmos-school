@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Kosmos.Shared;
 using TMPro;
+using mixpanel;
 
 namespace Kosmos.MagneticFields {
   // takes care of magnetic fields controls
@@ -13,6 +15,7 @@ namespace Kosmos.MagneticFields {
     private List<float> currentQueue;
     private bool powerOn;
     private bool valueChanged;
+    private GameController gameController;
 
     [SerializeField] private SliderControl sliderControl;
     [SerializeField] private TextMeshPro displayText;
@@ -31,6 +34,7 @@ namespace Kosmos.MagneticFields {
       powerOn = false;
       valueChanged = false;
       powerText.text = "Power Off";
+      gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
     }
 
     void Update() {
@@ -51,6 +55,11 @@ namespace Kosmos.MagneticFields {
 
         prevSliderValue = sliderControl.SliderValue;
         valueChanged = true;
+
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      props["Value"] = sliderControl.SliderValue;
+      Mixpanel.Track("Slider", props);
       }
 
       // update text on display
@@ -221,6 +230,10 @@ namespace Kosmos.MagneticFields {
 
       connectorDict.Add(_connectorLabel, new ConductorInfo(_conductorMF, _handleSide));
 
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      Mixpanel.Track("Add Handle", props);
+
     }
 
     public void RemoveConductor(ConnectorLabel _connectorLabel) {
@@ -229,6 +242,10 @@ namespace Kosmos.MagneticFields {
       if (!connectorDict.ContainsKey(_connectorLabel)) return;
 
       connectorDict.Remove(_connectorLabel);
+
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      Mixpanel.Track("Remove Handle", props);
     }
 
     public void PowerButtonPress() {
@@ -244,7 +261,15 @@ namespace Kosmos.MagneticFields {
         mainLight.TurnOn(false);
         //setCurrents(0);
         currentQueue.Add(0);
+
+        // show feedback popup
+        if (gameController) gameController.ShowFeedbackPopup(5);
       }
+
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      props["Power On"] = powerOn;
+      Mixpanel.Track("Power Button Press", props);
     }
 
     // re-draws magnetic fields

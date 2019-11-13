@@ -2571,6 +2571,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RollerCoasterBuilder
       objectReference: {fileID: 0}
+    - target: {fileID: 1776364041118511370, guid: e257bd174fb844603a19ee1be6852d54,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 1776364041118511380, guid: e257bd174fb844603a19ee1be6852d54,
         type: 3}
       propertyPath: rollerCoasterController

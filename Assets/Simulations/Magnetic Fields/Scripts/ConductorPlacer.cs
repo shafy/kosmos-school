@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using mixpanel;
 
 namespace Kosmos.MagneticFields {
   // makes sure players can place the conductor on these hooks
@@ -56,6 +58,10 @@ namespace Kosmos.MagneticFields {
           audioSource.Play();
         }
 
+      var props = new Value();
+      props["Scene Name"] = SceneManager.GetActiveScene().name;
+      Mixpanel.Track("Place Conductor");
+
       }
 
       // when user removes it
@@ -65,6 +71,10 @@ namespace Kosmos.MagneticFields {
 
         conductorMF.IsPlaced = false;
         mfController.ReDraw();
+
+        var props = new Value();
+        props["Scene Name"] = SceneManager.GetActiveScene().name;
+        Mixpanel.Track("Remove Conductor");
       }
     }
 

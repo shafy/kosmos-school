@@ -27,7 +27,7 @@ namespace Kosmos.Shared {
       OVRInput.Controller currentController;
 
       // decide which controller to vibrate
-      if (grabbableHands) {
+      if (grabbableHands && grabbableHands.grabbedBy) {
         if (grabbableHands.grabbedBy.gameObject.name == "HandLeft") {
           currentController = OVRInput.Controller.LTouch;
         } else {
