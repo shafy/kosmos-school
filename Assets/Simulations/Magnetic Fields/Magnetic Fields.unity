@@ -2478,7 +2478,7 @@ PrefabInstance:
     - target: {fileID: 7223476554864391469, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 7223476554864391469, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
@@ -2488,7 +2488,7 @@ PrefabInstance:
     - target: {fileID: 7223476554864391469, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 7223476554864391469, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
@@ -2503,7 +2503,7 @@ PrefabInstance:
     - target: {fileID: 7223476554864391469, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 7223476554864391469, guid: 2e75425bae46a4904b223ce3af9dbc1a,
         type: 3}
@@ -3570,31 +3570,15 @@ MonoBehaviour:
   textBody: {fileID: 1721477195}
   clickedBlock: {fileID: 568153818}
   unclickedBlock: {fileID: 1285414314}
-  titleText: Science
-  bodyText: 'The cart can have energy due to its height (gravitational potential energy)
-    and due to its velocity (kinetic potential energy). We use the following formulas
-    to calculate the different energies:
-
-
-
-
-
-
-
-    m: mass of cart [kg]
-
-    g: acceleration due to gravity [9.81m/s^2]
-
-    h: height of cart (assuming the lowest point of the ride is 0 m) [m]
-
-    v: velocity of cart [m/s]
-
-
-    Energy is measured in Joules. Keep in mind that the total energy is always E(kin)
-    + E(pot). Energy cannot be created or destroyed, therefore the total energy the
-    cart has always remains the same during the duration of the ride. In this simulation
-    we assume that there is no friction and that the cart has 1.5 kJ, 3 kJ or 4.5kJ
-    (small, medium, large cart) of kinetic energy at the start.'
+  titleText: Calculating the Magnetic Field
+  bodyText: "The magnetic field you see is induced by current running through the
+    wires. You can calculate the magnitude of the magnetic field with this formula:\n\n\n\n\n\n\nI:
+    magnitude of electric current [A]\nmu(0): permeability of free space (constant:
+    4\u03C0 * 10^-7 [T * m/A])\nd: distance [m]\nB: magnitude of magnetic field [T]\n\nThis
+    formula gives you the magnitude of the magnetic field, a scalar value. However,
+    the magnetic field also has a direction (it's a vector!). Its direction, indicated
+    by the arrows, depends on the direction of the current in the wire. Maybe you
+    have heard about the right-hand rule?"
 --- !u!4 &705240157
 Transform:
   m_ObjectHideFlags: 0
@@ -5535,15 +5519,13 @@ GameObject:
   - component: {fileID: 973136723}
   - component: {fileID: 973136727}
   - component: {fileID: 973136726}
-  - component: {fileID: 973136725}
-  - component: {fileID: 973136724}
   m_Layer: 0
   m_Name: Power Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &973136723
 Transform:
   m_ObjectHideFlags: 0
@@ -5558,33 +5540,6 @@ Transform:
   m_Father: {fileID: 1716725315}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &973136724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 973136722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7804f2d6d3f2e46459bdc702657964df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioClip: {fileID: 0}
-  mFController: {fileID: 1716725316}
---- !u!135 &973136725
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 973136722}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &973136726
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5763,7 +5718,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &984730492
 Transform:
   m_ObjectHideFlags: 0
@@ -5776,7 +5731,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1395197404}
-  - {fileID: 2038822755}
   - {fileID: 1656386351}
   - {fileID: 1379881866}
   - {fileID: 1721477199}
@@ -6589,7 +6543,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1177807763}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07994bfe8b0e4adb97d706de5dea48d5, type: 3}
   m_Name: 
@@ -7030,6 +6984,106 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61d6e1f1cf1c44263a1c3c3802191dd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1270858955
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1270858959}
+  - component: {fileID: 1270858958}
+  - component: {fileID: 1270858957}
+  - component: {fileID: 1270858956}
+  m_Layer: 0
+  m_Name: TMP SubMesh [TMP - Lato Regular Material + LiberationSans SDF Atlas]
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1270858956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1270858955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07994bfe8b0e4adb97d706de5dea48d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_spriteAsset: {fileID: 0}
+  m_material: {fileID: 0}
+  m_sharedMaterial: {fileID: 0}
+  m_isDefaultMaterial: 0
+  m_padding: 1.25
+  m_renderer: {fileID: 1270858958}
+  m_meshFilter: {fileID: 1270858957}
+  m_TextComponent: {fileID: 1721477195}
+--- !u!33 &1270858957
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1270858955}
+  m_Mesh: {fileID: 0}
+--- !u!23 &1270858958
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1270858955}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!4 &1270858959
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1270858955}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1721477199}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1285414313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7552,7 +7606,7 @@ RectTransform:
   m_Children:
   - {fileID: 1177807764}
   m_Father: {fileID: 984730492}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7633,7 +7687,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: Science
+  m_text: Calculating the Magnetic Field
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
   m_sharedMaterial: {fileID: 21422954054896030, guid: 7dc16d1937a754ffa8f1b692dd2843a1,
@@ -7703,10 +7757,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1379881870}
-    characterCount: 7
+    characterCount: 30
     spriteCount: 0
-    spaceCount: 0
-    wordCount: 1
+    spaceCount: 3
+    wordCount: 4
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -8151,7 +8205,7 @@ GameObject:
   - component: {fileID: 1395197406}
   - component: {fileID: 1395197405}
   m_Layer: 0
-  m_Name: eKin Formula
+  m_Name: MF Formula
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8165,8 +8219,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1395197403}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.211, z: -0.05}
-  m_LocalScale: {x: 0.64432824, y: 0.17947373, z: 1}
+  m_LocalPosition: {x: 0, y: 1.112, z: -0.05}
+  m_LocalScale: {x: 0.822936, y: 0.2725129, z: 1}
   m_Children: []
   m_Father: {fileID: 984730492}
   m_RootOrder: 0
@@ -8202,7 +8256,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 80a0f60fae1264b97b0717489a16bae6, type: 2}
+  - {fileID: 2100000, guid: ecc42404c7d62491eb1d4529f833a34e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9057,7 +9111,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 45228079ef4524807a776967bc5f4484, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 45228079ef4524807a776967bc5f4484, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9447,6 +9501,7 @@ Transform:
   - {fileID: 1391490186}
   - {fileID: 1797511950}
   - {fileID: 816444754}
+  - {fileID: 1870857999}
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9465,6 +9520,9 @@ MonoBehaviour:
   sliderControl: {fileID: 3449816839031510490}
   displayText: {fileID: 858796475}
   powerText: {fileID: 1391490187}
+  conductorOne: {fileID: 259188992}
+  conductorTwo: {fileID: 5664913305310083269}
+  mainLight: {fileID: 3816722832465737271}
 --- !u!82 &1716725317
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9601,30 +9659,14 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 'The cart can have energy due to its height (gravitational potential energy)
-    and due to its velocity (kinetic potential energy). We use the following formulas
-    to calculate the different energies:
-
-
-
-
-
-
-
-    m: mass of cart [kg]
-
-    g: acceleration due to gravity [9.81m/s^2]
-
-    h: height of cart (assuming the lowest point of the ride is 0 m) [m]
-
-    v: velocity of cart [m/s]
-
-
-    Energy is measured in Joules. Keep in mind that the total energy is always E(kin)
-    + E(pot). Energy cannot be created or destroyed, therefore the total energy the
-    cart has always remains the same during the duration of the ride. In this simulation
-    we assume that there is no friction and that the cart has 1.5 kJ, 3 kJ or 4.5kJ
-    (small, medium, big cart) of kinetic energy at the start.'
+  m_text: "The magnetic field you see is induced by current running through the wires.
+    You can calculate the magnitude of the magnetic field with this formula:\n\n\n\n\n\n\nI:
+    magnitude of electric current [A]\nmu(0): permeability of free space (constant:
+    4\u03C0 * 10^-7 [T * m/A])\nd: distance [m]\nB: magnitude of magnetic field [T]\n\nThis
+    formula gives you the magnitude of the magnetic field, a scalar value. However,
+    the magnetic field also has a direction (it's a vector!). Its direction, indicated
+    by the arrows, depends on the direction of the current in the wire. Maybe you
+    have heard about the right-hand rule?"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7dc16d1937a754ffa8f1b692dd2843a1, type: 2}
   m_sharedMaterial: {fileID: 21422954054896030, guid: 7dc16d1937a754ffa8f1b692dd2843a1,
@@ -9670,7 +9712,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 334
+  m_firstOverflowCharacterIndex: 275
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -9694,14 +9736,14 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1721477195}
-    characterCount: 745
+    characterCount: 594
     spriteCount: 0
-    spaceCount: 138
-    wordCount: 139
+    spaceCount: 106
+    wordCount: 101
     linkCount: 0
-    lineCount: 20
+    lineCount: 19
     pageCount: 1
-    materialCount: 1
+    materialCount: 2
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -9709,7 +9751,7 @@ MonoBehaviour:
   m_renderer: {fileID: 1721477196}
   m_subTextObjects:
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1270858956}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -9781,9 +9823,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.026000023}
   m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
-  m_Children: []
+  m_Children:
+  - {fileID: 1270858959}
   m_Father: {fileID: 984730492}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10339,6 +10382,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectorLabel: 2
   mFController: {fileID: 1716725316}
+--- !u!1 &1870857998 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3816722832893489464, guid: 93f64c0331194442da0d8f21651a223c,
+    type: 3}
+  m_PrefabInstance: {fileID: 3816722832465737270}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1870857999 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+    type: 3}
+  m_PrefabInstance: {fileID: 3816722832465737270}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1870858000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870857998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7804f2d6d3f2e46459bdc702657964df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
+  mFController: {fileID: 1716725316}
+--- !u!65 &1870858001
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870857998}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.04, y: 0.01, z: 0.04}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1890969562 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4721295916077824533, guid: 814fa4c65d0ec4ed39bc961e926e22b6,
@@ -11609,99 +11691,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995890760}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2038822754
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2038822755}
-  - component: {fileID: 2038822758}
-  - component: {fileID: 2038822757}
-  - component: {fileID: 2038822756}
-  m_Layer: 0
-  m_Name: ePot Formula
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!4 &2038822755
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2038822754}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.018, y: 0.9910002, z: -0.05}
-  m_LocalScale: {x: 0.5552692, y: 0.09113675, z: 1}
-  m_Children: []
-  m_Father: {fileID: 984730492}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &2038822756
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2038822754}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &2038822757
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2038822754}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: afd604f31bf394422b54f76ad0d86e30, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!33 &2038822758
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2038822754}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &2048535301 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 6e42b0192767a49939beddf2423c442e,
@@ -13055,6 +13044,102 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b7670a26e06b4f09a94529a3c0818f5, type: 3}
+--- !u!1001 &3816722832465737270
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1716725315}
+    m_Modifications:
+    - target: {fileID: 3816722832893489464, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_Name
+      value: Light
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.4778
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.841
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3816722832893489465, guid: 93f64c0331194442da0d8f21651a223c,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 93f64c0331194442da0d8f21651a223c, type: 3}
+--- !u!114 &3816722832465737271 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6081461095837160003, guid: 93f64c0331194442da0d8f21651a223c,
+    type: 3}
+  m_PrefabInstance: {fileID: 3816722832465737270}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e32bf9008e4df43aca46826707b40de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!33 &3987761616395980205
 MeshFilter:
   m_ObjectHideFlags: 0

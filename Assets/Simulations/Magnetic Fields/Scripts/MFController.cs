@@ -19,6 +19,7 @@ namespace Kosmos.MagneticFields {
     [SerializeField] private TextMeshPro powerText;
     [SerializeField] private ConductorMF conductorOne;
     [SerializeField] private ConductorMF conductorTwo;
+    [SerializeField] private Kosmos.Shared.Light mainLight;
 
     public enum ConnectorLabel {DC_A_POS, DC_A_NEG, DC_B_POS, DC_B_NEG, AC_A1, AC_A2, AC_B1, AC_B2};
     private ConnectorLabel connectorLabel;
@@ -234,11 +235,13 @@ namespace Kosmos.MagneticFields {
       if (!powerOn) {
         powerOn = true;
         powerText.text = "Power On";
+        mainLight.TurnOn(true);
         //setCurrents(sliderControl.SliderValue);
         currentQueue.Add(sliderControl.SliderValue);
       } else {
         powerOn = false;
         powerText.text = "Power Off";
+        mainLight.TurnOn(false);
         //setCurrents(0);
         currentQueue.Add(0);
       }
